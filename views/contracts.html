@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+ {{template "header"}}
+  <title> 首页 - 客户管理</title>  
+  </head>
+
+  <body background: #ff0000>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-striped table-hover">
+					<thead>
+						<tr class="warning">
+							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
+								{{with .Selectors}}
+								<th>
+									序号
+								</th>
+								<th>合同号
+									<select  name="Contract_id">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Contract_id.Values}}
+											<option value= {{$k}} 
+											{{if eq $k $.Selectors.Contract_id.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									客户姓名
+									<select  name="Client_name">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Client_name.Values}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Client_name.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									国家
+									<select  name="Country">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Country.Values}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Country.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									项目
+									<select  name="Project_type">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Project_type.Values}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Project_type.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									咨询
+									<select  name="Consulter">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Consulter.Values}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Consulter.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									文案
+									<select  name="Secretary">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Secretary.Values}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Secretary.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									转案日期
+								</th>
+								<th>
+									状态
+								</th>
+								<th>
+									操作
+								</th>
+								{{end}}
+								<th>
+									<button type="submit" class="btn btn-danger">查询</button>
+									<button type="submit" class="btn btn-danger"  onclick="return backToHome();">全部</button>
+								</th>
+							</form>
+						</tr>
+					</thead>
+					<tbody>
+						{{$curUser := .CurUser}}
+						{{range .Contracts}}
+						<tr  class="success">
+							<td>
+								{{.Seq}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Contract_id:{{.Contract_id}}">{{.Contract_id}}</a>
+							</td>	
+							<td>
+								<a href="/contract/query?filter=Client_name:{{.Client_name}}">{{.Client_name}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Country:{{.Country}}">{{.Country}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Project_type:{{.Project_type}}">{{.Project_type}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Consulter:{{.Consulter}}">{{.Consulter}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Secretary:{{.Secretary}}">{{.Secretary}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Zhuan_an_date:{{.Zhuan_an_date}}">{{.Zhuan_an_date}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>
+							</td>
+							<td>
+							{{if or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager"))  (eq $curUser.Uname .Secretary)}}
+								<a href="/contract/update?cid={{.Contract_id}}">修改</a>
+							{{end}}
+							</td>  
+							<td></td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function backToHome() {
+			window.location.href = "/contract"
+			return false;
+		}
+	</script>
+	<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
