@@ -129,7 +129,7 @@
 								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>
 							</td>
 							<td>
-							{{if or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager"))  (eq $curUser.Uname .Secretary)}}
+							{{if or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager"))  (eq $curUser.Cname .Secretary)}}
 								<a href="/contract/update?cid={{.Contract_id}}">修改</a>
 							{{end}}
 							</td>  

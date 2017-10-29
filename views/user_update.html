@@ -20,6 +20,10 @@
                 <input type="text" class="form-control" name="Uname" value={{.User.Uname}} readonly>
             </div>
 			<div class="form-group">
+                <label>姓名:</label>
+                <input type="text" class="form-control" name="Cname"  required="required" minlength="2" max="20" value={{.User.Cname}}>
+            </div>
+			<div class="form-group">
                 <label>职位:</label>
                 <select class="form-control" name="Title" required="required"
 				{{if or (ne .OP "ADMIN") (eq .User.Title "Admin")}}

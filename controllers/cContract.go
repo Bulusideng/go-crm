@@ -34,13 +34,13 @@ func (this *ContractController) Query() { //Filter contract
 	filters := map[string]string{}
 
 	filter := this.GetString("filter")
-	if filter != "" {
+	if filter != "" { //Single filter
 		beego.Warning("Filter: ", this.GetString("filter"))
 		kv := strings.Split(filter, ":")
 		if len(kv) == 2 {
 			filters[kv[0]] = kv[1]
 		}
-	} else {
+	} else { //Filter in form
 		cfilter := &models.Contract{}
 		this.ParseForm(cfilter)
 		object := reflect.ValueOf(cfilter)

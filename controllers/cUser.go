@@ -102,16 +102,8 @@ func (this *UserController) Post() {
 	this.Redirect("/user", 302)
 }
 
-func (this *UserController) Add() {
-	title := GetTitle(this.Ctx)
-	if title == "Guest" {
-		this.Redirect("/login", 302)
-		return
-	} else if title != "Admin" { //Only Admin can add/update/delete user
-		return
-	}
-
-	this.TplName = "user_add.html"
+func (this *UserController) Register() {
+	this.TplName = "user_register.html"
 	this.Data["CurUser"] = GetUserInfo(this.Ctx)
 	this.Data["OP"] = "ADD"
 	this.Data["IsAddUser"] = true

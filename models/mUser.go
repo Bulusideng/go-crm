@@ -30,12 +30,14 @@ func NewGuest() *UserInfo {
 	return &UserInfo{
 		Uname: "Guest",
 		Title: "Guest",
+		Cname: "访客",
 	}
 }
 
 type UserInfo struct {
 	Uname  string `orm:"pk"`
 	Title  string //Administrator, Manager, Consulter or Secretary
+	Cname  string //Chinese name
 	Email  string
 	Mobile string
 }
