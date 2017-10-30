@@ -24,8 +24,14 @@ func (this *AccountController) Get() {
 
 	this.Data["IsUser"] = true
 	this.Data["CurUser"] = curUser
+	var reporters []*models.Account
+	var err error
+	if curUser.IsAdmin() {
+		reporters, err = models.GetAllAccts()
+	} else if curUser.IsManager() {
+		reporters, err = curUser.GetReporters()
+	}
 
-	reporters, err := curUser.GetReporters()
 	if err != nil {
 		beego.Error(err)
 	} else {
@@ -34,18 +40,47 @@ func (this *AccountController) Get() {
 	this.TplName = "accounts.html"
 }
 
+func (this *AccountController) Register() {
+	this.TplName = "account_register.html"
+	this.Data["RegAcct"] = true
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
+	this.Data["Managers"], _ = models.GetManagers()
+
+}
+
 func (this *AccountController) View() {
 	this.TplName = "account_view.html"
 	this.Data["ViewAcct"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }
 
-func (this *AccountController) Register() {
-	this.TplName = "account_register.html"
-	this.Data["RegAcct"] = true
-	this.Data["CurUser"] = GetCurAcct(this.Ctx)
-	filter := map[string]string{"title": "Manager"}
-	mgrs, _ = models.GetAcctounts(filter)
+func (this *AccountController) Manage() {
+	uname := this.GetString("uname", "")
+	if uname == "" {
+		return
+	}
+	acct, err := models.GetAccount(uname)
+	if err != nil {
+		this.Redirect("/status?msg=Manage account error, invalid Uname: "+uname, 302)
+		return
+	}
+	curUsr := GetCurAcct(this.Ctx)
+	if curUsr.IsGuest() {
+		this.Redirect("/login", 302)
+		return
+	} else if !curUsr.IsManagerOf(acct) {
+		this.Redirect("/status?msg=Current user: "+curUsr.Uname+"is not manager of: "+uname, 302)
+		fmt.Printf("User %+v want update %s\n", *curUsr, uname)
+		return
+	}
+
+	this.TplName = "account_manage.html"
+	this.Data["IsUser"] = true
+	this.Data["CurUser"] = curUsr
+	this.Data["Acct"] = acct
+
+	this.Data["Managers"], _ = models.GetManagers()
+	fmt.Printf("Mgrs: %+v\n", this.Data["Managers"])
 }
 
 func (this *AccountController) Post() {
@@ -101,10 +136,16 @@ func (this *AccountController) Post() {
 	case "manage_acct":
 		if curUsr.IsActive() {
 			if curUsr.IsManagerOf(acct) {
-				models.ManageAccount(acct.Uname, acct.Status, acct.Title, acct.Manager)
+				if err = models.ManageAccount(acct.Uname, acct.Status, acct.Title, acct.Manager); err == nil {
+					this.Redirect("/status?msg=Manage account success", 302)
+					ct, _ := models.GetAccount(acct.Uname)
+					fmt.Printf("After manage: %+v\n\n", *ct)
+					return
+				}
+
 			} else {
 				beego.Error("没有权限！！！")
-				this.Redirect("/status?msg=Update account failed, permission denied", 302)
+				this.Redirect("/status?msg=Manage account failed, permission denied cur: "+curUsr.Uname+", Account: "+acct.Uname, 302)
 				return
 			}
 		}
@@ -127,38 +168,8 @@ func (this *AccountController) Post() {
 		this.Redirect("/status?msg=Account disabled", 302)
 		return
 	}
+	fmt.Printf("账户操作失败: %s\n", op)
+	fmt.Printf("CurUser: %+v\n", *curUsr)
+	fmt.Printf("Account: %+v\n", *acct)
 	this.Redirect("/status?msg=unknown error", 302)
 }
-
-/*
-func (this *AccountController) Update() {
-	uname := this.GetString("uname", "")
-	if uname == "" {
-		return
-	}
-	curUsr := GetCurAcct(this.Ctx)
-	if curUsr.IsGuest() {
-		this.Redirect("/login", 302)
-		return
-	} else if curUsr.Title != "Admin" && curUsr.Uname != uname { //Only Admin self can update user
-		fmt.Printf("User %+v want update %s\n", *curUsr, uname)
-		return
-	}
-	usr, err := models.GetAccount(uname)
-	if err != nil {
-		beego.Error(err)
-		this.Redirect("/", 302)
-		return
-	}
-
-	this.TplName = "user_update.html"
-	this.Data["CurUser"] = curUsr
-	if curUsr.Title != "Admin" {
-		this.Data["OP"] = "UPDATE"
-	} else {
-		this.Data["OP"] = "ADMIN" //Admin change other user info
-	}
-
-	this.Data["User"] = usr
-}
-*/

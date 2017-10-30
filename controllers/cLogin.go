@@ -51,15 +51,14 @@ func (c *LoginController) Post() {
 		beego.Warning("Login success:", uname, ": ", pwd)
 		c.Redirect("/", 301)
 	} else {
-		c.Redirect("/login?failed=true", 301)
+		//c.Redirect("/login?failed=true", 301)
+		c.Redirect("/status?msg=Account is inactive, please wait manager approve!", 302)
 	}
 	return
 }
 
+//Get account in cookie, check password and status is active, if failed return guest
 func GetCurAcct(ctx *context.Context) *models.Account {
-	for _, cook := range ctx.Request.Cookies() {
-		fmt.Printf("ctx cook: %+v\n", *cook)
-	}
 	ck, err := ctx.Request.Cookie("uname")
 	if err != nil {
 		beego.Warning("No uname")

@@ -50,17 +50,22 @@ func GetValidAcct(uname, pwd string) (c *Account, err error) {
 //Only one's manager can do this!!!
 func ManageAccount(uname, status, manager, title string) error {
 	o := orm.NewOrm()
-	usr := &Account{Uname: uname}
-	err := o.Read(usr)
+	acct := &Account{Uname: uname}
+	err := o.Read(acct)
 	if err == nil {
-		if mgr, err := GetAccount(manager); err == nil && mgr.IsManager() {
-			usr.Status = status
-			usr.Manager = manager
-			usr.Title = title
-			_, err = o.Update(usr, "status", "manager", "title")
+		if mgr, err := GetAccount(manager); err == nil && mgr.IsManagerOf(acct) {
+			acct.Status = status
+			acct.Manager = manager
+			acct.Title = title
+			_, err = o.Update(acct, "Status", "Manager", "Title")
 		} else {
 			err = errors.New("Invalid manager")
 		}
+	}
+	if err != nil {
+		fmt.Printf("manage acct failed[%s, %s, %s]...........%s\n", uname, status, manager, err.Error())
+	} else {
+		fmt.Printf("manage acct success[%s, %s, %s]...........%s\n", uname, status, manager)
 	}
 	return err
 }
@@ -145,12 +150,12 @@ func GetAllAccts() ([]*Account, error) {
 
 func GetManagers() ([]*Account, error) {
 	filter := map[string]string{
-		"title": "Admin",
+		"Title": "Admin",
 	}
 	admins, _ := GetAcctounts(filter)
-	filter["title"] = "Manager"
+	filter["Title"] = "Manager"
 	mgrs, _ := GetAcctounts(filter)
-	return append()
+	return append(mgrs, admins...), nil
 
 }
 

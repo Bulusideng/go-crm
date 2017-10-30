@@ -13,48 +13,42 @@
 
     <div class="container">
         <h3 class="text-center" >修改信息</h3>
-        <form method="post" action="/user"  enctype="multipart/form-data">
-			<input style="display:none" type="text" class="form-control" name="OP" value={{.OP}}>
+        <form method="post" action="/account?op=manage_acct"  enctype="multipart/form-data">
+			{{$mgrs := .Managers}}
+			{{with .Acct}}
             <div class="form-group">
                 <label>用户名:</label>
-                <input type="text" class="form-control" name="Uname" value={{.User.Uname}} readonly>
+                <input type="text" class="form-control" name="Uname" value={{.Uname}} readonly>
             </div>
 			<div class="form-group">
                 <label>姓名:</label>
-                <input type="text" class="form-control" name="Cname"  required="required" minlength="2" max="20" value={{.User.Cname}}>
+                <input type="text" class="form-control" name="Cname"  required="required" minlength="2" max="20" value={{.Cname}}>
             </div>
 			<div class="form-group">
                 <label>职位:</label>
-                <select class="form-control" name="Title" required="required"
-				{{if or (ne .OP "ADMIN") (eq .User.Title "Admin")}}
-					onfocus="this.defaultIndex=this.selectedIndex;" 
-					onchange="this.selectedIndex=this.defaultIndex;"
-				{{end}}
-				> 
-				{{if eq .User.Title "Admin"}}
-				<option value ="Admin" selected = "selected" >管理员</option>
-				{{end}}
-				<option value ="Manager" {{if eq .User.Title "Manager"}}selected = "selected"{{end}} >经理</option>
-				<option value="Consulter" {{if eq .User.Title "Consulter"}}selected = "selected"{{end}} >咨询</option>
-				<option value="Secretary" {{if eq .User.Title "Secretary"}}selected = "selected"{{end}} >文案</option>
+                <select class="form-control" name="Title" required="required">
+				<option value ="Manager" {{if eq .Title "Manager"}} selected = "selected" {{end}} >经理</option>
+				<option value="Consulter" {{if eq .Title "Consulter"}} selected = "selected" {{end}} >咨询</option>
+				<option value="Secretary" {{if eq .Title "Secretary"}} selected = "selected" {{end}} >文案</option>
 				</select>
             </div>
 			<div class="form-group">
-                <label>新密码:</label>
-                <input type="password" class="form-control" name="Pwd" required="required" minlength="5" max="20">
-            </div>
-           	<div class="form-group">
-                <label>重复新密码:</label>
-                <input type="password" class="form-control" name="RePwd" required="required" minlength="5" max="20">
-            </div>
-			{{with .User}}
-			<div class="form-group">
-                <label>邮箱:</label>
-                <input type="email" class="form-control" name="Email" value={{.Email}} required="required" >
+                <label>经理:</label>
+				<select class="form-control" name="Manager" required="required"> 
+				<option value =""></option>
+				{{$curMgr := .Manager}}
+				{{range $mgrs}}
+				<option value = {{.Uname}} {{if eq $curMgr .Uname}} selected = "selected" {{end}} >{{.Uname}}: {{.Cname}}</option>
+				{{end}}
+				</select>
             </div>
 			<div class="form-group">
-                <label>电话:</label>
-                <input type="tel" class="form-control" name="Mobile" value={{.Mobile}} required minlength="5" max="20">
+                <label>状态:</label>
+                <select class="form-control" name="Status" required="required">
+				<option value ="Active" {{if eq .Status "Active"}} selected = "selected" {{end}} >正常</option>
+				<option value="Locked" {{if eq .Status "Locked"}} selected = "selected" {{end}} >锁定</option>
+				<option value="Disabled" {{if eq .Status "Disabled"}} selected = "selected" {{end}} >未激活</option>
+				</select>
             </div>
 			{{end}}
 			<div class="form-group">
@@ -63,7 +57,7 @@
             </div>
 			<center>
             	<button type="submit" class="btn btn-danger">确定</button>
-				<a class="btn  btn-danger" href="/contract">取消</a>
+				<a class="btn  btn-danger" href="/account">取消</a>
 			</center>
         </form>
     </div>

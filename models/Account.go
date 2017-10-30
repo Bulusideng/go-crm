@@ -51,7 +51,7 @@ func (this *Account) IsManager() bool {
 }
 
 func (this *Account) IsManagerOf(u *Account) bool {
-	return (this.IsManager() && this.Uname == u.Manager)
+	return (this.IsManager() && (u.Manager == "" || this.Uname == u.Manager))
 }
 
 func (this *Account) IsGuest() bool {

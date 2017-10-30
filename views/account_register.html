@@ -35,6 +35,9 @@
                 <label>经理:</label>
 				<select class="form-control" name="Manager" required="required"> 
 				<option value =""></option>
+				{{range .Managers}}
+				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
+				{{end}}
 				</select>
             </div>
 			<div class="form-group">

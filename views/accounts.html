@@ -26,6 +26,9 @@
 								职位
 							</th>
 							<th>
+								经理
+							</th>
+							<th>
 								邮箱
 							</th>
 							<th>
@@ -40,7 +43,9 @@
 						</tr>
 					</thead>
 					<tbody>
+						{{$curUsr := .CurUser}}
 						{{range .Reporters}}
+						{{if ne $curUsr.Uname .Uname}}
 						<tr class="success">
 							<td>
 								{{.Uname}}
@@ -52,24 +57,30 @@
 								{{.Title}}
 							</td>
 							<td>
+								{{.Manager}}
+							</td>
+							<td>
 								{{.Email}}
 							</td>
 							<td>
 								{{.Mobile}}
 							</td>
 							<td>
-								{{if eq .Status 0}}
+								{{if eq .Status "Disabled"}}
 								未激活
-								{{else if eq .Status 1}}
+								{{else if eq .Status "Locked"}}
 								锁定
-								{{else}}
+								{{else if eq .Status "Active"}}
 								正常
+								{{else}}
+								未知状态：{{.Status}}
 								{{end}}
 							</td>
 							<td>
-								<a href="/account/update?uname={{.Uname}}">修改</a>
+								<a href="/account/manage?uname={{.Uname}}">修改</a>
 							</td>  
 						</tr>
+						{{end}}
 						{{end}}
 					</tbody>
 				</table>
