@@ -16,30 +16,31 @@
 				<table class="table table-striped table-hover">
 					<thead>
 						<tr class="warning">
-							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
-								<th>
-									用户名
-								</th>
-								<th>
-									姓名
-								</th>
-								<th>
-									职位
-								</th>
-								<th>
-									邮箱
-								</th>
-								<th>
-									电话
-								</th>
-								<th>
-									操作
-								</th>
-							</form>
+							<th>
+								用户名
+							</th>
+							<th>
+								姓名
+							</th>
+							<th>
+								职位
+							</th>
+							<th>
+								邮箱
+							</th>
+							<th>
+								电话
+							</th>
+							<th>
+								状态
+							</th>
+							<th>
+								操作
+							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{{range .Users}}
+						{{range .Reporters}}
 						<tr class="success">
 							<td>
 								{{.Uname}}
@@ -57,7 +58,16 @@
 								{{.Mobile}}
 							</td>
 							<td>
-								<a href="user/update?uname={{.Uname}}">修改</a>
+								{{if eq .Status 0}}
+								未激活
+								{{else if eq .Status 1}}
+								锁定
+								{{else}}
+								正常
+								{{end}}
+							</td>
+							<td>
+								<a href="/account/update?uname={{.Uname}}">修改</a>
 							</td>  
 						</tr>
 						{{end}}

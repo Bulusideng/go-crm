@@ -25,7 +25,7 @@ func (this *ContractController) Get() {
 	}
 
 	this.TplName = "contracts.html"
-	this.Data["CurUser"] = GetUserInfo(this.Ctx)
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }
 
 func (this *ContractController) Query() { //Filter contract
@@ -66,7 +66,7 @@ func (this *ContractController) Query() { //Filter contract
 		this.Data["Selectors"] = GetSelectors(contracts, filters)
 	}
 	this.TplName = "contracts.html"
-	this.Data["CurUser"] = GetUserInfo(this.Ctx)
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }
 
 func GetSelectors(contracts []*models.Contract, filters map[string]string) *models.ContractSelector {
@@ -101,7 +101,7 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 }
 
 func (this *ContractController) Post() {
-	if IsGuest(this.Ctx) {
+	if GetCurAcct(this.Ctx).IsGuest() {
 		this.Redirect("/login", 302)
 		return
 	}
@@ -130,19 +130,19 @@ func (this *ContractController) Post() {
 }
 
 func (this *ContractController) Add() {
-	if IsGuest(this.Ctx) {
+	if GetCurAcct(this.Ctx).IsGuest() {
 		this.Redirect("/login", 302)
 		return
 	}
 
 	this.TplName = "contract_add.html"
 	this.Data["IsAddContract"] = true
-	this.Data["CurUser"] = GetUserInfo(this.Ctx)
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 
 }
 
 func (this *ContractController) Update() {
-	if IsGuest(this.Ctx) {
+	if GetCurAcct(this.Ctx).IsGuest() {
 		this.Redirect("/login", 302)
 		return
 	}
@@ -171,5 +171,5 @@ func (this *ContractController) View() {
 	}
 	this.Data["Contract"] = contract
 	this.Data["Tid"] = this.Ctx.Input.Params()["0"]
-	this.Data["Account"] = GetUserInfo(this.Ctx)
+	this.Data["Account"] = GetCurAcct(this.Ctx)
 }

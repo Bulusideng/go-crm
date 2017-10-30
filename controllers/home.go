@@ -14,7 +14,7 @@ func (this *MainController) Get() {
 	return
 	this.Data["IsHome"] = true
 	this.TplName = "home.html"
-	this.Data["CurUser"] = GetUserInfo(this.Ctx)
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 	contracts, err := models.GetAllContracts()
 	if err != nil {
 		beego.Error(err)

@@ -25,7 +25,7 @@
 				<div style="display:none" name="status">{{if .Failed}}failed{{end}}</div>	
 			
 			  <button type="submit" class="btn btn-danger" >登录</button>
-			  <button type="submit" class="btn btn-danger"  onclick="return backToHome();">返回</button>
+			  <a class="btn  btn-danger" href="/contract">返回</a>
 			</form>
 
 			<script type="text/javascript">
@@ -37,10 +37,6 @@
 					document.getElementById("pwd").value = "";
 					document.getElementById("uname").focus()
 				};
-				function backToHome() {
-					window.location.href = "/"
-					return false;
-				}
 			</script>
 		</div>
 	</body>

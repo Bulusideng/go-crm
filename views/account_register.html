@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+ {{template "header"}}
+  <title>添加用户</title>  
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="text-center" >用户注册</h3>
+        <form method="post" action="/account?op=register"  enctype="multipart/form-data">
+            <div class="form-group">
+                <label>用户名:</label>
+                <input type="text" class="form-control" name="Uname" required="required" minlength="2" max="20">
+            </div>
+			<div class="form-group">
+                <label>姓名:</label>
+                <input type="text" class="form-control" name="Cname" required="required" minlength="2" max="20">
+            </div>
+			<div class="form-group">
+                <label>职位:</label>
+				<select class="form-control" name="Title" required="required"> 
+				<option value =""></option>
+				<option value ="Manager">经理</option>
+				<option value="Consulter">咨询</option>
+				<option value="Secretary">文案</option>
+				</select>
+            </div>
+			<div class="form-group">
+                <label>经理:</label>
+				<select class="form-control" name="Manager" required="required"> 
+				<option value =""></option>
+				</select>
+            </div>
+			<div class="form-group">
+                <label>密码:</label>
+                <input type="password" class="form-control" name="Pwd" required="required" minlength="1" max="20">
+            </div>
+           	<div class="form-group">
+                <label>重复密码:</label>
+                <input type="password" class="form-control" name="RePwd" required="required" minlength="1" max="20">
+            </div>
+			<div class="form-group">
+                <label>邮箱:</label>
+                <input type="email" class="form-control" name="Email" >
+            </div>
+			<div class="form-group">
+                <label>电话:</label>
+                <input type="tel" class="form-control" name="Mobile" minlength="1" max="20">
+            </div>
+			<center>
+            	<button type="submit" class="btn btn-danger">确定</button>
+				<a class="btn  btn-danger" href="/contract">取消</a>
+			</center>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+

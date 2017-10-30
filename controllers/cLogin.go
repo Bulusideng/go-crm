@@ -14,10 +14,9 @@ type LoginController struct {
 
 func (c *LoginController) Get() {
 	isExit := c.Input().Get("exit") == "true"
-	failed := c.Input().Get("failed") == "true"
+	failed := c.Input().Get("failed") != ""
 	if isExit || failed {
 		c.Ctx.SetCookie("uname", "", -1, "/")
-		c.Ctx.SetCookie("isAdmin", "", -1, "/")
 		c.Ctx.SetCookie("title", "", -1, "/")
 		fmt.Printf("Clear cookie\n")
 	}
@@ -38,7 +37,8 @@ func (c *LoginController) Post() {
 
 	fmt.Printf("Login %s:%s\n", uname, pwd)
 	autoLogin := c.Input().Get("autoLogin") == "on"
-	usr, err := models.GetValidUser(uname, pwd)
+
+	usr, err := models.GetValidAcct(uname, pwd)
 	if err == nil {
 		maxAge := 10
 		if autoLogin {
@@ -49,54 +49,51 @@ func (c *LoginController) Post() {
 		c.Ctx.SetCookie("pwd", pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
 		beego.Warning("Login success:", uname, ": ", pwd)
-
-		fmt.Printf("Set COOK:%+v\n", c.Ctx.GetCookie("uname"))
-		fmt.Printf("Set COOK:%+v\n", c.Ctx.GetCookie("pwd"))
-
-		c.Redirect("/contract", 301)
+		c.Redirect("/", 301)
 	} else {
 		c.Redirect("/login?failed=true", 301)
 	}
 	return
 }
 
-func GetUserInfo(ctx *context.Context) *models.UserInfo {
+func GetCurAcct(ctx *context.Context) *models.Account {
 	for _, cook := range ctx.Request.Cookies() {
-		fmt.Printf("get vCOOK:%+v\n", *cook)
+		fmt.Printf("ctx cook: %+v\n", *cook)
 	}
-
 	ck, err := ctx.Request.Cookie("uname")
 	if err != nil {
 		beego.Warning("No uname")
-		return models.NewGuest()
+		return models.Guest()
 	}
 	uname := ck.Value
 	ck, err = ctx.Request.Cookie("pwd")
 	if err != nil {
 		beego.Warning("No pwd")
-		return models.NewGuest()
+		return models.Guest()
 	}
 	pwd := ck.Value
-	usr, err := models.GetValidUser(uname, pwd)
+	usr, err := models.GetValidAcct(uname, pwd)
 	if err == nil {
 		ctx.SetCookie("title", usr.Title) //Update title in case changed
-		return &usr.UserInfo
+		return usr
 	}
 	beego.Warning("Invalid pwd ", uname, ": ", pwd)
-	return models.NewGuest()
+	return models.Guest()
 }
 
+/*
 func IsGuest(ctx *context.Context) bool {
-	usr := GetUserInfo(ctx)
+	usr := GetCurUser(ctx)
 	fmt.Printf("User info:%+v\n", usr)
 	return usr.Uname == "Guest"
 }
 func IsAdmin(ctx *context.Context) bool {
-	usr := GetUserInfo(ctx)
+	usr := GetCurUser(ctx)
 	return usr.Title == "Admin"
 }
 func GetTitle(ctx *context.Context) string {
-	usr := GetUserInfo(ctx)
+	usr := GetCurUser(ctx)
 	fmt.Printf("User info:%+v\n", usr)
 	return usr.Title
 }
+*/

@@ -18,8 +18,10 @@ func Register() {
 		beego.AutoRouter(&controllers.ContractController{})
 	}
 
-	beego.Router("user/", &controllers.UserController{})
-	beego.AutoRouter(&controllers.UserController{})
+	beego.Router("account/", &controllers.AccountController{})
+	beego.AutoRouter(&controllers.AccountController{})
+
+	beego.Router("/status", &controllers.StatusController{})
 
 	beego.Router("/login", &controllers.LoginController{})
 
