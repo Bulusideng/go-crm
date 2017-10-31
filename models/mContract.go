@@ -10,16 +10,11 @@ import (
 
 //合同号 序号	客户姓名 国家 项目 咨询 文案 转案日期 目前状态
 
-type History struct {
-	User    string
-	Date    string
-	Changes string
-}
-
 type Contract struct {
 	Contract_id    string `orm:"pk"`
 	Seq            string
 	Client_name    string
+	Client_Tel     string
 	Country        string
 	Project_type   string
 	Consulter      string
@@ -30,8 +25,10 @@ type Contract struct {
 	Create_by      string
 	Zhuan_an_date  string
 	Current_state  string
-	Histories      []*History
+	//Histories      []*History
 }
+
+
 
 func NewContract() *Contract {
 	return &Contract{
@@ -48,7 +45,8 @@ func NewContract() *Contract {
 		"N/A",
 		"N/A",
 		"N/A",
-		nil,
+		"N/A",
+		//nil,
 	}
 }
 

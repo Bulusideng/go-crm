@@ -13,7 +13,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped table-hover">
+				<table class="table table-striped table-hover table-bordered" >
 					<thead>
 						<tr class="warning">
 							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
@@ -39,6 +39,9 @@
 											{{if eq $k $.Selectors.Client_name.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
+								</th>
+								<th>
+								电话:
 								</th>
 								<th>
 									国家:
@@ -124,6 +127,9 @@
 								<a href="/contract/query?filter=Client_name:{{.Client_name}}">{{.Client_name}}</a>
 							</td>
 							<td>
+								<a href="/contract/query?filter=Client_Tel:{{.Client_Tel}}">{{.Client_Tel}}</a>
+							</td>
+							<td>
 								<a href="/contract/query?filter=Country:{{.Country}}">{{.Country}}</a>
 							</td>
 							<td>
@@ -143,7 +149,7 @@
 							</td>
 							<td>
 							{{if or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager"))  (eq $curUser.Cname .Secretary)}}
-								<a href="/contract/update?cid={{.Contract_id}}">修改</a>
+								<a href="/contract/update?cid={{.Contract_id}}">更新</a>
 							{{end}}
 							</td>  
 							<td></td>

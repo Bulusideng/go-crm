@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title> 项目管理 - 修改客户</title>  
+  <title> 项目管理 - 更新合同</title>  
   </head>
 
   <body>
@@ -12,7 +12,7 @@
     </nav>
 
     <div class="container">
-		<h3 class="text-center" >修改客户信息</h3>
+		<h3 class="text-center" >更新合同状态</h3>
         <form method="post" action="/contract"  enctype="multipart/form-data">
 			<input style="display:none" type="text" class="form-control" name="OP" value="UPDATE">
 			{{$Team := .Team}}
@@ -75,10 +75,5 @@
 			</center>
         </form>
     </div>
-	
-    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/static/js/my.js"></script>
   </body>
 </html>
-

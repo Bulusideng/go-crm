@@ -181,6 +181,7 @@ func (this *ContractController) View() {
 		return
 	}
 	this.Data["Contract"] = contract
+	this.Data["Comments"], _ = models.GetComments(cid)
 	this.Data["Tid"] = this.Ctx.Input.Params()["0"]
 	this.Data["Account"] = GetCurAcct(this.Ctx)
 }
