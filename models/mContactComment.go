@@ -1,7 +1,8 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
+	"fmt"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -29,8 +30,9 @@ func DelComment(id int) error {
 	o := orm.NewOrm()
 	if _, err := o.Delete(&Comment{Id: id}); err != nil {
 		fmt.Printf("Delete Comment failed %d\n", id)
+		return err
 	}
-	return err
+	return nil
 }
 
 func GetComments(contract_id string) ([]*Comment, error) {
