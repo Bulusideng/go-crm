@@ -6,11 +6,11 @@
     
 	{{if .CurUser }}
 			{{if eq .CurUser.Title "Admin"}}
-				<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>
-				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">帐号管理</a></li>
+				<!--<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>-->
+				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">员工管理</a></li>
 			{{else if eq .CurUser.Title "Manager"}}
 				<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>
-				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">帐号管理</a></li>
+				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">员工管理</a></li>
 			{{end}}
 		
 			{{if ne .CurUser.Uname "Guest"}}

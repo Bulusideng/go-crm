@@ -17,7 +17,7 @@ func (this *AccountController) Get() {
 		this.Redirect("/login", 302)
 		return
 	}
-	if !curUser.IsManager() {
+	if !(curUser.IsManager() || curUser.IsAdmin()) {
 		this.Redirect("/status?msg=No access!!!", 302)
 		return
 	}
@@ -26,7 +26,7 @@ func (this *AccountController) Get() {
 	this.Data["CurUser"] = curUser
 	var reporters []*models.Account
 	var err error
-	if curUser.IsAdmin() {
+	if curUser.IsAdmin() || true {
 		reporters, err = models.GetAllAccts()
 	} else if curUser.IsManager() {
 		reporters, err = curUser.GetReporters()
@@ -43,8 +43,11 @@ func (this *AccountController) Get() {
 func (this *AccountController) Register() {
 	this.TplName = "account_register.html"
 	this.Data["RegAcct"] = true
-	this.Data["CurUser"] = GetCurAcct(this.Ctx)
-	this.Data["Managers"], _ = models.GetManagers()
+
+	mgrs, _ := models.AcctByTitle("Manager")
+	admins, _ := models.AcctByTitle("Admin")
+	this.Data["Managers"] = append(mgrs, admins...)
+	fmt.Printf("Mgrs: %+v\n", this.Data["Managers"])
 
 }
 
@@ -79,7 +82,9 @@ func (this *AccountController) Manage() {
 	this.Data["CurUser"] = curUsr
 	this.Data["Acct"] = acct
 
-	this.Data["Managers"], _ = models.GetManagers()
+	mgrs, _ := models.AcctByTitle("Manager")
+	admins, _ := models.AcctByTitle("Admin")
+	this.Data["Managers"] = append(mgrs, admins...)
 	fmt.Printf("Mgrs: %+v\n", this.Data["Managers"])
 }
 
@@ -136,13 +141,12 @@ func (this *AccountController) Post() {
 	case "manage_acct":
 		if curUsr.IsActive() {
 			if curUsr.IsManagerOf(acct) {
-				if err = models.ManageAccount(acct.Uname, acct.Status, acct.Title, acct.Manager); err == nil {
+				if err = models.ManageAccount(acct); err == nil {
 					this.Redirect("/status?msg=Manage account success", 302)
 					ct, _ := models.GetAccount(acct.Uname)
 					fmt.Printf("After manage: %+v\n\n", *ct)
 					return
 				}
-
 			} else {
 				beego.Error("没有权限！！！")
 				this.Redirect("/status?msg=Manage account failed, permission denied cur: "+curUsr.Uname+", Account: "+acct.Uname, 302)

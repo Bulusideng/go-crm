@@ -39,12 +39,28 @@
 							           </div>
 									<div class="form-group">
 							               <label>职  位: {{.Title}}</label>
-							           </div>
+							        </div>
+									<div class="form-group">
+										<label>经  理：{{.Manager}}</label>
+									</div>
 									<div class="form-group">
 							               <label>邮箱: {{.Email}}</label>
 							           </div>
 									<div class="form-group">
 							               <label>电话: {{.Mobile}}</label>
+							        </div>
+									<div class="form-group">
+							               <label>
+										状态: {{if eq .Status "Disabled"}}
+										禁用
+										{{else if eq .Status "Locked"}}
+										锁定
+										{{else if eq .Status "Active"}}
+										正常
+										{{else}}
+										未知状态：{{.Status}}
+										{{end}}
+										</label>
 							        </div>
 									{{end}}
 							    </div>
@@ -52,7 +68,7 @@
 						</div>
 						<div class="tab-pane" id="panel-309865">
 							<p>
-								<form method="post" action="/account?op=change_contact"  enctype="multipart/form-data">
+								<form class ="table table-hover" method="post" action="/account?op=change_contact"  enctype="multipart/form-data">
 								{{with .CurUser}}
 								<div class="form-group">
 					                <label>用户名:</label>
@@ -74,9 +90,9 @@
 					        </form>
 							</p>
 						</div>
+						
 						<div class="tab-pane" id="panel-309867">
-							<p>
-								<form method="post" action="/account?op=change_pwd"  enctype="multipart/form-data">
+							<form class ="table table-hover" method="post" action="/account?op=change_pwd"  enctype="multipart/form-data">
 								<div class="form-group">
 					                <label>用户名:</label>
 					                <input type="text" class="form-control" readonly name="Uname" value={{.CurUser.Uname}}>
@@ -93,13 +109,13 @@
 					                <label>当前密码:</label>
 					                <input type="password" class="form-control" name="CurPwd" required="required" >
 					            </div>
-								<center>
-					            	<button type="submit" class="btn btn-danger">确定</a>
+									<center>
+					            	<button type="submit" class="btn btn-danger">确定</button>
 									<a class="btn  btn-danger" href="/contract">取消</a>
-								</center>
+									</center>
 					        </form>
-							</p>
 						</div>
+						
 					</div>
 				</div>
 			</div>

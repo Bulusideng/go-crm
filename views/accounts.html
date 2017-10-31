@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title> 用户管理 </title>  
+  <title> 员工管理 </title>  
   </head>
 
   <body>
@@ -35,6 +35,9 @@
 								电话
 							</th>
 							<th>
+								创建日期
+							</th>
+							<th>
 								状态
 							</th>
 							<th>
@@ -45,8 +48,13 @@
 					<tbody>
 						{{$curUsr := .CurUser}}
 						{{range .Reporters}}
+						<tr 
 						{{if ne $curUsr.Uname .Uname}}
-						<tr class="success">
+						class="success"
+						{{else}}
+						class="fatal"
+						{{end}}
+						>
 							<td>
 								{{.Uname}}
 							</td>
@@ -66,8 +74,11 @@
 								{{.Mobile}}
 							</td>
 							<td>
+								{{.CreateDate}}
+							</td>
+							<td>
 								{{if eq .Status "Disabled"}}
-								未激活
+								禁用
 								{{else if eq .Status "Locked"}}
 								锁定
 								{{else if eq .Status "Active"}}
@@ -77,10 +88,12 @@
 								{{end}}
 							</td>
 							<td>
+							<!--This is not admin and Current is Admin or Current is manager of this-->
+							{{if and (ne .Title "Admin") (or (eq $curUsr.Title "Admin") (eq $curUsr.Uname .Manager))}}
 								<a href="/account/manage?uname={{.Uname}}">修改</a>
-							</td>  
+							{{end}}
+							</td>
 						</tr>
-						{{end}}
 						{{end}}
 					</tbody>
 				</table>

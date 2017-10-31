@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -11,6 +10,7 @@ import (
 )
 
 func AddAccount(c *Account) error {
+	c.CreateDate = time.Now().Format(time.RFC3339)
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
@@ -48,24 +48,26 @@ func GetValidAcct(uname, pwd string) (c *Account, err error) {
 }
 
 //Only one's manager can do this!!!
-func ManageAccount(uname, status, manager, title string) error {
+func ManageAccount(nAcct *Account) error {
 	o := orm.NewOrm()
-	acct := &Account{Uname: uname}
+	acct := &Account{Uname: nAcct.Uname}
 	err := o.Read(acct)
 	if err == nil {
-		if mgr, err := GetAccount(manager); err == nil && mgr.IsManagerOf(acct) {
-			acct.Status = status
-			acct.Manager = manager
-			acct.Title = title
-			_, err = o.Update(acct, "Status", "Manager", "Title")
+		var mgr *Account
+		if mgr, err = GetAccount(nAcct.Manager); err == nil {
+			if mgr.IsAdmin() || mgr.IsManager() {
+				acct.Cname = nAcct.Cname
+				acct.Title = nAcct.Title
+				acct.Manager = nAcct.Manager
+				acct.Status = nAcct.Status
+				_, err = o.Update(acct, "Cname", "Title", "Manager", "Status")
+				fmt.Printf("manage acct success %+v...........\n", *acct)
+			} else {
+				err = errors.New(nAcct.Manager + " is not manager")
+			}
 		} else {
-			err = errors.New("Invalid manager")
+			err = errors.New("Invalid manager: " + nAcct.Manager)
 		}
-	}
-	if err != nil {
-		fmt.Printf("manage acct failed[%s, %s, %s]...........%s\n", uname, status, manager, err.Error())
-	} else {
-		fmt.Printf("manage acct success[%s, %s, %s]...........%s\n", uname, status, manager)
 	}
 	return err
 }
@@ -122,18 +124,6 @@ func UpdateErrCnt(uname string, delta int) error {
 	return err
 }
 
-func GetAcctounts(filters map[string]string) ([]*Account, error) {
-	o := orm.NewOrm()
-
-	qs := o.QueryTable("Account")
-	for k, v := range filters {
-		qs = qs.Filter(strings.ToLower(k), v)
-	}
-	users := []*Account{}
-	_, err := qs.All(&users)
-	return users, err
-}
-
 func GetAllAccts() ([]*Account, error) {
 	o := orm.NewOrm()
 
@@ -141,22 +131,45 @@ func GetAllAccts() ([]*Account, error) {
 
 	qs := o.QueryTable("Account")
 	qs.Limit(-1)
-	_, err := qs.All(&users)
+	_, err := qs.OrderBy("Title").All(&users)
 	if err != nil {
 		fmt.Printf("GetAllUsers failed:%s\n", err.Error())
 	}
 	return users, err
 }
 
-func GetManagers() ([]*Account, error) {
-	filter := map[string]string{
-		"Title": "Admin",
-	}
-	admins, _ := GetAcctounts(filter)
-	filter["Title"] = "Manager"
-	mgrs, _ := GetAcctounts(filter)
-	return append(mgrs, admins...), nil
+func GetAcctounts(filters map[string]string) ([]*Account, error) {
+	o := orm.NewOrm()
 
+	qs := o.QueryTable("Account")
+	for field, value := range filters {
+		//qs = qs.Filter(strings.ToLower(field), value)
+		qs = qs.Filter(field, value)
+	}
+	users := []*Account{}
+	_, err := qs.OrderBy("Title").All(&users)
+	return users, err
+}
+
+func AcctByTitle(title string) ([]*Account, error) {
+	filter := map[string]string{
+		"Title": title,
+	}
+	return GetAcctounts(filter)
+}
+
+func GetNonAdmins() ([]*Account, error) {
+	o := orm.NewOrm()
+
+	users := make([]*Account, 0)
+
+	qs := o.QueryTable("Account")
+	qs.Limit(-1)
+	_, err := qs.Exclude("Title", "Admin").OrderBy("Title").All(&users) //All account exclude admin
+	if err != nil {
+		fmt.Printf("GetNonAdmins failed:%s\n", err.Error())
+	}
+	return users, err
 }
 
 func RegisterAdmin() {

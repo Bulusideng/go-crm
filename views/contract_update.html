@@ -15,6 +15,7 @@
 		<h3 class="text-center" >修改客户信息</h3>
         <form method="post" action="/contract"  enctype="multipart/form-data">
 			<input style="display:none" type="text" class="form-control" name="OP" value="UPDATE">
+			{{$Team := .Team}}
 			{{with .Contract}}
             <div class="form-group">
                 <label>合同号:</label>
@@ -38,15 +39,25 @@
             </div>
 			<div class="form-group">
                 <label>咨询:</label>
-                <input type="text" class="form-control" name="Consulter" value={{.Consulter}}>
+				<select class="form-control" name="Consulter" required="required">
+				{{$cons := .Consulter}}
+				{{range $Team}}
+				<option value = {{.Uname}} {{if eq $cons .Uname}} selected="selected" {{end}}>{{.Uname}}: {{.Cname}}</option>
+				{{end}}
+				</select>
             </div>
 			<div class="form-group">
                 <label>文案:</label>
-                <input type="text" class="form-control" name="Secretary" value={{.Secretary}}>
+				<select class="form-control" name="Secretary" required="required">
+				{{$sec := .Secretary}}
+				{{range $Team}}
+				<option value = {{.Uname}} {{if eq $sec .Uname}} selected="selected" {{end}}>{{.Uname}}: {{.Cname}}</option>
+				{{end}}
+				</select>
             </div>
 			<div class="form-group">
                 <label>转案日期:</label>
-                <input type="text" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
+                <input type="date" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
             </div>
 			<div class="form-group">
                 <label>目前状态:</label>
@@ -62,10 +73,9 @@
 				<button type="submit" class="btn  btn-danger">确定</button>
 				<a class="btn  btn-danger" href="/contract">取消</a>
 			</center>
-			
         </form>
     </div>
-
+	
     <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/my.js"></script>

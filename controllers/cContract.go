@@ -31,7 +31,7 @@ func (this *ContractController) Get() {
 func (this *ContractController) Query() { //Filter contract
 	this.Data["IsContract"] = true
 
-	filters := map[string]string{}
+	filters := map[string]string{} //fieldname: value
 
 	filter := this.GetString("filter")
 	if filter != "" { //Single filter
@@ -64,40 +64,49 @@ func (this *ContractController) Query() { //Filter contract
 		this.Data["Filters"] = filters
 		contracts, _ := models.GetAllContracts()
 		this.Data["Selectors"] = GetSelectors(contracts, filters)
+		//this.Data["Cnames"] = models.GetCnames()
 	}
 	this.TplName = "contracts.html"
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }
 
 func GetSelectors(contracts []*models.Contract, filters map[string]string) *models.ContractSelector {
-	vals := models.NewContractSelector()
+	selectors := models.NewContractSelectors()
 	for _, c := range contracts {
-		vals.Contract_id.Values[c.Contract_id] = true
-		vals.Client_name.Values[c.Client_name] = true
-		vals.Consulter.Values[c.Consulter] = true
-		vals.Secretary.Values[c.Secretary] = true
-		vals.Country.Values[c.Country] = true
-		vals.Project_type.Values[c.Project_type] = true
+		selectors.Contract_id.List[c.Contract_id] = true
+		selectors.Client_name.List[c.Client_name] = true
+		selectors.Consulter.List[c.Consulter] = true
+		selectors.Secretary.List[c.Secretary] = true
+		selectors.Country.List[c.Country] = true
+		selectors.Project_type.List[c.Project_type] = true
+		selectors.Zhuan_an_date.List[c.Zhuan_an_date] = true
+		selectors.Current_state.List[c.Current_state] = true
 	}
 	if key, ok := filters["Contract_id"]; ok {
-		vals.Contract_id.Filter = key
+		selectors.Contract_id.CurSelected = key
 	}
 	if key, ok := filters["Client_name"]; ok {
-		vals.Client_name.Filter = key
+		selectors.Client_name.CurSelected = key
 	}
 	if key, ok := filters["Consulter"]; ok {
-		vals.Consulter.Filter = key
+		selectors.Consulter.CurSelected = key
 	}
 	if key, ok := filters["Secretary"]; ok {
-		vals.Secretary.Filter = key
+		selectors.Secretary.CurSelected = key
 	}
 	if key, ok := filters["Country"]; ok {
-		vals.Country.Filter = key
+		selectors.Country.CurSelected = key
 	}
 	if key, ok := filters["Project_type"]; ok {
-		vals.Project_type.Filter = key
+		selectors.Project_type.CurSelected = key
 	}
-	return vals
+	if key, ok := filters["Zhuan_an_date"]; ok {
+		selectors.Zhuan_an_date.CurSelected = key
+	}
+	if key, ok := filters["Current_state"]; ok {
+		selectors.Current_state.CurSelected = key
+	}
+	return selectors
 }
 
 func (this *ContractController) Post() {
@@ -115,6 +124,8 @@ func (this *ContractController) Post() {
 
 	op := this.Input().Get("OP")
 	beego.Warning("op:%s: %+v", op, *c)
+	cons, _ := models.GetAccount(c.Consulter)
+	c.Consulter_name = cons.Cname
 	if op == "ADD" {
 		err = models.AddContract(c)
 	} else if op == "UPDATE" {
@@ -138,7 +149,7 @@ func (this *ContractController) Add() {
 	this.TplName = "contract_add.html"
 	this.Data["IsAddContract"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
-
+	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
 
 func (this *ContractController) Update() {
@@ -156,8 +167,8 @@ func (this *ContractController) Update() {
 	}
 	this.TplName = "contract_update.html"
 	this.Data["Contract"] = contract
+	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 	this.Data["Cid"] = cid
-
 }
 
 func (this *ContractController) View() {

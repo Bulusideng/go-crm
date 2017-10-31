@@ -2,25 +2,35 @@ package models
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
-
-	"github.com/tealeg/xlsx"
 
 	"github.com/astaxie/beego/orm"
 )
 
 //合同号 序号	客户姓名 国家 项目 咨询 文案 转案日期 目前状态
 
+type History struct {
+	User    string
+	Date    string
+	Changes string
+}
+
 type Contract struct {
-	Contract_id   string `orm:"pk"`
-	Seq           string
-	Client_name   string
-	Country       string
-	Project_type  string
-	Consulter     string
-	Secretary     string
-	Zhuan_an_date string
-	Current_state string
+	Contract_id    string `orm:"pk"`
+	Seq            string
+	Client_name    string
+	Country        string
+	Project_type   string
+	Consulter      string
+	Consulter_name string
+	Secretary      string
+	Secretary_name string
+	Create_date    string
+	Create_by      string
+	Zhuan_an_date  string
+	Current_state  string
+	Histories      []*History
 }
 
 func NewContract() *Contract {
@@ -34,12 +44,17 @@ func NewContract() *Contract {
 		"N/A",
 		"N/A",
 		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		nil,
 	}
 }
 
 type Selector struct {
-	Filter string
-	Values map[string]bool
+	CurSelected string
+	List        map[string]bool
 }
 
 type ContractSelector struct {
@@ -54,7 +69,7 @@ type ContractSelector struct {
 	Current_state Selector
 }
 
-func NewContractSelector() *ContractSelector {
+func NewContractSelectors() *ContractSelector {
 	return &ContractSelector{
 		Contract_id:   Selector{"ALL", map[string]bool{}},
 		Seq:           Selector{"ALL", map[string]bool{}},
@@ -100,7 +115,7 @@ func UpdateContract(c *Contract) error {
 	old := *c
 	err := o.Read(&old)
 	if err == nil {
-		if *c != old { //compae and update reflect.DeepEqual()
+		if reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
 			_, err = o.Update(c)
 		}
 	}
@@ -128,35 +143,4 @@ func GetAllContracts() ([]*Contract, error) {
 	qs := o.QueryTable("Contract")
 	_, err := qs.Limit(-1).OrderBy("contract_id").All(&contracts)
 	return contracts, err
-}
-
-func RegCase() {
-	excelFileName := "./jjl.xlsx"
-	xlFile, err := xlsx.OpenFile(excelFileName)
-	if err != nil {
-
-	}
-	for _, sheet := range xlFile.Sheets {
-		for _, row := range sheet.Rows {
-			if len(row.Cells) == 9 {
-				c := &Contract{
-					Seq:           row.Cells[0].String(),
-					Contract_id:   row.Cells[1].String(),
-					Client_name:   row.Cells[2].String(),
-					Country:       row.Cells[3].String(),
-					Project_type:  row.Cells[4].String(),
-					Consulter:     row.Cells[5].String(),
-					Secretary:     row.Cells[6].String(),
-					Zhuan_an_date: row.Cells[7].String(),
-					Current_state: row.Cells[8].String(),
-				}
-				AddContract(c)
-
-			} else {
-				for _, cell := range row.Cells {
-					fmt.Printf("%s\n", cell.String())
-				}
-			}
-		}
-	}
 }

@@ -21,70 +21,84 @@
 								<th>
 									序号
 								</th>
-								<th>合同号
+								<th>合同号:
 									<select  name="Contract_id">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Contract_id.Values}}
+										{{range $k,$v := .Contract_id.List}}
 											<option value= {{$k}} 
-											{{if eq $k $.Selectors.Contract_id.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Contract_id.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									客户姓名
+									客户姓名:
 									<select  name="Client_name">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Client_name.Values}}
+										{{range $k,$v := .Client_name.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Client_name.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Client_name.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									国家
+									国家:
 									<select  name="Country">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Country.Values}}
+										{{range $k,$v := .Country.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Country.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Country.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									项目
+									项目:
 									<select  name="Project_type">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Project_type.Values}}
+										{{range $k,$v := .Project_type.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Project_type.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Project_type.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									咨询
+									咨询:
 									<select  name="Consulter">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Consulter.Values}}
+										{{range $k,$v := .Consulter.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Consulter.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Consulter.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									文案
+									文案:
 									<select  name="Secretary">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Secretary.Values}}
+										{{range $k,$v := .Secretary.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Secretary.Filter }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Secretary.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
-									转案日期
+									转案日期:
+									<select  name="Zhuan_an_date">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Zhuan_an_date.List}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Zhuan_an_date.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
 								</th>
 								<th>
-									状态
+									状态:
+									<select  name="Current_state">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Current_state.List}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Current_state.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
 								</th>
 								<th>
 									操作
@@ -92,7 +106,6 @@
 								{{end}}
 								<th>
 									<button type="submit" class="btn btn-danger">查询</button>
-									<button type="submit" class="btn btn-danger"  onclick="return backToHome();">全部</button>
 								</th>
 							</form>
 						</tr>
@@ -117,10 +130,10 @@
 								<a href="/contract/query?filter=Project_type:{{.Project_type}}">{{.Project_type}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Consulter:{{.Consulter}}">{{.Consulter}}</a>
+								<a href="/contract/query?filter=Consulter:{{.Consulter}}">{{.Consulter_name}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Secretary:{{.Secretary}}">{{.Secretary}}</a>
+								<a href="/contract/query?filter=Secretary:{{.Secretary}}">{{.Secretary_name}}</a>
 							</td>
 							<td>
 								<a href="/contract/query?filter=Zhuan_an_date:{{.Zhuan_an_date}}">{{.Zhuan_an_date}}</a>

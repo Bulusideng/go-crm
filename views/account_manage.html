@@ -37,8 +37,11 @@
 				<select class="form-control" name="Manager" required="required"> 
 				<option value =""></option>
 				{{$curMgr := .Manager}}
+				{{$acctUname := .Uname}}
 				{{range $mgrs}}
+				{{if ne .Uname $acctUname}}  <!--Don't allow set self as manager-->
 				<option value = {{.Uname}} {{if eq $curMgr .Uname}} selected = "selected" {{end}} >{{.Uname}}: {{.Cname}}</option>
+				{{end}}
 				{{end}}
 				</select>
             </div>
@@ -47,7 +50,7 @@
                 <select class="form-control" name="Status" required="required">
 				<option value ="Active" {{if eq .Status "Active"}} selected = "selected" {{end}} >正常</option>
 				<option value="Locked" {{if eq .Status "Locked"}} selected = "selected" {{end}} >锁定</option>
-				<option value="Disabled" {{if eq .Status "Disabled"}} selected = "selected" {{end}} >未激活</option>
+				<option value="Disabled" {{if eq .Status "Disabled"}} selected = "selected" {{end}} >禁用</option>
 				</select>
             </div>
 			{{end}}

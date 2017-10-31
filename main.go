@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	models.Register()
 	orm.Debug = false
 	orm.RunSyncdb("default", false, true)
