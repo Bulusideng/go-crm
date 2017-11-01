@@ -94,6 +94,29 @@
 									</select>
 								</th>
 								<th>
+									录入日期:
+									<select  name="Create_date">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Create_date.List}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Create_date.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								<th>
+									录入人:
+									<select  name="Create_by">
+										<option value="ALL" selected = "selected">全部</option>
+										{{range $k,$v := .Create_by.List}}
+											<option value= {{$k}}
+											{{if eq $k $.Selectors.Create_by.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+										{{end}}
+									</select>
+								</th>
+								
+								
+								
+								<th>
 									状态:
 									<select  name="Current_state">
 										<option value="ALL" selected = "selected">全部</option>
@@ -102,6 +125,9 @@
 											{{if eq $k $.Selectors.Current_state.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
+								</th>
+								<th>
+									查看
 								</th>
 								<th>
 									操作
@@ -127,7 +153,7 @@
 								<a href="/contract/query?filter=Client_name:{{.Client_name}}">{{.Client_name}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Client_Tel:{{.Client_Tel}}">{{.Client_Tel}}</a>
+								<a href="/contract/query?filter=Client_Tel:{{.Client_tel}}">{{.Client_tel}}</a>
 							</td>
 							<td>
 								<a href="/contract/query?filter=Country:{{.Country}}">{{.Country}}</a>
@@ -145,10 +171,21 @@
 								<a href="/contract/query?filter=Zhuan_an_date:{{.Zhuan_an_date}}">{{.Zhuan_an_date}}</a>
 							</td>
 							<td>
+								<a href="/contract/query?filter=Create_date:{{.Create_date}}">{{.Create_date}}</a>
+							</td>
+							<td>
+								<a href="/contract/query?filter=Create_by:{{.Create_by}}">{{.Create_by}}</a>
+							</td>
+							<td>
 								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>
 							</td>
 							<td>
-							{{if or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager"))  (eq $curUser.Cname .Secretary)}}
+							{{if ne $curUser.Title "Guest"}}
+								<a href="/contract/view?cid={{.Contract_id}}">查看</a>
+							{{end}}
+							</td>  
+							<td>
+							{{if or (or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager")) (eq $curUser.Uname .Secretary)) (eq $curUser.Uname .Secretary)}}
 								<a href="/contract/update?cid={{.Contract_id}}">更新</a>
 							{{end}}
 							</td>  

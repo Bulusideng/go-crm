@@ -28,6 +28,10 @@
                 <input type="text" class="form-control" name="Client_name" required>
             </div>
 			<div class="form-group">
+                <label>客户电话:</label>
+                <input type="text" class="form-control" name="Client_tel" required>
+            </div>
+			<div class="form-group">
                 <label>国家:</label>
 				{{template "country_select"}}
             </div>
@@ -38,7 +42,7 @@
 			<div class="form-group">
                 <label>咨询:</label>
 				<select class="form-control" name="Consulter" required="required">
-				<option value = ""></option>
+				<option value = "N/A">N/A</option>
 				{{range .Team}}
 				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
 				{{end}}
@@ -47,7 +51,7 @@
 			<div class="form-group">
                 <label>文案:</label>
 				<select class="form-control" name="Secretary" required="required">
-				<option value = ""></option>
+				<option value = "N/A">N/A</option>
 				{{range .Team}}
 				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
 				{{end}}

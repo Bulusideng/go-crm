@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/Bulusideng/go-crm/models"
 	"github.com/astaxie/beego"
@@ -14,26 +15,22 @@ type ContractController struct {
 }
 
 func (this *ContractController) Get() {
-	this.TplName = "contracts.html"
-	this.Data["IsContract"] = true
-	curUsr := GetCurAcct(this.Ctx)
-	this.Data["CurUser"] = curUsr
+	this.Data["MgrClient"] = true
 
-	if curUsr.IsWorker() { //Admin can view ??
-		contracts, err := models.GetAllContracts()
-		if err != nil {
-			beego.Error(err)
-		} else {
-			this.Data["Contracts"] = contracts
-			this.Data["Selectors"] = GetSelectors(contracts, map[string]string{})
-		}
+	contracts, err := models.GetAllContracts()
+	if err != nil {
+		beego.Error(err)
 	} else {
-		this.Redirect("/login", 302)
+		this.Data["Contracts"] = contracts
+		this.Data["Selectors"] = GetSelectors(contracts, map[string]string{})
 	}
+
+	this.TplName = "contracts.html"
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }
 
 func (this *ContractController) Query() { //Filter contract
-	this.Data["IsContract"] = true
+	this.Data["MgrClient"] = true
 
 	filters := map[string]string{} //fieldname: value
 
@@ -84,7 +81,10 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 		selectors.Country.List[c.Country] = true
 		selectors.Project_type.List[c.Project_type] = true
 		selectors.Zhuan_an_date.List[c.Zhuan_an_date] = true
+		selectors.Create_date.List[c.Create_date] = true
+		selectors.Create_by.List[c.Create_by] = true
 		selectors.Current_state.List[c.Current_state] = true
+
 	}
 	if key, ok := filters["Contract_id"]; ok {
 		selectors.Contract_id.CurSelected = key
@@ -107,6 +107,12 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 	if key, ok := filters["Zhuan_an_date"]; ok {
 		selectors.Zhuan_an_date.CurSelected = key
 	}
+	if key, ok := filters["Create_date"]; ok {
+		selectors.Create_date.CurSelected = key
+	}
+	if key, ok := filters["Create_by"]; ok {
+		selectors.Create_by.CurSelected = key
+	}
 	if key, ok := filters["Current_state"]; ok {
 		selectors.Current_state.CurSelected = key
 	}
@@ -114,7 +120,8 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 }
 
 func (this *ContractController) Post() {
-	if GetCurAcct(this.Ctx).IsGuest() {
+	usr := GetCurAcct(this.Ctx)
+	if usr.IsGuest() {
 		this.Redirect("/login", 302)
 		return
 	}
@@ -127,13 +134,33 @@ func (this *ContractController) Post() {
 	}
 
 	op := this.Input().Get("OP")
-	fmt.Printf("%s on %+v\n", op, *c)
+	beego.Warning("op:%s: %+v", op, *c)
 	cons, _ := models.GetAccount(c.Consulter)
 	c.Consulter_name = cons.Cname
 	if op == "ADD" {
+		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
+		c.Create_by = usr.Cname
+		c.Create_date = time.Now().Format(time.RFC1123)
 		err = models.AddContract(c)
 	} else if op == "UPDATE" {
-		err = models.UpdateContract(c)
+		var changes *models.ChangeSlice
+		changes, err = models.UpdateContract(c)
+		if err == nil {
+			txt := this.GetString("NewComment", "")
+			if len(txt) > 0 || len(*changes) > 0 {
+				cmt := &models.Comment{
+					Contract_id: c.Contract_id,
+					Title:       usr.Title,
+					Uname:       usr.Uname,
+					Cname:       usr.Cname,
+					Date:        time.Now().Format(time.RFC1123),
+					Changes:     changes.String(),
+					Content:     txt,
+				}
+				err = models.AddComment(cmt)
+			}
+		}
+
 	} else {
 		beego.Error("Invalid op:%s", op)
 	}
@@ -151,7 +178,7 @@ func (this *ContractController) Add() {
 	}
 
 	this.TplName = "contract_add.html"
-	this.Data["IsAddContract"] = true
+	this.Data["AddClient"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
@@ -170,24 +197,25 @@ func (this *ContractController) Update() {
 		return
 	}
 	this.TplName = "contract_update.html"
-	this.Data["IsContract"] = true
+	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 	this.Data["Contract"] = contract
+	this.Data["Comments"], _ = models.GetComments(cid)
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
-	this.Data["Cid"] = cid
 }
 
 func (this *ContractController) View() {
-	this.TplName = "contract_view.html"
-	cid := this.Ctx.Input.Params()["0"]
+	//cid := this.Ctx.Input.Params()["0"]
+	cid := this.GetString("cid", "-1")
 	contract, err := models.GetContract(cid)
 	if err != nil {
 		beego.Error(err)
 		this.Redirect("/contract", 302)
 		return
 	}
+	this.TplName = "contract_view.html"
+	this.Data["MgrClient"] = true
 	this.Data["Contract"] = contract
 	this.Data["Comments"], _ = models.GetComments(cid)
-	this.Data["Tid"] = this.Ctx.Input.Params()["0"]
-	this.Data["Account"] = GetCurAcct(this.Ctx)
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }

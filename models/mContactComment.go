@@ -6,12 +6,32 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+type Change struct {
+	Id      int
+	Item    string
+	Last    string
+	Current string
+}
+
+type ChangeSlice []Change
+
+func (this *ChangeSlice) String() string {
+	str := ""
+	for _, c := range *this {
+		str += fmt.Sprintf("%s: %s -> %s; ", c.Item, c.Last, c.Current)
+	}
+	return str
+}
+
 type Comment struct {
 	Id          int
 	Contract_id string
-	User        string
+	Title       string //The author's title
+	Uname       string //The author
+	Cname       string //The author
 	Date        string
-	Text        string
+	Changes     string
+	Content     string
 }
 
 func AddComment(c *Comment) error {
@@ -39,6 +59,6 @@ func GetComments(contract_id string) ([]*Comment, error) {
 	o := orm.NewOrm()
 	comments := make([]*Comment, 0)
 	qs := o.QueryTable("Comment")
-	_, err := qs.Limit(-1).All(&comments)
+	_, err := qs.Limit(-1).Filter("contract_id", contract_id).All(&comments)
 	return comments, err
 }

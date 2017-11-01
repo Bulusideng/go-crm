@@ -14,7 +14,7 @@ type Contract struct {
 	Contract_id    string `orm:"pk"`
 	Seq            string
 	Client_name    string
-	Client_Tel     string
+	Client_tel     string
 	Country        string
 	Project_type   string
 	Consulter      string
@@ -28,54 +28,39 @@ type Contract struct {
 	//Histories      []*History
 }
 
-func NewContract() *Contract {
-	return &Contract{
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		"N/A",
-		//nil,
-	}
-}
-
-type Selector struct {
-	CurSelected string
-	List        map[string]bool
-}
-
 type ContractSelector struct {
-	Contract_id   Selector
-	Seq           Selector
-	Client_name   Selector
-	Country       Selector
-	Project_type  Selector
-	Consulter     Selector
-	Secretary     Selector
-	Zhuan_an_date Selector
-	Current_state Selector
+	Contract_id   FieldSelector
+	Seq           FieldSelector
+	Client_name   FieldSelector
+	Client_tel    FieldSelector
+	Country       FieldSelector
+	Project_type  FieldSelector
+	Consulter     FieldSelector
+	Secretary     FieldSelector
+	Create_date   FieldSelector
+	Create_by     FieldSelector
+	Zhuan_an_date FieldSelector
+	Current_state FieldSelector
+}
+type FieldSelector struct {
+	CurSelected string          //Filter value of field
+	List        map[string]bool //All values of the field
 }
 
 func NewContractSelectors() *ContractSelector {
 	return &ContractSelector{
-		Contract_id:   Selector{"ALL", map[string]bool{}},
-		Seq:           Selector{"ALL", map[string]bool{}},
-		Client_name:   Selector{"ALL", map[string]bool{}},
-		Country:       Selector{"ALL", map[string]bool{}},
-		Project_type:  Selector{"ALL", map[string]bool{}},
-		Consulter:     Selector{"ALL", map[string]bool{}},
-		Secretary:     Selector{"ALL", map[string]bool{}},
-		Zhuan_an_date: Selector{"ALL", map[string]bool{}},
-		Current_state: Selector{"ALL", map[string]bool{}},
+		Contract_id:   FieldSelector{"ALL", map[string]bool{}},
+		Seq:           FieldSelector{"ALL", map[string]bool{}},
+		Client_name:   FieldSelector{"ALL", map[string]bool{}},
+		Client_tel:    FieldSelector{"ALL", map[string]bool{}},
+		Country:       FieldSelector{"ALL", map[string]bool{}},
+		Project_type:  FieldSelector{"ALL", map[string]bool{}},
+		Consulter:     FieldSelector{"ALL", map[string]bool{}},
+		Secretary:     FieldSelector{"ALL", map[string]bool{}},
+		Create_date:   FieldSelector{"ALL", map[string]bool{}},
+		Create_by:     FieldSelector{"ALL", map[string]bool{}},
+		Zhuan_an_date: FieldSelector{"ALL", map[string]bool{}},
+		Current_state: FieldSelector{"ALL", map[string]bool{}},
 	}
 }
 
@@ -111,10 +96,13 @@ func GetContract(contractId string) (c *Contract, err error) {
 		Contract_id: contractId,
 	}
 	err = o.Read(c)
+	if err != nil {
+		fmt.Printf("GetContract[%s] failed %+v\n", contractId, err.Error())
+	}
 	return c, err
 }
 
-func UpdateContract(c *Contract) error {
+func UpdateContract(c *Contract) (*ChangeSlice, error) {
 	acct, err := GetAccount(c.Consulter)
 	if err == nil {
 		c.Consulter_name = acct.Cname
@@ -126,12 +114,37 @@ func UpdateContract(c *Contract) error {
 	o := orm.NewOrm()
 	old := *c
 	err = o.Read(&old)
+	changes := ChangeSlice{}
 	if err == nil {
-		if reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
+		if !reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
+			if c.Client_name != old.Client_name {
+				changes = append(changes, Change{Item: "客户姓名", Last: old.Client_name, Current: c.Client_name})
+			}
+			if c.Client_tel != old.Client_tel {
+				changes = append(changes, Change{Item: "客户电话", Last: old.Client_tel, Current: c.Client_tel})
+			}
+			if c.Country != old.Country {
+				changes = append(changes, Change{Item: "国家", Last: old.Country, Current: c.Country})
+			}
+			if c.Consulter != old.Consulter {
+				changes = append(changes, Change{Item: "咨询", Last: old.Consulter_name + "[" + old.Consulter + "]", Current: c.Consulter_name + "[" + c.Consulter + "]"})
+			}
+			if c.Secretary != old.Secretary {
+				changes = append(changes, Change{Item: "文案", Last: old.Secretary_name + "[" + old.Secretary + "]", Current: c.Secretary_name + "[" + c.Secretary + "]"})
+			}
+			if c.Zhuan_an_date != old.Zhuan_an_date {
+				changes = append(changes, Change{Item: "转案日期", Last: old.Zhuan_an_date, Current: c.Zhuan_an_date})
+			}
+			if c.Current_state != old.Current_state {
+				changes = append(changes, Change{Item: "状态", Last: old.Current_state, Current: c.Current_state})
+			}
 			_, err = o.Update(c)
 		}
 	}
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return &changes, nil
 }
 
 func GetContracts(filters map[string]string) ([]*Contract, error) {
@@ -155,4 +168,24 @@ func GetAllContracts() ([]*Contract, error) {
 	qs := o.QueryTable("Contract")
 	_, err := qs.Limit(-1).OrderBy("contract_id").All(&contracts)
 	return contracts, err
+}
+
+func NewContract() *Contract {
+	return &Contract{
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		//nil,
+	}
 }

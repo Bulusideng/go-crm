@@ -12,10 +12,11 @@
     </nav>
 
     <div class="container">
-		<h3 class="text-center" >更新合同状态</h3>
-        <form method="post" action="/contract"  enctype="multipart/form-data">
+		<h3 class="text-center" >更新客户状态</h3>
+        <form method="post" action="/contract" onsubmit="checkForm()" enctype="multipart/form-data">
 			<input style="display:none" type="text" class="form-control" name="OP" value="UPDATE">
 			{{$Team := .Team}}
+			{{$CurUser := .CurUser}}
 			{{with .Contract}}
             <div class="form-group">
                 <label>合同号:</label>
@@ -30,6 +31,10 @@
                 <input type="text" class="form-control" name="Client_name" value={{.Client_name}}>
             </div>
 			<div class="form-group">
+                <label>客户电话:</label>
+                <input type="text" class="form-control" name="Client_tel" value={{.Client_tel}}>
+            </div>
+			<div class="form-group">
                 <label>国家:</label>
                 <input type="text" class="form-control" name="Country" value={{.Country}}>
             </div>
@@ -39,7 +44,7 @@
             </div>
 			<div class="form-group">
                 <label>咨询:</label>
-				<select class="form-control" name="Consulter" required="required">
+				<select class="form-control" id="Consulter" name="Consulter" required="required" {{if ne $CurUser.Title "Manager"}} disabled="disabled" {{end}}>
 				{{$cons := .Consulter}}
 				{{range $Team}}
 				<option value = {{.Uname}} {{if eq $cons .Uname}} selected="selected" {{end}}>{{.Uname}}: {{.Cname}}</option>
@@ -48,7 +53,8 @@
             </div>
 			<div class="form-group">
                 <label>文案:</label>
-				<select class="form-control" name="Secretary" required="required">
+				<select class="form-control" id="Secretary" name="Secretary" required="required" {{if ne $CurUser.Title "Manager"}} disabled="disabled" {{end}}>
+				<option value = "N/A">N/A</option>
 				{{$sec := .Secretary}}
 				{{range $Team}}
 				<option value = {{.Uname}} {{if eq $sec .Uname}} selected="selected" {{end}}>{{.Uname}}: {{.Cname}}</option>
@@ -60,7 +66,7 @@
                 <input type="date" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
             </div>
 			<div class="form-group">
-                <label>目前状态:</label>
+                <label>状态:</label>
                 <input type="text" class="form-control" name="Current_state" value={{.Current_state}}>
             </div>
 			
@@ -69,6 +75,29 @@
                 <input type="file" class="form-control" name="attachment" >
             </div>
 			{{end}}
+			<div class="form-group">
+                <label>历史记录:</label>
+				<div class="container-fluid">
+					<div class="row-fluid">
+						<div class="span12">
+							<ol>
+							 {{range .Comments}}
+								<li>
+									{{.Date}} {{.Title}}:{{.Cname}}[{{.Uname}}]:</br>
+									{{.Changes}}
+									{{.Content}}
+								</li>
+								{{end}}
+							</ol>
+						</div>
+					</div>
+				</div>				
+            </div>
+			
+			<div class="form-group">
+                <label>更新:</label>
+                <input type="textarea" class="form-control" name="NewComment">
+            </div>
             <center>
 				<button type="submit" class="btn  btn-danger">确定</button>
 				<a class="btn  btn-danger" href="/contract">取消</a>
@@ -76,4 +105,11 @@
         </form>
     </div>
   </body>
+	<script>
+	function checkForm()
+	{
+		document.getElementById("Consulter").disabled=false
+		document.getElementById("Secretary").disabled=false
+	}
+</script>
 </html>
