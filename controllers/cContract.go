@@ -14,18 +14,22 @@ type ContractController struct {
 }
 
 func (this *ContractController) Get() {
-	this.Data["IsContract"] = true
-
-	contracts, err := models.GetAllContracts()
-	if err != nil {
-		beego.Error(err)
-	} else {
-		this.Data["Contracts"] = contracts
-		this.Data["Selectors"] = GetSelectors(contracts, map[string]string{})
-	}
-
 	this.TplName = "contracts.html"
-	this.Data["CurUser"] = GetCurAcct(this.Ctx)
+	this.Data["IsContract"] = true
+	curUsr := GetCurAcct(this.Ctx)
+	this.Data["CurUser"] = curUsr
+
+	if curUsr.IsWorker() { //Admin can view ??
+		contracts, err := models.GetAllContracts()
+		if err != nil {
+			beego.Error(err)
+		} else {
+			this.Data["Contracts"] = contracts
+			this.Data["Selectors"] = GetSelectors(contracts, map[string]string{})
+		}
+	} else {
+		this.Redirect("/login", 302)
+	}
 }
 
 func (this *ContractController) Query() { //Filter contract
@@ -123,7 +127,7 @@ func (this *ContractController) Post() {
 	}
 
 	op := this.Input().Get("OP")
-	beego.Warning("op:%s: %+v", op, *c)
+	fmt.Printf("%s on %+v\n", op, *c)
 	cons, _ := models.GetAccount(c.Consulter)
 	c.Consulter_name = cons.Cname
 	if op == "ADD" {
@@ -166,6 +170,8 @@ func (this *ContractController) Update() {
 		return
 	}
 	this.TplName = "contract_update.html"
+	this.Data["IsContract"] = true
+	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 	this.Data["Contract"] = contract
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 	this.Data["Cid"] = cid

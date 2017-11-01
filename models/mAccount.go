@@ -31,6 +31,9 @@ func GetAccount(uname string) (c *Account, err error) {
 	o := orm.NewOrm()
 	c = &Account{Uname: uname}
 	err = o.Read(c)
+	if err != nil {
+		fmt.Printf("Get account failed: [%s]\n", uname)
+	}
 
 	return c, err
 }

@@ -49,10 +49,15 @@ func (c *LoginController) Post() {
 		c.Ctx.SetCookie("pwd", pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
 		beego.Warning("Login success:", uname, ": ", pwd)
-		c.Redirect("/", 301)
+		if usr.IsAdmin() {
+			c.Redirect("/account", 301)
+		} else {
+			c.Redirect("/contract", 301)
+		}
+
 	} else {
 		//c.Redirect("/login?failed=true", 301)
-		c.Redirect("/status?msg=Account is inactive, please wait manager approve!", 302)
+		c.Redirect("/status?msg=Login failed: "+err.Error(), 302)
 	}
 	return
 }

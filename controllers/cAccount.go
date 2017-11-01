@@ -22,7 +22,7 @@ func (this *AccountController) Get() {
 		return
 	}
 
-	this.Data["IsUser"] = true
+	this.Data["MgrAcct"] = true
 	this.Data["CurUser"] = curUser
 	var reporters []*models.Account
 	var err error

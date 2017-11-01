@@ -51,6 +51,10 @@ func (this *Account) IsManager() bool {
 	return this.Title == "Manager"
 }
 
+func (this *Account) IsWorker() bool {
+	return this.Title == "Manager" || this.Title == "Consulter" || this.Title == "Secretary"
+}
+
 func (this *Account) IsManagerOf(u *Account) bool { //Admin is manager of all
 	return this.IsAdmin() || (this.IsManager() && (u.Manager == "" || this.Uname == u.Manager))
 }

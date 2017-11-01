@@ -1,26 +1,29 @@
 {{define "navbar"}}
 
-<div>
-    <ul class="nav nav-pills">
-		<li  {{if .IsContract}} class="active"{{end}}><a href="/contract">客户管理</a></li>
-    
+<div>	
+    <ul class="nav nav-pills pull-right">
 	{{if .CurUser }}
-			{{if eq .CurUser.Title "Admin"}}
-				<!--<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>-->
-				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">员工管理</a></li>
-			{{else if eq .CurUser.Title "Manager"}}
-				<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>
-				<li {{if .MgrAcct}}class="active"{{end}}><a href="/account">员工管理</a></li>
-			{{end}}
-		
-			{{if ne .CurUser.Uname "Guest"}}
-				<li {{if .ViewAcct}} class="active"{{end}}><a href="/account/view">个人信息</a></li>
-				<li><a href="/login?exit=true">退出</a></li>
-			{{else}}
-				<li {{if .RegAcct}} class="active"{{end}}><a href="/account/register">注册</a></li>
-				<li><a href="/login">登录</a></li>
-			{{end}}
+		{{if eq .CurUser.Title "Admin"}}
+			<!--<li {{if .IsAddContract}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>-->
+			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">员工管理</a></li>
+		{{else if eq .CurUser.Title "Manager"}}
+			<li {{if .IsContract}} class="active"{{end}}><a href="/contract">客户管理</a></li>
+			<li {{if .IsAddContract}} class="active" {{end}}><a href="/contract/add">添加客户</a></li>
+			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">员工管理</a></li>
+		{{else if or ( eq .CurUser.Title "Consulter") (eq .CurUser.Title "Secretary")}}
+			<li {{if .IsContract}} class="active"{{end}}><a href="/contract">客户管理</a></li>
 		{{end}}
+	
+		{{if ne .CurUser.Uname "Guest"}}
+			<li {{if .ViewAcct}} class="active"{{end}}><a href="/account/view">个人信息</a></li>
+			<li><a href="/login?exit=true">退出</a></li>
+		{{else}}
+			<li {{if .RegAcct}} class="active"{{end}}><a href="/account/register">注册</a></li>
+			<li><a href="/login">登录</a></li>
+		{{end}}
+		<li class="active"><a>当前用户  {{.CurUser.Title}}: {{.CurUser.Cname}}[{{.CurUser.Uname}}]</a></li>
+	{{end}}
+	
     </ul>
 </div>
 

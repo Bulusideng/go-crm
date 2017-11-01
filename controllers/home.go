@@ -10,7 +10,7 @@ type MainController struct {
 }
 
 func (this *MainController) Get() {
-	this.Redirect("/contract", 302)
+	this.Redirect("/login", 302)
 	return
 	this.Data["IsHome"] = true
 	this.TplName = "home.html"

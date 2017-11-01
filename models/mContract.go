@@ -28,8 +28,6 @@ type Contract struct {
 	//Histories      []*History
 }
 
-
-
 func NewContract() *Contract {
 	return &Contract{
 		"N/A",
@@ -82,8 +80,16 @@ func NewContractSelectors() *ContractSelector {
 }
 
 func AddContract(c *Contract) error {
+	acct, err := GetAccount(c.Consulter)
+	if err == nil {
+		c.Consulter_name = acct.Cname
+	}
+	acct, err = GetAccount(c.Secretary)
+	if err == nil {
+		c.Secretary_name = acct.Cname
+	}
 	o := orm.NewOrm()
-	_, err := o.Insert(c)
+	_, err = o.Insert(c)
 	if err != nil {
 		fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
 		return err
@@ -109,9 +115,17 @@ func GetContract(contractId string) (c *Contract, err error) {
 }
 
 func UpdateContract(c *Contract) error {
+	acct, err := GetAccount(c.Consulter)
+	if err == nil {
+		c.Consulter_name = acct.Cname
+	}
+	acct, err = GetAccount(c.Secretary)
+	if err == nil {
+		c.Secretary_name = acct.Cname
+	}
 	o := orm.NewOrm()
 	old := *c
-	err := o.Read(&old)
+	err = o.Read(&old)
 	if err == nil {
 		if reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
 			_, err = o.Update(c)
