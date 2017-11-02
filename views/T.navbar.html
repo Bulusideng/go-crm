@@ -1,15 +1,15 @@
 {{define "navbar"}}
 
 <div><b>
-    <ul class="nav nav-pills pull-right">
+    <ul class="nav nav-pills ">
 	{{if .CurUser }}
-		{{if eq .CurUser.Title "Admin"}}
-			<!--<li {{if .AddClient}} class="active"{{end}}><a href="/contract/add">添加客户</a></li>-->
-			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">员工管理</a></li>
-		{{else if eq .CurUser.Title "Manager"}}
+		{{if (eq .CurUser.Title "Admin")}}
+			<li {{if .SysConfig}} class="active"{{end}}><a href="/config">系统配置</a></li>
+			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">账户管理</a></li>	
+		{{else if  (eq .CurUser.Title "Manager")}}
 			<li {{if .MgrClient}} class="active"{{end}}><a href="/contract">客户管理</a></li>
 			<li {{if .AddClient}} class="active" {{end}}><a href="/contract/add">添加客户</a></li>
-			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">员工管理</a></li>
+			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">账户管理</a></li>
 		{{else if or ( eq .CurUser.Title "Consulter") (eq .CurUser.Title "Secretary")}}
 			<li {{if .MgrClient}} class="active"{{end}}><a href="/contract">客户管理</a></li>
 		{{end}}
@@ -21,7 +21,7 @@
 			<li {{if .RegAcct}} class="active"{{end}}><a href="/account/register">注册</a></li>
 			<li><a href="/login">登录</a></li>
 		{{end}}
-		<li class="active"><a>当前用户  {{.CurUser.Title}}: {{.CurUser.Cname}}[{{.CurUser.Uname}}]</a></li>
+		<li class="active"><a>当前用户 {{.CurUser.Title}}: {{.CurUser.Cname}}[{{.CurUser.Uname}}]</a></li>
 	{{end}}
 	
     </ul>

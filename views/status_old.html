@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	{{template "header"}}
+	</head>
+	
+	<body>
+	  	<div class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				{{template "navbar" .}}
+	       	</div>
+		</div>
+		
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+					<div class="row-fluid">
+						<div class="span4">
+						</div>
+						<div class="span4">
+							<h2>{{.Message}}</h2></br>
+							{{if .RedirectTo }}
+							<a id ="nxtPage" class="btn  btn-danger" href={{.RedirectTo}}>返回</a>
+							{{else}}
+							<a id ="nxtPage" class="btn  btn-danger" href="/">返回</a>
+							{{end}}
+						</div>
+						<div class="span4">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	 </body>
+	<script>
+	window.onload = function(){
+		cnt = 10
+		$("#nxtPage").text("返回"+cnt+"...")
+		setInterval(function(){
+			cnt--
+			$("#nxtPage").text("返回"+cnt+"...")
+			if (cnt == 0){
+				window.location.href = $("#nxtPage").attr('href')	
+			}
+			
+		}, 1000)
+	}
+	</script>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title> 项目管理 - 更新合同</title>  
+  <title> 客户管理 - 更新客户</title>  
   </head>
 
   <body>
@@ -13,7 +13,7 @@
 
     <div class="container">
 		<h3 class="text-center" >更新客户状态</h3>
-        <form method="post" action="/contract" onsubmit="checkForm()" enctype="multipart/form-data">
+        <form class="col-xs-4" method="post" action="/contract" onsubmit="checkForm()" enctype="multipart/form-data">
 			<input style="display:none" type="text" class="form-control" name="OP" value="UPDATE">
 			{{$Team := .Team}}
 			{{$CurUser := .CurUser}}
@@ -75,24 +75,6 @@
                 <input type="file" class="form-control" name="attachment" >
             </div>
 			{{end}}
-			<div class="form-group">
-                <label>历史记录:</label>
-				<div class="container-fluid">
-					<div class="row-fluid">
-						<div class="span12">
-							<ol>
-							 {{range .Comments}}
-								<li>
-									{{.Date}} {{.Title}}:{{.Cname}}[{{.Uname}}]:</br>
-									{{.Changes}}
-									{{.Content}}
-								</li>
-								{{end}}
-							</ol>
-						</div>
-					</div>
-				</div>				
-            </div>
 			
 			<div class="form-group">
                 <label>更新:</label>
@@ -100,9 +82,31 @@
             </div>
             <center>
 				<button type="submit" class="btn  btn-danger">确定</button>
-				<a class="btn  btn-danger" href="/contract">取消</a>
+				<a id="#toBotton" class="btn  btn-danger" href="/contract">返回</a>
 			</center>
         </form>
+		
+		<form>
+		<div class="form-group">
+			<label>历史记录:</label>
+			<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+					<ol>
+					 {{range .Comments}}
+						<li>
+							{{.Date}} {{.Title}}:{{.Cname}}[{{.Uname}}]:</br>
+							{{.Changes}}
+							{{.Content}}
+						</li>
+						{{end}}
+					</ol>
+				</div>
+			</div>
+			</div>				
+		</div>
+		</form>
+		
     </div>
   </body>
 	<script>

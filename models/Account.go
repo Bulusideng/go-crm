@@ -71,6 +71,7 @@ func (this *Account) Lock() { //Lock by pwd error 3 times
 }
 func (this *Account) UnLock() {
 	if !this.Disabled() {
+		this.ErrCnt = 0
 		this.Status = "Active"
 	}
 }
@@ -78,6 +79,7 @@ func (this *Account) Disable() {
 	this.Status = "Disabled"
 }
 func (this *Account) Enable() {
+	this.ErrCnt = 0
 	this.Status = "Active"
 }
 

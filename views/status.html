@@ -1,41 +1,63 @@
 <!DOCTYPE html>
 <html>
 	{{template "header"}}
-	</head>
 	
-	<body>
-	  	<div class="navbar navbar-default navbar-fixed-top">
-			<div class="container">
-				{{template "navbar" .}}
-	       	</div>
-	   </div>
-		{{.Message}}
-		
-		<div class="container-fluid">
-			<div class="row-fluid">
-				<div class="span12">
-					 <a id="modal-346033" href="#modal-container-3460339" role="button" class="btn" data-toggle="modal">触发遮罩窗体</a>
-					
-					<div id="modal-container-3460339" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-						<div class="modal-header">
-							 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-							<h3 id="myModalLabel">
-								标题栏
-							</h3>
-						</div>
-						<div class="modal-body">
-							<p>
-								显示信息
-							</p>
-						</div>
-						<div class="modal-footer">
-							 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <button class="btn btn-primary">保存设置</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	   <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
-	   <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-	 </body>
+	</head>
+<body>
+
+<section class="cid-qzO6FIBSpg mbr-fullscreen mbr-parallax-background" id="header2-2" data-rv-view="38">
+
+    <div class="container align-center">
+        <div class="row justify-content-md-center">
+            <div class="mbr-white col-md-10">
+                <h1 class="mbr-section-title mbr-bold pb-3 mbr-fonts-style display-1">
+
+                </h1>
+                
+                <p class="mbr-text pb-3 mbr-fonts-style display-5">
+                    {{.Message}}
+                </p>
+                <div class="mbr-section-btn">
+					{{if .RedirectTo }}
+					<a id ="nxtPage" class="btn btn-md btn-secondary display-4" href={{.RedirectTo}}>返回</a>
+					{{else}}
+					<a class="btn btn-md btn-white-outline display-4" href="/">返回</a>
+					{{end}}                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mbr-arrow hidden-sm-down" aria-hidden="true">
+        <a href="#next">
+            <i class="mbri-down mbr-iconfont"></i>
+        </a>
+    </div>
+</section>
+
+	<script>
+		window.onload = function(){
+			cnt = 10
+			$("#nxtPage").text("返回"+cnt+"...")
+			setInterval(function(){
+				cnt--
+				$("#nxtPage").text("返回"+cnt+"...")
+				if (cnt == 0){
+					window.location.href = $("#nxtPage").attr('href')	
+				}
+				
+			}, 1000)
+		}
+	</script>
+
+  <section class="engine"><a href="https://mobirise.co/o">bootstrap button</a></section>
+  <script src="/static/assets/web/assets/jquery/jquery.min.js"></script>
+  <script src="/static/assets/popper/popper.min.js"></script>
+  <script src="/static/assets/tether/tether.min.js"></script>
+  <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/static/assets/smooth-scroll/smooth-scroll.js"></script>
+  <script src="/static/assets/jarallax/jarallax.min.js"></script>
+  <script src="/static/assets/theme/js/script.js"></script>
+  
+  
+</body>
 </html>

@@ -84,7 +84,10 @@ func AddContract(c *Contract) error {
 	return nil
 }
 
-func DelContract(c *Contract) error {
+func DelContract(cid string) error {
+	c := &Contract{
+		Contract_id: cid,
+	}
 	o := orm.NewOrm()
 	_, err := o.Delete(c)
 	return err

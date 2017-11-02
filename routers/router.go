@@ -21,6 +21,7 @@ func Register() {
 	beego.Router("account/", &controllers.AccountController{})
 	beego.AutoRouter(&controllers.AccountController{})
 
+	beego.Router("/config", &controllers.ConfigController{})
 	beego.Router("/status", &controllers.StatusController{})
 
 	beego.Router("/login", &controllers.LoginController{})

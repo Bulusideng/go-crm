@@ -4,7 +4,7 @@
   <title> 首页 - 客户管理</title>  
   </head>
 
-  <body background: #ff0000>
+  <body class="cid-qzO6FIBSpg mbr-fullscreen mbr-parallax-background" id="header2-2" data-rv-view="38">
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             {{template "navbar" .}}
@@ -18,9 +18,6 @@
 						<tr class="warning">
 							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
 								{{with .Selectors}}
-								<th>
-									序号
-								</th>
 								<th>合同号:
 									<select  name="Contract_id">
 										<option value="ALL" selected = "selected">全部</option>
@@ -42,6 +39,13 @@
 								</th>
 								<th>
 								电话:
+									<select  name="Client_tel">
+											<option value="ALL" selected = "selected">全部</option>
+											{{range $k,$v := .Client_tel.List}}
+												<option value= {{$k}}
+												{{if eq $k $.Selectors.Client_tel.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+											{{end}}
+									</select>
 								</th>
 								<th>
 									国家:
@@ -133,7 +137,7 @@
 									操作
 								</th>
 								<th>
-									<button type="submit" class="btn btn-danger">查询</button>
+									<button type="submit" class="btn btn-success">查询</button>
 								</th>
 								{{end}}
 							</form>
@@ -143,9 +147,6 @@
 						{{$curUser := .CurUser}}
 						{{range .Contracts}}
 						<tr  class="success">
-							<td>
-								{{.Seq}}</a>
-							</td>
 							<td>
 								<a href="/contract/query?filter=Contract_id:{{.Contract_id}}">{{.Contract_id}}</a>
 							</td>	
@@ -181,12 +182,16 @@
 							</td>
 							<td>
 							{{if ne $curUser.Title "Guest"}}
-								<a href="/contract/view?cid={{.Contract_id}}">查看</a>
+								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">查看</a>
 							{{end}}
 							</td>  
 							<td>
 							{{if or (or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager")) (eq $curUser.Uname .Secretary)) (eq $curUser.Uname .Secretary)}}
-								<a href="/contract/update?cid={{.Contract_id}}">更新</a>
+								<a class="btn  btn-success" href="/contract/update?cid={{.Contract_id}}">更新</a>
+							{{end}}
+							
+							{{if eq $curUser.Title "Manager"}}
+								<a class="btn  btn-danger" href="/contract/delete?cid={{.Contract_id}}">删除</a>
 							{{end}}
 							</td>  
 							<td></td>

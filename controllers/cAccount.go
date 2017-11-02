@@ -8,7 +8,7 @@ import (
 )
 
 type AccountController struct {
-	beego.Controller
+	baseController
 }
 
 func (this *AccountController) Get() {
@@ -18,7 +18,7 @@ func (this *AccountController) Get() {
 		return
 	}
 	if !(curUser.IsManager() || curUser.IsAdmin()) {
-		this.Redirect("/status?msg=No access!!!", 302)
+		this.RedirectTo("/status", "No access!!!", "/account", 302)
 		return
 	}
 
@@ -64,7 +64,7 @@ func (this *AccountController) Manage() {
 	}
 	acct, err := models.GetAccount(uname)
 	if err != nil {
-		this.Redirect("/status?msg=Manage account error, invalid Uname: "+uname, 302)
+		this.RedirectTo("/status", "Manage account error, invalid Uname: "+uname, "/account", 302)
 		return
 	}
 	curUsr := GetCurAcct(this.Ctx)
@@ -72,7 +72,7 @@ func (this *AccountController) Manage() {
 		this.Redirect("/login", 302)
 		return
 	} else if !curUsr.IsManagerOf(acct) {
-		this.Redirect("/status?msg=Current user: "+curUsr.Uname+"is not manager of: "+uname, 302)
+		this.RedirectTo("/status", "Current user: "+curUsr.Uname+"is not manager of: "+uname, "/account", 302)
 		fmt.Printf("User %+v want update %s\n", *curUsr, uname)
 		return
 	}
@@ -106,17 +106,17 @@ func (this *AccountController) Post() {
 		RePwd := this.GetString("RePwd")
 		if RePwd == acct.Pwd {
 			if err = acct.Register(); err == nil {
-				this.Redirect("/status?msg=Register success, please wait manager approve", 302)
+				this.RedirectTo("/status", "Register success, please wait manager approve", "/account", 302)
 				return
 			}
 		} else {
-			this.Redirect("/status?msg=Register failed, password mismatch", 302)
+			this.RedirectTo("/status", "Register failed, password mismatch", "/account", 302)
 			return
 		}
 	case "change_contact":
 		if curUsr.IsActive() {
 			if err = models.UpdateContact(acct.Uname, acct.Email, acct.Mobile); err == nil {
-				this.Redirect("/status?msg=Update contact success", 302)
+				this.RedirectTo("/status", "Update contact success", "/account", 302)
 				return
 			}
 		}
@@ -126,15 +126,15 @@ func (this *AccountController) Post() {
 			if curUsr.Uname == acct.Uname {
 				if curPwd == curUsr.Pwd {
 					if err = models.UpdatePwd(acct.Uname, acct.Pwd); err == nil {
-						this.Redirect("/status?msg=Update passwrod success", 302)
+						this.RedirectTo("/status", "Update passwrod success", "/account", 302)
 						return
 					}
 				} else {
-					this.Redirect("/status?msg=Update password failed, invalid password", 302)
+					this.RedirectTo("/status", "Update password failed, invalid password", "/account", 302)
 					return
 				}
 			} else {
-				this.Redirect("/status?msg=Update password failed, account mismatch", 302)
+				this.RedirectTo("/status", "Update password failed, account mismatch", "/account", 302)
 				return
 			}
 		}
@@ -142,25 +142,25 @@ func (this *AccountController) Post() {
 		if curUsr.IsActive() {
 			if curUsr.IsManagerOf(acct) {
 				if err = models.ManageAccount(acct); err == nil {
-					this.Redirect("/status?msg=Manage account success", 302)
+					this.RedirectTo("/status", "Manage account success", "/account", 302)
 					ct, _ := models.GetAccount(acct.Uname)
 					fmt.Printf("After manage: %+v\n\n", *ct)
 					return
 				}
 			} else {
 				beego.Error("没有权限！！！")
-				this.Redirect("/status?msg=Manage account failed, permission denied cur: "+curUsr.Uname+", Account: "+acct.Uname, 302)
+				this.RedirectTo("/status", "Manage account failed, permission denied cur: "+curUsr.Uname+", Account: "+acct.Uname, "/account", 302)
 				return
 			}
 		}
 	default:
 		beego.Error("无效操作！！！")
-		this.Redirect("/status?msg=Invalid operation", 302)
+		this.RedirectTo("/status", "Invalid operation", "/account", 302)
 		return
 	}
 	if err != nil {
 		beego.Error(err)
-		this.Redirect("/status?msg="+err.Error(), 302)
+		this.RedirectTo("/status", ""+err.Error(), "/account", 302)
 	} else if curUsr.IsGuest() {
 		this.Redirect("/login", 302)
 		return
@@ -169,11 +169,11 @@ func (this *AccountController) Post() {
 		return
 	} else if curUsr.Disabled() {
 		beego.Error("账户禁用！！！")
-		this.Redirect("/status?msg=Account disabled", 302)
+		this.RedirectTo("/status", "Account disabled", "/account", 302)
 		return
 	}
 	fmt.Printf("账户操作失败: %s\n", op)
 	fmt.Printf("CurUser: %+v\n", *curUsr)
 	fmt.Printf("Account: %+v\n", *acct)
-	this.Redirect("/status?msg=unknown error", 302)
+	this.RedirectTo("/status", "unknown error", "/account", 302)
 }

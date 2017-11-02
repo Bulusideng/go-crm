@@ -33,18 +33,21 @@ func GetAccount(uname string) (c *Account, err error) {
 	err = o.Read(c)
 	if err != nil {
 		fmt.Printf("Get account failed: [%s]\n", uname)
+		return nil, errors.New("用户名不存在: " + uname)
 	}
 
-	return c, err
+	return c, nil
 }
 
 func GetValidAcct(uname, pwd string) (c *Account, err error) {
 	c, err = GetAccount(uname)
 	if err == nil {
-		if c.Pwd != pwd {
-			return nil, errors.New("Invalid password")
-		} else if !c.IsActive() {
-			return nil, errors.New("Account is inactive")
+		if c.Disabled() {
+			return nil, errors.New("账户已禁用")
+		} else if c.Locked() {
+			return nil, errors.New("账户已锁定")
+		} else if c.Pwd != pwd {
+			return c, errors.New("密码错误")
 		}
 	}
 	return c, err
@@ -57,18 +60,29 @@ func ManageAccount(nAcct *Account) error {
 	err := o.Read(acct)
 	if err == nil {
 		var mgr *Account
-		if mgr, err = GetAccount(nAcct.Manager); err == nil {
+		if mgr, err = GetAccount(nAcct.Manager); err == nil { //Validate the manager field
 			if mgr.IsAdmin() || mgr.IsManager() {
 				acct.Cname = nAcct.Cname
 				acct.Title = nAcct.Title
 				acct.Manager = nAcct.Manager
+				fmt.Printf("manage acct status:%s\n", acct.Status)
+				switch nAcct.Status {
+				case "Active":
+					acct.Enable()
+				case "Disabled":
+					acct.Disable()
+				case "Locked":
+					acct.Lock()
+				}
 				acct.Status = nAcct.Status
-				_, err = o.Update(acct, "Cname", "Title", "Manager", "Status")
+				_, err = o.Update(acct, "Cname", "Title", "Manager", "Status", "ErrCnt")
 				fmt.Printf("manage acct success %+v...........\n", *acct)
 			} else {
+				fmt.Printf("manage acct error %+v...........\n", err)
 				err = errors.New(nAcct.Manager + " is not manager")
 			}
 		} else {
+			fmt.Printf("manage acct error %+v...........\n", err)
 			err = errors.New("Invalid manager: " + nAcct.Manager)
 		}
 	}
@@ -107,7 +121,10 @@ func UpdatePwd(uname, pwd string) error {
 	return err
 }
 
-func UpdateErrCnt(uname string, delta int) error {
+var maxErrCnt = 3
+
+func UpdateErrCnt(uname string, delta int) (int, error) {
+	remaining := 3
 	o := orm.NewOrm()
 	usr := &Account{Uname: uname}
 	err := o.Read(usr)
@@ -118,13 +135,17 @@ func UpdateErrCnt(uname string, delta int) error {
 				usr.ErrCnt = 0
 			} else if usr.ErrCnt >= 3 {
 				usr.Lock()
+				remaining = 0
+			} else {
+				remaining = 3 - usr.ErrCnt
 			}
+			fmt.Printf("UpdateErrCnt %s delta:%d, newcnt:%d, locked:%t\n", uname, delta, usr.ErrCnt, usr.Locked())
 			_, err = o.Update(usr, "err_cnt", "status")
 		} else {
-			return errors.New("Invalid user status")
+			return 0, errors.New("Invalid user status")
 		}
 	}
-	return err
+	return remaining, err
 }
 
 func GetAllAccts() ([]*Account, error) {

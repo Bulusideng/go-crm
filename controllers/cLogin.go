@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Bulusideng/go-crm/models"
 	"github.com/astaxie/beego"
@@ -9,12 +10,14 @@ import (
 )
 
 type LoginController struct {
-	beego.Controller
+	baseController
 }
 
 func (c *LoginController) Get() {
 	isExit := c.Input().Get("exit") == "true"
 	failed := c.Input().Get("failed") != ""
+	c.Data["chances"] = c.Input().Get("chances")
+
 	if isExit || failed {
 		c.Ctx.SetCookie("uname", "", -1, "/")
 		c.Ctx.SetCookie("title", "", -1, "/")
@@ -40,7 +43,7 @@ func (c *LoginController) Post() {
 
 	usr, err := models.GetValidAcct(uname, pwd)
 	if err == nil {
-		maxAge := 10
+		maxAge := 1
 		if autoLogin {
 			maxAge = 1<<31 - 1
 		}
@@ -49,16 +52,31 @@ func (c *LoginController) Post() {
 		c.Ctx.SetCookie("pwd", pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
 		beego.Warning("Login success:", uname, ": ", pwd)
+		models.UpdateErrCnt(uname, -1000) //Clear error cnt
+
 		if usr.IsAdmin() {
 			c.Redirect("/account", 301)
+			return
 		} else {
 			c.Redirect("/contract", 301)
+			return
 		}
 
 	} else {
-		//c.Redirect("/login?failed=true", 301)
-		c.Redirect("/status?msg=Login failed: "+err.Error(), 302)
+		if usr != nil {
+			remainChance := 0
+			remainChance, err = models.UpdateErrCnt(uname, 1)
+			if remainChance > 0 {
+				c.Redirect("/login?chances="+strconv.Itoa(remainChance), 301)
+				return
+			} else {
+				c.RedirectTo("/status", "Login failed, account locked!", "/login", 302)
+				return
+			}
+		}
 	}
+
+	c.RedirectTo("/status", "Login failed: "+err.Error(), "/login", 302)
 	return
 }
 
@@ -84,20 +102,3 @@ func GetCurAcct(ctx *context.Context) *models.Account {
 	beego.Warning("Invalid pwd ", uname, ": ", pwd)
 	return models.Guest()
 }
-
-/*
-func IsGuest(ctx *context.Context) bool {
-	usr := GetCurUser(ctx)
-	fmt.Printf("User info:%+v\n", usr)
-	return usr.Uname == "Guest"
-}
-func IsAdmin(ctx *context.Context) bool {
-	usr := GetCurUser(ctx)
-	return usr.Title == "Admin"
-}
-func GetTitle(ctx *context.Context) string {
-	usr := GetCurUser(ctx)
-	fmt.Printf("User info:%+v\n", usr)
-	return usr.Title
-}
-*/

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title> 登录 - 我的beego 博客</title>  
-  </head>
-	
-	<body>
+  <title> 登录 - 客户管理系统</title>  
+  </head>	
+	<body class="cid-qzO6FIBSpg mbr-fullscreen mbr-parallax-background" id="header2-2" data-rv-view="38">
 		<div class="container" style="width:500px">
 			<form role="form" method="POST" action="/login">
 			  <div class="form-group">
@@ -22,7 +21,7 @@
 			    </label>
 			  </div>
 			
-				<div style="display:none" name="status">{{if .Failed}}failed{{end}}</div>	
+				<div style="display:none" id="chances">{{if .chances }}{{.chances}}{{end}}</div>	
 			
 			  <button type="submit" class="btn btn-danger" >登录</button>
 			  <a class="btn btn-danger" href="/account/register">注册</a>
@@ -30,8 +29,9 @@
 
 			<script type="text/javascript">
 				window.onload = function(){
-					if (document.getElementsByName("status")[0].innerHTML == "failed"){
-						alert("用户名或密码错误，请重新输入");
+					chance = document.getElementById("chances").innerHTML
+					if (chance != ""){
+						alert("密码错误，还有"+chance+ " 次机会，请重新输入");
 					}
 					document.getElementById("uname").value = "";
 					document.getElementById("pwd").value = "";
