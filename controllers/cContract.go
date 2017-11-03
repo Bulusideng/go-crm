@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -102,16 +103,26 @@ func (this *ContractController) Post() {
 		return
 	}
 
-	op := this.Input().Get("OP")
-	beego.Warning("op:%s: %+v", op, *c)
-	cons, _ := models.GetAccount(c.Consulter)
-	c.Consulter_name = cons.Cname
-	if op == "ADD" {
+	op := this.Input().Get("op")
+	beego.Debug("op:%s: %+v", op, *c)
+	cons, err := models.GetAccount(c.Consulter)
+	if err == nil {
+		c.Consulter_name = cons.Cname
+	}
+	sec, err := models.GetAccount(c.Secretary)
+	if err == nil {
+		c.Secretary_name = sec.Cname
+	}
+	contractURL := "/contract/view?cid=" + c.Contract_id
+	if op == "add" {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
 		c.Create_by = curUser.Uname
 		c.Create_date = time.Now().Format(time.RFC822)
 		err = models.AddContract(c)
-	} else if op == "UPDATE" {
+		if err == nil {
+			this.RedirectTo("/status", "添加成功!", contractURL, 302)
+		}
+	} else if op == "update" {
 		var changes *models.ChangeSlice
 		changes, err = models.UpdateContract(c)
 		if err == nil {
@@ -127,21 +138,26 @@ func (this *ContractController) Post() {
 					Content:     txt,
 				}
 				err = models.AddComment(cmt)
-			}
-			if err == nil {
-				fmt.Printf("URL:%s, URI:%s, rq:%s, rp:%s\n", this.Ctx.Request.URL.String(), this.Ctx.Request.URL.RequestURI(), this.Ctx.Request.URL.RawQuery, this.Ctx.Request.URL.RawPath)
-				this.RedirectTo("/status", "Update success!", this.Ctx.Request.URL.String()+"/update?cid="+c.Contract_id, 302)
+				if err == nil {
+					this.RedirectTo("/status", "更新成功!", contractURL, 302)
+				} else {
+					this.RedirectTo("/status", "更新失败: "+err.Error(), contractURL, 302)
+				}
+			} else {
+				this.RedirectTo("/status", "没有改动!", contractURL, 302)
 			}
 		}
 
 	} else {
 		beego.Error("Invalid op:%s", op)
+		err = errors.New("非法操作: " + op)
 	}
 
 	if err != nil {
 		beego.Error(err)
+		this.RedirectTo("/status", "操作失败: "+err.Error(), contractURL, 302)
 	}
-	this.Redirect("/contract", 302)
+
 }
 
 func (this *ContractController) Add() {
@@ -181,7 +197,7 @@ func (this *ContractController) Delete() {
 	}
 }
 
-func (this *ContractController) Update() {
+func (this *ContractController) View() {
 	curUser := GetCurAcct(this.Ctx)
 	if !this.valid(curUser) {
 		return
@@ -194,7 +210,7 @@ func (this *ContractController) Update() {
 		this.Redirect("/contract", 302)
 		return
 	}
-	this.TplName = "contract_update.html"
+	this.TplName = "contract.html"
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
 	this.Data["Contract"] = contract
@@ -202,7 +218,7 @@ func (this *ContractController) Update() {
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
 
-func (this *ContractController) View() {
+func (this *ContractController) Viewo() {
 	curUser := GetCurAcct(this.Ctx)
 	if !this.valid(curUser) {
 		return
@@ -215,11 +231,12 @@ func (this *ContractController) View() {
 		this.Redirect("/contract", 302)
 		return
 	}
-	this.TplName = "contract_view.html"
+	this.TplName = "contract.html"
 	this.Data["MgrClient"] = true
+	this.Data["CurUser"] = curUser
 	this.Data["Contract"] = contract
 	this.Data["Comments"], _ = models.GetComments(cid)
-	this.Data["CurUser"] = curUser
+
 }
 
 func GetSelectors(contracts []*models.Contract, filters map[string]string) *models.ContractSelector {

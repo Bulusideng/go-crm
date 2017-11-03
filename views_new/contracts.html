@@ -131,6 +131,12 @@
 									</select>
 								</th>
 								<th>
+									查看
+								</th>
+								<th>
+									操作
+								</th>
+								<th>
 									<button type="submit" class="btn btn-success">查询</button>
 								</th>
 								{{end}}
@@ -175,8 +181,20 @@
 								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>
 							</td>
 							<td>
-								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">详情</a>
-							</td>
+							{{if ne $curUser.Title "Guest"}}
+								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">查看</a>
+							{{end}}
+							</td>  
+							<td>
+							{{if or (or (or (eq $curUser.Title "Admin") (eq $curUser.Title "Manager")) (eq $curUser.Uname .Secretary)) (eq $curUser.Uname .Secretary)}}
+								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">更新</a>
+							{{end}}
+							
+							{{if eq $curUser.Title "Manager"}}
+								<a class="btn  btn-danger" href="/contract/delete?cid={{.Contract_id}}">删除</a>
+							{{end}}
+							</td>  
+							<td></td>
 						</tr>
 						{{end}}
 					</tbody>

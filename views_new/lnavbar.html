@@ -1,7 +1,7 @@
 {{define "navbar"}}
 
 <div><b>
-    <ul class="nav nav-pills pull-right">
+    <ul class="nav nav-pills ">
 	{{if .CurUser }}
 		{{if (eq .CurUser.Title "Admin")}}
 			<li {{if .SysConfig}} class="active"{{end}}><a href="/config">系统配置</a></li>

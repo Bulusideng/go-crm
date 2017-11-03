@@ -52,7 +52,7 @@ func (this *AccountController) Register() {
 }
 
 func (this *AccountController) View() {
-	this.TplName = "account_view.html"
+	this.TplName = "account.html"
 	this.Data["ViewAcct"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 }

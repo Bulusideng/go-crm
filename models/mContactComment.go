@@ -18,7 +18,7 @@ type ChangeSlice []Change
 func (this *ChangeSlice) String() string {
 	str := ""
 	for _, c := range *this {
-		str += fmt.Sprintf("%s: %s -> %s; ", c.Item, c.Last, c.Current)
+		str += fmt.Sprintf(" {%s: %s -> %s}; ", c.Item, c.Last, c.Current)
 	}
 	return str
 }

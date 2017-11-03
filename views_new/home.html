@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+ {{template "header"}}
+  <title> Home</title>  
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </div>
+	Admin:
+		1. Controll all accounts: Enable/disable, title, role, report to etc.
+		2. Update self contact/pwd
+	Manager:
+		1. Controll reporters' accounts
+		3. Update self contact/pwd
+		5. View all cases
+		6. Update all cases
+	User:
+		1. Update self contact/pwd
+		3. View all cases
+		4. Update self cases
+		
+	Guest:
+		1. Register
+		2. Forget password
+		3. View all cases ??
+
+        
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
- {{template "mheader"}}
-  <title>账户管理</title>  
+ {{template "header"}}
+  <title>添加用户</title>  
   </head>
 
-  <body class="cid-qzO6FIBSpg mbr-white mbr-fullscreen mbr-parallax-background" id="header2-2" data-rv-view="38">
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </nav>
+
     <div class="container">
-        <h3 class="text-center" >账户管理</h3>
+        <h3 class="text-center" >修改信息</h3>
         <form method="post" action="/account?op=manage_acct"  enctype="multipart/form-data">
 			{{$mgrs := .Managers}}
 			{{with .Acct}}
@@ -61,7 +67,6 @@
 
     <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/static/js/my.js"></script>
   </body>
 </html>
 
