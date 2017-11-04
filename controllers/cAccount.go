@@ -110,7 +110,7 @@ func (this *AccountController) Post() {
 				return
 			}
 		} else {
-			this.RedirectTo("/status", "Register failed, password mismatch", "/account", 302)
+			this.RedirectTo("/status", "Register failed, password mismatch", "/account/register", 302)
 			return
 		}
 	case "change_contact":

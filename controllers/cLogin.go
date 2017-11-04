@@ -39,6 +39,7 @@ func (c *LoginController) Post() {
 	pwd := c.Input().Get("pwd")
 
 	fmt.Printf("Login %s:%s\n", uname, pwd)
+
 	autoLogin := c.Input().Get("autoLogin") == "on"
 
 	usr, err := models.GetValidAcct(uname, pwd)
@@ -48,6 +49,7 @@ func (c *LoginController) Post() {
 			maxAge = 1<<31 - 1
 		}
 		maxAge = 1<<31 - 1
+
 		c.Ctx.SetCookie("uname", uname, maxAge, "/")
 		c.Ctx.SetCookie("pwd", pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
@@ -84,13 +86,14 @@ func (c *LoginController) Post() {
 func GetCurAcct(ctx *context.Context) *models.Account {
 	ck, err := ctx.Request.Cookie("uname")
 	if err != nil {
-		beego.Warning("No uname")
+		beego.Warning("Get uname cookie error: ", err.Error())
 		return models.Guest()
 	}
 	uname := ck.Value
+
 	ck, err = ctx.Request.Cookie("pwd")
 	if err != nil {
-		beego.Warning("No pwd")
+		beego.Warning("Get pwd cookie error: ", err.Error())
 		return models.Guest()
 	}
 	pwd := ck.Value

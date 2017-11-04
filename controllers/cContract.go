@@ -104,15 +104,12 @@ func (this *ContractController) Post() {
 	}
 
 	op := this.Input().Get("op")
-	beego.Debug("op:%s: %+v", op, *c)
-	cons, err := models.GetAccount(c.Consulter)
-	if err == nil {
-		c.Consulter_name = cons.Cname
+	fmt.Printf("op:%s: %+v\n", op, *c)
+
+	for k, v := range this.Ctx.Request.Form {
+		fmt.Printf("Param %s: %+v\n", k, v)
 	}
-	sec, err := models.GetAccount(c.Secretary)
-	if err == nil {
-		c.Secretary_name = sec.Cname
-	}
+
 	contractURL := "/contract/view?cid=" + c.Contract_id
 	if op == "add" {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
@@ -123,6 +120,9 @@ func (this *ContractController) Post() {
 			this.RedirectTo("/status", "添加成功!", contractURL, 302)
 		}
 	} else if op == "update" {
+		c.Consulters = strings.Join(this.Ctx.Request.Form["Consulters"], "&")
+		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
+		fmt.Printf("New values: %+v\n", *c)
 		var changes *models.ChangeSlice
 		changes, err = models.UpdateContract(c)
 		if err == nil {
@@ -210,10 +210,21 @@ func (this *ContractController) View() {
 		this.Redirect("/contract", 302)
 		return
 	}
+	Perm := "Read"
+	//Manager, full write permission, consulter or secretary, partial wirte permission
+	if curUser.IsManager() {
+		Perm = "Write"
+	} else {
+		if strings.Contains(contract.Consulters, curUser.Cname) || strings.Contains(contract.Secretaries, curUser.Cname) {
+			Perm = "ParWrite" //Partial write
+		}
+	}
+
 	this.TplName = "contract.html"
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
 	this.Data["Contract"] = contract
+	this.Data["Perm"] = Perm
 	this.Data["Comments"], _ = models.GetComments(cid)
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
@@ -245,15 +256,14 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 		selectors.Contract_id.List[c.Contract_id] = true
 		selectors.Client_name.List[c.Client_name] = true
 		selectors.Client_tel.List[c.Client_tel] = true
-		selectors.Consulter.List[c.Consulter] = true
-		selectors.Secretary.List[c.Secretary] = true
+		selectors.Consulter.List[c.Consulters] = true
+		selectors.Secretary.List[c.Secretaries] = true
 		selectors.Country.List[c.Country] = true
 		selectors.Project_type.List[c.Project_type] = true
 		selectors.Zhuan_an_date.List[c.Zhuan_an_date] = true
 		selectors.Create_date.List[c.Create_date] = true
 		selectors.Create_by.List[c.Create_by] = true
 		selectors.Current_state.List[c.Current_state] = true
-
 	}
 	if key, ok := filters["Contract_id"]; ok {
 		selectors.Contract_id.CurSelected = key
@@ -264,10 +274,10 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 	if key, ok := filters["Client_tel"]; ok {
 		selectors.Client_tel.CurSelected = key
 	}
-	if key, ok := filters["Consulter"]; ok {
+	if key, ok := filters["Consulter_name"]; ok {
 		selectors.Consulter.CurSelected = key
 	}
-	if key, ok := filters["Secretary"]; ok {
+	if key, ok := filters["Secretary_name"]; ok {
 		selectors.Secretary.CurSelected = key
 	}
 	if key, ok := filters["Country"]; ok {

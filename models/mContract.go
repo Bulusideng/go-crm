@@ -8,24 +8,38 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-//合同号 序号	客户姓名 国家 项目 咨询 文案 转案日期 目前状态
+//合同明细
+//序号	合同号	客户姓名	客户电话 申请国家	项目	签约日期	顾问	 文案姓名 转案日期	 状态（案件进度）
+//递档日期	档案号	补料	 通知面试	面试	打款通知	打款确认	省提名	递交联邦	联邦档案号	通知体检	获签	拒签
 
 type Contract struct {
-	Contract_id    string `orm:"pk"`
-	Seq            string
-	Client_name    string
-	Client_tel     string
-	Country        string
-	Project_type   string
-	Consulter      string
-	Consulter_name string
-	Secretary      string
-	Secretary_name string
-	Create_date    string
-	Create_by      string
-	Zhuan_an_date  string
-	Current_state  string
-	//Histories      []*History
+	Seq             string //序号
+	Contract_id     string `orm:"pk"` //合同号
+	Client_name     string //客户姓名
+	Client_tel      string //客户电话
+	Country         string //申请国家
+	Project_type    string //项目
+	Contract_date   string //签约日期
+	Consulters      string //顾问
+	Secretaries     string //文案
+	Zhuan_an_date   string //转案日期
+	Current_state   string //状态（案件进度）
+	Didang_date     string //递档日期
+	Danganhao_date  string //档案号
+	Buliao_date     string //补料
+	Interview_date1 string //通知面试
+	Interview_date2 string //面试
+	Pay_date1       string //打款通知
+	Pay_date2       string //打款确认
+	Nominate_date   string //省提名
+	Federal_date1   string //递交联邦
+	Federal_date2   string //联邦档案号
+	Physical_date   string //通知体检
+	Visa_date       string //获签
+	Fail_date       string //拒签
+
+	Create_date string
+	Create_by   string
 }
 
 type ContractSelector struct {
@@ -65,21 +79,13 @@ func NewContractSelectors() *ContractSelector {
 }
 
 func AddContract(c *Contract) error {
-	acct, err := GetAccount(c.Consulter)
-	if err == nil {
-		c.Consulter_name = acct.Cname
-	}
-	acct, err = GetAccount(c.Secretary)
-	if err == nil {
-		c.Secretary_name = acct.Cname
-	}
 	o := orm.NewOrm()
-	_, err = o.Insert(c)
+	_, err := o.Insert(c)
 	if err != nil {
 		fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
 		return err
 	} else {
-		fmt.Printf("Add Contract success %+v\n", *c)
+		//fmt.Printf("Add Contract success %+v\n", *c)
 	}
 	return nil
 }
@@ -106,17 +112,10 @@ func GetContract(contractId string) (c *Contract, err error) {
 }
 
 func UpdateContract(c *Contract) (*ChangeSlice, error) {
-	acct, err := GetAccount(c.Consulter)
-	if err == nil {
-		c.Consulter_name = acct.Cname
-	}
-	acct, err = GetAccount(c.Secretary)
-	if err == nil {
-		c.Secretary_name = acct.Cname
-	}
+
 	o := orm.NewOrm()
 	old := *c
-	err = o.Read(&old)
+	err := o.Read(&old)
 	changes := ChangeSlice{}
 	if err == nil {
 		if !reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
@@ -129,11 +128,11 @@ func UpdateContract(c *Contract) (*ChangeSlice, error) {
 			if c.Country != old.Country {
 				changes = append(changes, Change{Item: "国家", Last: old.Country, Current: c.Country})
 			}
-			if c.Consulter != old.Consulter {
-				changes = append(changes, Change{Item: "咨询", Last: old.Consulter_name + "[" + old.Consulter + "]", Current: c.Consulter_name + "[" + c.Consulter + "]"})
+			if c.Consulters != old.Consulters {
+				changes = append(changes, Change{Item: "咨询", Last: old.Consulters, Current: c.Consulters})
 			}
-			if c.Secretary != old.Secretary {
-				changes = append(changes, Change{Item: "文案", Last: old.Secretary_name + "[" + old.Secretary + "]", Current: c.Secretary_name + "[" + c.Secretary + "]"})
+			if c.Secretaries != old.Secretaries {
+				changes = append(changes, Change{Item: "文案", Last: old.Secretaries, Current: c.Secretaries})
 			}
 			if c.Zhuan_an_date != old.Zhuan_an_date {
 				changes = append(changes, Change{Item: "转案日期", Last: old.Zhuan_an_date, Current: c.Zhuan_an_date})
@@ -174,7 +173,8 @@ func GetAllContracts() ([]*Contract, error) {
 }
 
 func NewContract() *Contract {
-	return &Contract{
+	return &Contract{}
+	/*
 		"N/A",
 		"N/A",
 		"N/A",
@@ -189,6 +189,20 @@ func NewContract() *Contract {
 		"N/A",
 		"N/A",
 		"N/A",
-		//nil,
-	}
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+		"N/A",
+	*/
+
 }

@@ -18,6 +18,9 @@
 						<tr class="warning">
 							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
 								{{with .Selectors}}
+								<th>
+									<button type="submit" class="btn btn-success">查询</button>
+								</th>
 								<th>合同号:
 									<select  name="Contract_id">
 										<option value="ALL" selected = "selected">全部</option>
@@ -35,16 +38,6 @@
 											<option value= {{$k}}
 											{{if eq $k $.Selectors.Client_name.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
-									</select>
-								</th>
-								<th>
-								电话:
-									<select  name="Client_tel">
-											<option value="ALL" selected = "selected">全部</option>
-											{{range $k,$v := .Client_tel.List}}
-												<option value= {{$k}}
-												{{if eq $k $.Selectors.Client_tel.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
-											{{end}}
 									</select>
 								</th>
 								<th>
@@ -98,29 +91,6 @@
 									</select>
 								</th>
 								<th>
-									录入日期:
-									<select  name="Create_date">
-										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Create_date.List}}
-											<option value= {{$k}}
-											{{if eq $k $.Selectors.Create_date.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
-										{{end}}
-									</select>
-								</th>
-								<th>
-									录入人:
-									<select  name="Create_by">
-										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Create_by.List}}
-											<option value= {{$k}}
-											{{if eq $k $.Selectors.Create_by.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
-										{{end}}
-									</select>
-								</th>
-								
-								
-								
-								<th>
 									状态:
 									<select  name="Current_state">
 										<option value="ALL" selected = "selected">全部</option>
@@ -129,9 +99,6 @@
 											{{if eq $k $.Selectors.Current_state.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
-								</th>
-								<th>
-									<button type="submit" class="btn btn-success">查询</button>
 								</th>
 								{{end}}
 							</form>
@@ -142,13 +109,13 @@
 						{{range .Contracts}}
 						<tr  class="success">
 							<td>
+								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">详情</a>
+							</td>
+							<td>
 								<a href="/contract/query?filter=Contract_id:{{.Contract_id}}">{{.Contract_id}}</a>
 							</td>	
 							<td>
 								<a href="/contract/query?filter=Client_name:{{.Client_name}}">{{.Client_name}}</a>
-							</td>
-							<td>
-								<a href="/contract/query?filter=Client_Tel:{{.Client_tel}}">{{.Client_tel}}</a>
 							</td>
 							<td>
 								<a href="/contract/query?filter=Country:{{.Country}}">{{.Country}}</a>
@@ -157,26 +124,18 @@
 								<a href="/contract/query?filter=Project_type:{{.Project_type}}">{{.Project_type}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Consulter:{{.Consulter}}">{{.Consulter_name}}</a>
+								<a href="/contract/query?filter=Consulters:{{.Consulters}}">{{.Consulters}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Secretary:{{.Secretary}}">{{.Secretary_name}}</a>
+								<a href="/contract/query?filter=Secretaries:{{.Secretaries}}">{{.Secretaries}}</a>
 							</td>
 							<td>
 								<a href="/contract/query?filter=Zhuan_an_date:{{.Zhuan_an_date}}">{{.Zhuan_an_date}}</a>
 							</td>
 							<td>
-								<a href="/contract/query?filter=Create_date:{{.Create_date}}">{{.Create_date}}</a>
-							</td>
-							<td>
-								<a href="/contract/query?filter=Create_by:{{.Create_by}}">{{.Create_by}}</a>
-							</td>
-							<td>
 								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>
 							</td>
-							<td>
-								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">详情</a>
-							</td>
+							
 						</tr>
 						{{end}}
 					</tbody>

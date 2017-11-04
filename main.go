@@ -14,6 +14,7 @@ func main() {
 	orm.RunSyncdb("default", false, true)
 	models.RegisterAdmin()
 	routers.Register()
-	//models.RegCase()
+	models.RegisterAccounts()
+	models.ImportContracts()
 	beego.Run()
 }

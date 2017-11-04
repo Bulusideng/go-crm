@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -194,38 +193,4 @@ func GetNonAdmins() ([]*Account, error) {
 		fmt.Printf("GetNonAdmins failed:%s\n", err.Error())
 	}
 	return users, err
-}
-
-func RegisterAdmin() {
-	users, err := GetAcctounts(map[string]string{"title": "Admin"})
-	for err != nil {
-		time.Sleep(time.Second)
-		users, err = GetAllAccts()
-	}
-	if err == nil && len(users) == 0 { ///No user yet, add the user in config to DB
-		uname := beego.AppConfig.String("uname")
-		pwd := beego.AppConfig.String("pwd")
-		usr := &Account{
-			Uname:  uname,
-			Cname:  "管理员",
-			Title:  Titles[EAdmin],
-			Email:  "364718765@qq.com",
-			Pwd:    pwd,
-			Status: "Active",
-			ErrCnt: 0,
-		}
-		AddAccount(usr)
-		usr = &Account{
-			Uname:  "dengx",
-			Cname:  "管理员",
-			Title:  Titles[EAdmin],
-			Mobile: "15010275683",
-			Email:  "364718765@qq.com",
-			Pwd:    "dengx",
-			Status: "Active",
-			ErrCnt: 0,
-		}
-		AddAccount(usr)
-	}
-
 }
