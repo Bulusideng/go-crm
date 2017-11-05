@@ -3,6 +3,8 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"reflect"
 	"strings"
 	"time"
@@ -110,7 +112,7 @@ func (this *ContractController) Post() {
 		fmt.Printf("Param %s: %+v\n", k, v)
 	}
 
-	contractURL := "/contract/view?cid=" + c.Contract_id
+	contractURL := "/contract/view?cid=" + string(c.Contract_id)
 	if op == "add" {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
 		c.Create_by = curUser.Uname
@@ -148,6 +150,28 @@ func (this *ContractController) Post() {
 			}
 		}
 
+	} else if op == "backup" {
+		pwd := this.GetString("pwd", "")
+		usr, err := models.GetValidAcct(curUser.Uname, pwd)
+		if err != nil {
+			this.RedirectTo("/status", "密码错误!", contractURL, 302)
+			return
+		}
+		if !usr.IsManager() {
+			this.RedirectTo("/status", "当前帐号没有备份权限!", contractURL, 302)
+			return
+		}
+
+		fn := ""
+
+		fn, err = models.ExportContracts()
+
+		if err != nil {
+			this.RedirectTo("/status", "备份失败:"+err.Error(), contractURL, 302)
+		} else {
+			this.Redirect("/contract/backup?file="+fn, 302)
+		}
+		return
 	} else {
 		beego.Error("Invalid op:%s", op)
 		err = errors.New("非法操作: " + op)
@@ -160,9 +184,31 @@ func (this *ContractController) Post() {
 
 }
 
+func (this *ContractController) Backup() {
+	curUser := GetCurAcct(this.Ctx)
+	if !this.valid(curUser) {
+		return
+	}
+	if !curUser.IsManager() {
+		return
+	}
+
+	this.TplName = "contract_backup.html"
+	this.Data["BakClient"] = true
+	this.Data["CurUser"] = curUser
+	fn := this.GetString("file", "")
+	if fn != "" {
+		this.Data["FILE"] = "/files/" + fn
+	}
+
+}
+
 func (this *ContractController) Add() {
 	curUser := GetCurAcct(this.Ctx)
 	if !this.valid(curUser) {
+		return
+	}
+	if !curUser.IsManager() {
 		return
 	}
 
@@ -253,7 +299,7 @@ func (this *ContractController) Viewo() {
 func GetSelectors(contracts []*models.Contract, filters map[string]string) *models.ContractSelector {
 	selectors := models.NewContractSelectors()
 	for _, c := range contracts {
-		selectors.Contract_id.List[c.Contract_id] = true
+		selectors.Contract_id.List[strconv.FormatInt(c.Contract_id, 10)] = true
 		selectors.Client_name.List[c.Client_name] = true
 		selectors.Client_tel.List[c.Client_tel] = true
 		selectors.Consulter.List[c.Consulters] = true

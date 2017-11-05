@@ -16,7 +16,7 @@
         <form method="post" action="/account?op=register"  onsubmit="return checkRegist()" enctype="multipart/form-data">
             <div class="form-group">
                 <label>用户名:</label>
-                <input type="text" class="form-control" name="Uname" required="required" minlength="2" max="20">
+                <input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z]{5,20}" class="form-control" name="Uname" required="required" minlength="5" max="20">
             </div>
 			<div class="form-group">
                 <label>姓名:</label>
@@ -42,7 +42,7 @@
             </div>
 			<div class="form-group">
                 <label>密码:</label>
-                <input type="password" class="form-control" id="Pwd" name="Pwd" required="required" minlength="1" max="20">
+                <input type="password" placeholder="5-20位 数字，字母，下划线" class="form-control" id="Pwd" name="Pwd" required="required" minlength="1" max="20">
             </div>
            	<div class="form-group">
                 <label>重复密码:</label>
@@ -67,7 +67,7 @@
 	
 	function checkRegist()
 	{
-		if $('#Pwd').val() != $('#RePwd').val(){
+		if ($('#Pwd').val() != $('#RePwd').val()){
 			alert("密码不一致");
 			return false;
 		}else{

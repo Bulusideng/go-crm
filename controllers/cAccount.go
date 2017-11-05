@@ -104,9 +104,13 @@ func (this *AccountController) Post() {
 	switch op {
 	case "register": //No accout validation required
 		RePwd := this.GetString("RePwd")
+		fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
 		if RePwd == acct.Pwd {
 			if err = acct.Register(); err == nil {
-				this.RedirectTo("/status", "Register success, please wait manager approve", "/account", 302)
+				this.RedirectTo("/status", "Register success, please wait manager approve", "/account/register", 302)
+				return
+			} else {
+				this.RedirectTo("/status", "Register failed: 用户名已存在", "/account/register", 302)
 				return
 			}
 		} else {
@@ -116,25 +120,30 @@ func (this *AccountController) Post() {
 	case "change_contact":
 		if curUsr.IsActive() {
 			if err = models.UpdateContact(acct.Uname, acct.Email, acct.Mobile); err == nil {
-				this.RedirectTo("/status", "Update contact success", "/account", 302)
+				this.RedirectTo("/status", "Update contact success", "/account/view", 302)
 				return
 			}
 		}
 	case "change_pwd":
 		curPwd := this.GetString("CurPwd", "")
+		RePwd := this.GetString("RePwd", "")
+		fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
+		if _, err := models.GetValidAcct(acct.Uname, curPwd); err != nil {
+			this.RedirectTo("/status", "Update password failed, Current password incorrect", "/account/view", 302)
+		}
 		if curUsr.IsActive() {
 			if curUsr.Uname == acct.Uname {
-				if curPwd == curUsr.Pwd {
+				if RePwd == acct.Pwd {
 					if err = models.UpdatePwd(acct.Uname, acct.Pwd); err == nil {
-						this.RedirectTo("/status", "Update passwrod success", "/account", 302)
+						this.RedirectTo("/status", "Update passwrod success", "/account/view", 302)
 						return
 					}
 				} else {
-					this.RedirectTo("/status", "Update password failed, invalid password", "/account", 302)
+					this.RedirectTo("/status", "Update password failed, password mismatch", "/account/view", 302)
 					return
 				}
 			} else {
-				this.RedirectTo("/status", "Update password failed, account mismatch", "/account", 302)
+				this.RedirectTo("/status", "Update password failed, account mismatch", "/account/view", 302)
 				return
 			}
 		}

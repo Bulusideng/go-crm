@@ -25,7 +25,7 @@ func (this *ChangeSlice) String() string {
 
 type Comment struct {
 	Id          int
-	Contract_id string
+	Contract_id int64
 	Title       string //The author's title
 	Uname       string //The author
 	Cname       string //The author

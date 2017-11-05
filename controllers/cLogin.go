@@ -49,9 +49,11 @@ func (c *LoginController) Post() {
 			maxAge = 1<<31 - 1
 		}
 		maxAge = 1<<31 - 1
+		//euname, _ := models.ENC.Encrypt(uname)
+		//epwd, _ := models.ENC.Encrypt(pwd)
 
-		c.Ctx.SetCookie("uname", uname, maxAge, "/")
-		c.Ctx.SetCookie("pwd", pwd, maxAge, "/")
+		c.Ctx.SetCookie("uname", string(uname), maxAge, "/")
+		c.Ctx.SetCookie("pwd", string(pwd), maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
 		beego.Warning("Login success:", uname, ": ", pwd)
 		models.UpdateErrCnt(uname, -1000) //Clear error cnt
@@ -69,10 +71,10 @@ func (c *LoginController) Post() {
 			remainChance := 0
 			remainChance, err = models.UpdateErrCnt(uname, 1)
 			if remainChance > 0 {
-				c.Redirect("/login?chances="+strconv.Itoa(remainChance), 301)
+				c.RedirectTo("/status", "登录失败，还有"+strconv.Itoa(remainChance)+"次机会!", "/login", 301)
 				return
 			} else {
-				c.RedirectTo("/status", "Login failed, account locked!", "/login", 302)
+				c.RedirectTo("/status", "登录失败，账户锁定，请联系你的经理！", "", 302)
 				return
 			}
 		}
@@ -90,6 +92,7 @@ func GetCurAcct(ctx *context.Context) *models.Account {
 		return models.Guest()
 	}
 	uname := ck.Value
+	//uname, _ := models.ENC.Decrypt([]byte(ck.Value))
 
 	ck, err = ctx.Request.Cookie("pwd")
 	if err != nil {
@@ -97,6 +100,7 @@ func GetCurAcct(ctx *context.Context) *models.Account {
 		return models.Guest()
 	}
 	pwd := ck.Value
+	//pwd, _ := models.ENC.Decrypt([]byte(ck.Value))
 	usr, err := models.GetValidAcct(uname, pwd)
 	if err == nil {
 		ctx.SetCookie("title", usr.Title) //Update title in case changed

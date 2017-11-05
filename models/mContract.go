@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/astaxie/beego/orm"
@@ -14,7 +15,7 @@ import (
 
 type Contract struct {
 	Seq             string //序号
-	Contract_id     string `orm:"pk"` //合同号
+	Contract_id     int64  `orm:"pk"` //合同号
 	Client_name     string //客户姓名
 	Client_tel      string //客户电话
 	Country         string //申请国家
@@ -82,7 +83,7 @@ func AddContract(c *Contract) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
-		fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
+		//fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
 		return err
 	} else {
 		//fmt.Printf("Add Contract success %+v\n", *c)
@@ -91,22 +92,20 @@ func AddContract(c *Contract) error {
 }
 
 func DelContract(cid string) error {
-	c := &Contract{
-		Contract_id: cid,
-	}
+	c := &Contract{}
+	c.Contract_id, _ = strconv.ParseInt(cid, 10, 64)
 	o := orm.NewOrm()
 	_, err := o.Delete(c)
 	return err
 }
 
-func GetContract(contractId string) (c *Contract, err error) {
+func GetContract(cid string) (c *Contract, err error) {
 	o := orm.NewOrm()
-	c = &Contract{
-		Contract_id: contractId,
-	}
+	c = &Contract{}
+	c.Contract_id, _ = strconv.ParseInt(cid, 10, 64)
 	err = o.Read(c)
 	if err != nil {
-		fmt.Printf("GetContract[%s] failed %+v\n", contractId, err.Error())
+		fmt.Printf("GetContract[%s] failed %+v\n", cid, err.Error())
 	}
 	return c, err
 }
@@ -128,8 +127,14 @@ func UpdateContract(c *Contract) (*ChangeSlice, error) {
 			if c.Country != old.Country {
 				changes = append(changes, Change{Item: "国家", Last: old.Country, Current: c.Country})
 			}
+			if c.Project_type != old.Project_type {
+				changes = append(changes, Change{Item: "项目", Last: old.Project_type, Current: c.Project_type})
+			}
+			if c.Contract_date != old.Contract_date {
+				changes = append(changes, Change{Item: "签约日期", Last: old.Contract_date, Current: c.Contract_date})
+			}
 			if c.Consulters != old.Consulters {
-				changes = append(changes, Change{Item: "咨询", Last: old.Consulters, Current: c.Consulters})
+				changes = append(changes, Change{Item: "顾问", Last: old.Consulters, Current: c.Consulters})
 			}
 			if c.Secretaries != old.Secretaries {
 				changes = append(changes, Change{Item: "文案", Last: old.Secretaries, Current: c.Secretaries})
@@ -140,6 +145,48 @@ func UpdateContract(c *Contract) (*ChangeSlice, error) {
 			if c.Current_state != old.Current_state {
 				changes = append(changes, Change{Item: "状态", Last: old.Current_state, Current: c.Current_state})
 			}
+			if c.Didang_date != old.Didang_date {
+				changes = append(changes, Change{Item: "递档", Last: old.Didang_date, Current: c.Didang_date})
+			}
+			if c.Danganhao_date != old.Danganhao_date {
+				changes = append(changes, Change{Item: "档案号", Last: old.Danganhao_date, Current: c.Danganhao_date})
+			}
+
+			if c.Buliao_date != old.Buliao_date {
+				changes = append(changes, Change{Item: "补料", Last: old.Buliao_date, Current: c.Buliao_date})
+			}
+			if c.Interview_date1 != old.Interview_date1 {
+				changes = append(changes, Change{Item: "通知面试", Last: old.Interview_date1, Current: c.Interview_date1})
+			}
+			if c.Interview_date2 != old.Interview_date2 {
+				changes = append(changes, Change{Item: "面试", Last: old.Interview_date2, Current: c.Interview_date2})
+			}
+			if c.Pay_date1 != old.Pay_date1 {
+				changes = append(changes, Change{Item: "打款通知", Last: old.Pay_date1, Current: c.Pay_date1})
+			}
+			if c.Pay_date2 != old.Pay_date2 {
+				changes = append(changes, Change{Item: "打款确认", Last: old.Pay_date2, Current: c.Pay_date2})
+			}
+			if c.Nominate_date != old.Nominate_date {
+				changes = append(changes, Change{Item: "省提名", Last: old.Nominate_date, Current: c.Nominate_date})
+			}
+
+			if c.Federal_date1 != old.Federal_date1 {
+				changes = append(changes, Change{Item: "递交联邦", Last: old.Federal_date1, Current: c.Federal_date1})
+			}
+			if c.Federal_date2 != old.Federal_date2 {
+				changes = append(changes, Change{Item: "联邦档案号", Last: old.Federal_date2, Current: c.Federal_date2})
+			}
+			if c.Physical_date != old.Physical_date {
+				changes = append(changes, Change{Item: "通知体检", Last: old.Physical_date, Current: c.Physical_date})
+			}
+			if c.Visa_date != old.Visa_date {
+				changes = append(changes, Change{Item: "获签", Last: old.Visa_date, Current: c.Visa_date})
+			}
+			if c.Fail_date != old.Fail_date {
+				changes = append(changes, Change{Item: "拒签", Last: old.Fail_date, Current: c.Fail_date})
+			}
+
 			_, err = o.Update(c)
 		}
 	}

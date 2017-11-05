@@ -1,17 +1,18 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
 	"io"
 	"net/url"
 	"os"
+
+	"github.com/astaxie/beego"
 )
 
-type AttachmentController struct {
+type FileController struct {
 	beego.Controller
 }
 
-func (c *AttachmentController) Get() {
+func (c *FileController) Get() {
 	filePath, err := url.QueryUnescape(c.Ctx.Request.RequestURI[1:])
 	if err != nil {
 		beego.Error(err)

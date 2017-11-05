@@ -1,6 +1,8 @@
 package routers
 
 import (
+	"os"
+
 	"github.com/Bulusideng/go-crm/controllers"
 	"github.com/astaxie/beego"
 )
@@ -18,5 +20,8 @@ func Register() {
 	beego.Router("/status", &controllers.StatusController{})
 
 	beego.Router("/login", &controllers.LoginController{})
+
+	os.Mkdir("files", os.ModePerm)
+	beego.Router("/files/*", &controllers.FileController{})
 
 }
