@@ -1,11 +1,10 @@
 package models
 
 import (
-	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -15,7 +14,7 @@ import (
 
 type Contract struct {
 	Seq             string //序号
-	Contract_id     int64  `orm:"pk"` //合同号
+	Contract_id     string `orm:"pk"` //合同号
 	Client_name     string //客户姓名
 	Client_tel      string //客户电话
 	Country         string //申请国家
@@ -50,8 +49,8 @@ type ContractSelector struct {
 	Client_tel    FieldSelector
 	Country       FieldSelector
 	Project_type  FieldSelector
-	Consulter     FieldSelector
-	Secretary     FieldSelector
+	Consulters    FieldSelector
+	Secretaries   FieldSelector
 	Create_date   FieldSelector
 	Create_by     FieldSelector
 	Zhuan_an_date FieldSelector
@@ -70,8 +69,8 @@ func NewContractSelectors() *ContractSelector {
 		Client_tel:    FieldSelector{"ALL", map[string]bool{}},
 		Country:       FieldSelector{"ALL", map[string]bool{}},
 		Project_type:  FieldSelector{"ALL", map[string]bool{}},
-		Consulter:     FieldSelector{"ALL", map[string]bool{}},
-		Secretary:     FieldSelector{"ALL", map[string]bool{}},
+		Consulters:    FieldSelector{"ALL", map[string]bool{}},
+		Secretaries:   FieldSelector{"ALL", map[string]bool{}},
 		Create_date:   FieldSelector{"ALL", map[string]bool{}},
 		Create_by:     FieldSelector{"ALL", map[string]bool{}},
 		Zhuan_an_date: FieldSelector{"ALL", map[string]bool{}},
@@ -83,6 +82,10 @@ func AddContract(c *Contract) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
+		p, err := GetContract(c.Contract_id)
+		if err == nil {
+			beego.Error("Previous contract: ", *p)
+		}
 		//fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
 		return err
 	} else {
@@ -93,7 +96,7 @@ func AddContract(c *Contract) error {
 
 func DelContract(cid string) error {
 	c := &Contract{}
-	c.Contract_id, _ = strconv.ParseInt(cid, 10, 64)
+	c.Contract_id = cid
 	o := orm.NewOrm()
 	_, err := o.Delete(c)
 	return err
@@ -102,10 +105,10 @@ func DelContract(cid string) error {
 func GetContract(cid string) (c *Contract, err error) {
 	o := orm.NewOrm()
 	c = &Contract{}
-	c.Contract_id, _ = strconv.ParseInt(cid, 10, 64)
+	c.Contract_id = cid
 	err = o.Read(c)
 	if err != nil {
-		fmt.Printf("GetContract[%s] failed %+v\n", cid, err.Error())
+		beego.Error("GetContract[%s]", cid, " failed: ", err.Error())
 	}
 	return c, err
 }

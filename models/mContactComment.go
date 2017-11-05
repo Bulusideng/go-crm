@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -25,7 +26,7 @@ func (this *ChangeSlice) String() string {
 
 type Comment struct {
 	Id          int
-	Contract_id int64
+	Contract_id string
 	Title       string //The author's title
 	Uname       string //The author
 	Cname       string //The author
@@ -38,10 +39,10 @@ func AddComment(c *Comment) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
-		fmt.Printf("Add Comment failed:%s %+v\n", err.Error(), *c)
+		beego.Error("Add Comment failed: ", err.Error(), *c)
 		return err
 	} else {
-		fmt.Printf("Add Comment success %+v\n", *c)
+		beego.Debug("Add Comment success: ", *c)
 	}
 	return nil
 }
@@ -49,7 +50,7 @@ func AddComment(c *Comment) error {
 func DelComment(id int) error {
 	o := orm.NewOrm()
 	if _, err := o.Delete(&Comment{Id: id}); err != nil {
-		fmt.Printf("Delete Comment failed %d\n", id)
+		beego.Error("Delete Comment failed: ", id)
 		return err
 	}
 	return nil

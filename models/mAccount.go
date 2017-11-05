@@ -2,9 +2,9 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -14,10 +14,10 @@ func AddAccount(c *Account) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
-		fmt.Printf("Add user %+v failed\n", *c)
+		beego.Debug("Add user failed: ", *c, "Error: ", err.Error())
 		return err
 	}
-	fmt.Printf("Add user %+v success\n", *c)
+	beego.Debug("Add user success: ", *c)
 	return nil
 }
 
@@ -32,7 +32,7 @@ func GetAccount(uname string) (c *Account, err error) {
 	c = &Account{Uname: uname}
 	err = o.Read(c)
 	if err != nil {
-		fmt.Printf("Get account failed: [%s]\n", uname)
+		beego.Error("Get account failed: ", uname)
 		return nil, errors.New("用户名不存在: " + uname)
 	}
 	return c, nil
@@ -51,7 +51,6 @@ func GetValidAcctEnc(uname, epwd string) (c *Account, err error) {
 		} else if c.Locked() {
 			return nil, errors.New("账户已锁定")
 		} else if c.Pwd != epwd {
-			fmt.Printf("User:%s, epwd:%s, realpwd:%s,%s\n", uname, epwd, c.Pwd, c.GetPwd())
 			return c, errors.New("密码错误")
 		}
 	}
@@ -70,7 +69,6 @@ func ManageAccount(nAcct *Account) error {
 				acct.Cname = nAcct.Cname
 				acct.Title = nAcct.Title
 				acct.Manager = nAcct.Manager
-				fmt.Printf("manage acct status:%s\n", acct.Status)
 				switch nAcct.Status {
 				case "Active":
 					acct.Enable()
@@ -81,13 +79,13 @@ func ManageAccount(nAcct *Account) error {
 				}
 				acct.Status = nAcct.Status
 				_, err = o.Update(acct, "Cname", "Title", "Manager", "Status", "ErrCnt")
-				fmt.Printf("manage acct success %+v...........\n", *acct)
+				beego.Debug("manage acct success: ", *acct)
 			} else {
-				fmt.Printf("manage acct error %+v...........\n", err)
+				beego.Error("manage acct error: ", err)
 				err = errors.New(nAcct.Manager + " is not manager")
 			}
 		} else {
-			fmt.Printf("manage acct error %+v...........\n", err)
+			beego.Error("manage acct error: ", err)
 			err = errors.New("Invalid manager: " + nAcct.Manager)
 		}
 	}
@@ -144,7 +142,7 @@ func UpdateErrCnt(uname string, delta int) (int, error) {
 			} else {
 				remaining = 3 - usr.ErrCnt
 			}
-			fmt.Printf("UpdateErrCnt %s delta:%d, newcnt:%d, locked:%t\n", uname, delta, usr.ErrCnt, usr.Locked())
+			beego.Debug("UpdateErrCnt ", uname, "delta: ", delta, "newcnt: ", usr.ErrCnt, "locked: ", usr.Locked())
 			_, err = o.Update(usr, "err_cnt", "status")
 		} else {
 			return 0, errors.New("Invalid user status")
@@ -162,7 +160,7 @@ func GetAllAccts() ([]*Account, error) {
 	qs.Limit(-1)
 	_, err := qs.OrderBy("Title").All(&users)
 	if err != nil {
-		fmt.Printf("GetAllUsers failed:%s\n", err.Error())
+		beego.Error("GetAllUsers failed: ", err.Error())
 	}
 	return users, err
 }
@@ -196,7 +194,7 @@ func GetNonAdmins() ([]*Account, error) {
 	qs.Limit(-1)
 	_, err := qs.Exclude("Title", "Admin").OrderBy("Title").All(&users) //All account exclude admin
 	if err != nil {
-		fmt.Printf("GetNonAdmins failed:%s\n", err.Error())
+		beego.Error("GetNonAdmins failed: ", err.Error())
 	}
 	return users, err
 }

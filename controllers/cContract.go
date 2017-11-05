@@ -3,8 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"strconv"
-
 	"reflect"
 	"strings"
 	"time"
@@ -69,11 +67,10 @@ func (this *ContractController) Query() { //Filter contract
 		typeOfType := myref.Type()
 		for i := 0; i < myref.NumField(); i++ {
 			field := myref.Field(i)
-
 			val := field.Interface().(string)
 			if val != "" && val != "ALL" { //Get valid filters
 				filters[typeOfType.Field(i).Name] = val
-				fmt.Printf("%d. %s %s = %v \n", i, typeOfType.Field(i).Name, field.Type(), field.Interface())
+				//fmt.Printf("%d. %s %s = %v \n", i, typeOfType.Field(i).Name, field.Type(), field.Interface())
 			}
 		}
 	}
@@ -107,10 +104,10 @@ func (this *ContractController) Post() {
 	}
 
 	op := this.Input().Get("op")
-	fmt.Printf("op:%s: %+v\n", op, *c)
+	beego.Debug("op: [", op, "] on: ", *c)
 
 	for k, v := range this.Ctx.Request.Form {
-		fmt.Printf("Param %s: %+v\n", k, v)
+		beego.Debug("Param ", k, ":", v)
 	}
 
 	contractURL := "/contract/view?cid=" + string(c.Contract_id)
@@ -300,11 +297,11 @@ func (this *ContractController) Viewo() {
 func GetSelectors(contracts []*models.Contract, filters map[string]string) *models.ContractSelector {
 	selectors := models.NewContractSelectors()
 	for _, c := range contracts {
-		selectors.Contract_id.List[strconv.FormatInt(c.Contract_id, 10)] = true
+		selectors.Contract_id.List[c.Contract_id] = true
 		selectors.Client_name.List[c.Client_name] = true
 		selectors.Client_tel.List[c.Client_tel] = true
-		selectors.Consulter.List[c.Consulters] = true
-		selectors.Secretary.List[c.Secretaries] = true
+		selectors.Consulters.List[c.Consulters] = true
+		selectors.Secretaries.List[c.Secretaries] = true
 		selectors.Country.List[c.Country] = true
 		selectors.Project_type.List[c.Project_type] = true
 		selectors.Zhuan_an_date.List[c.Zhuan_an_date] = true
@@ -321,11 +318,11 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 	if key, ok := filters["Client_tel"]; ok {
 		selectors.Client_tel.CurSelected = key
 	}
-	if key, ok := filters["Consulter_name"]; ok {
-		selectors.Consulter.CurSelected = key
+	if key, ok := filters["Consulters"]; ok {
+		selectors.Consulters.CurSelected = key
 	}
-	if key, ok := filters["Secretary_name"]; ok {
-		selectors.Secretary.CurSelected = key
+	if key, ok := filters["Secretaries"]; ok {
+		selectors.Secretaries.CurSelected = key
 	}
 	if key, ok := filters["Country"]; ok {
 		selectors.Country.CurSelected = key

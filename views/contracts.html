@@ -62,21 +62,21 @@
 								</th>
 								<th>
 									咨询:
-									<select  name="Consulter">
+									<select  name="Consulters">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Consulter.List}}
+										{{range $k,$v := .Consulters.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Consulter.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Consulters.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>
 								<th>
 									文案:
-									<select  name="Secretary">
+									<select  name="Secretaries">
 										<option value="ALL" selected = "selected">全部</option>
-										{{range $k,$v := .Secretary.List}}
+										{{range $k,$v := .Secretaries.List}}
 											<option value= {{$k}}
-											{{if eq $k $.Selectors.Secretary.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
+											{{if eq $k $.Selectors.Secretaries.CurSelected }} selected = "selected" {{end}}>{{$k}}</option>
 										{{end}}
 									</select>
 								</th>

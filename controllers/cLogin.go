@@ -38,7 +38,7 @@ func (c *LoginController) Post() {
 	uname := c.Input().Get("uname")
 	pwd := c.Input().Get("pwd")
 
-	fmt.Printf("Login %s:%s\n", uname, pwd)
+	beego.Debug("Login ", uname, ":", pwd)
 
 	autoLogin := c.Input().Get("autoLogin") == "on"
 

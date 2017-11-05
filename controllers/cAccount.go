@@ -47,8 +47,6 @@ func (this *AccountController) Register() {
 	mgrs, _ := models.AcctByTitle("Manager")
 	admins, _ := models.AcctByTitle("Admin")
 	this.Data["Managers"] = append(mgrs, admins...)
-	fmt.Printf("Mgrs: %+v\n", this.Data["Managers"])
-
 }
 
 func (this *AccountController) View() {
@@ -73,7 +71,7 @@ func (this *AccountController) Manage() {
 		return
 	} else if !curUsr.IsManagerOf(acct) {
 		this.RedirectTo("/status", "Current user: "+curUsr.Uname+"is not manager of: "+uname, "/account", 302)
-		fmt.Printf("User %+v want update %s\n", *curUsr, uname)
+		beego.Warn("User ", *curUsr, " want to update ", uname)
 		return
 	}
 
@@ -85,7 +83,6 @@ func (this *AccountController) Manage() {
 	mgrs, _ := models.AcctByTitle("Manager")
 	admins, _ := models.AcctByTitle("Admin")
 	this.Data["Managers"] = append(mgrs, admins...)
-	fmt.Printf("Mgrs: %+v\n", this.Data["Managers"])
 }
 
 func (this *AccountController) Post() {
@@ -95,16 +92,15 @@ func (this *AccountController) Post() {
 		beego.Error(err)
 		return
 	}
-
-	op := this.Input().Get("op") //Operations: register, change_contact, change_pwd, change_status
-	fmt.Printf("%s User: %+v\n", op, *acct)
-
 	curUsr := GetCurAcct(this.Ctx)
+	op := this.Input().Get("op") //Operations: register, change_contact, change_pwd, change_status
+	beego.Debug("User: ", curUsr.Uname, "[", op, "] account:", *acct)
+
 	err = nil
 	switch op {
 	case "register": //No accout validation required
 		RePwd := this.GetString("RePwd")
-		fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
+		//fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
 		if RePwd == acct.Pwd {
 			if err = acct.Register(); err == nil {
 				this.RedirectTo("/status", "Register success, please wait manager approve", "/account/register", 302)
@@ -127,7 +123,7 @@ func (this *AccountController) Post() {
 	case "change_pwd":
 		curPwd := this.GetString("CurPwd", "")
 		RePwd := this.GetString("RePwd", "")
-		fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
+		//fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
 
 		if !curUsr.ValidPwd(curPwd) {
 			this.RedirectTo("/status", "Update password failed, Current password incorrect", "/account/view", 302)
@@ -160,7 +156,7 @@ func (this *AccountController) Post() {
 				if err = models.ManageAccount(acct); err == nil {
 					this.RedirectTo("/status", "Manage account success", "/account", 302)
 					ct, _ := models.GetAccount(acct.Uname)
-					fmt.Printf("After manage: %+v\n", *ct)
+					beego.Debug("After manage: ", *ct)
 					return
 				}
 			} else {
@@ -192,7 +188,7 @@ func (this *AccountController) Post() {
 		return
 	}
 	fmt.Printf("账户操作失败: %s\n", op)
-	fmt.Printf("CurUser: %+v\n", *curUsr)
-	fmt.Printf("Account: %+v\n", *acct)
+	//fmt.Printf("CurUser: %+v\n", *curUsr)
+	//fmt.Printf("Account: %+v\n", *acct)
 	this.RedirectTo("/status", "unknown error", "/account", 302)
 }
