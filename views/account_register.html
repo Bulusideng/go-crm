@@ -13,17 +13,17 @@
 
     <div class="container">
         <h3 class="text-center" >用户注册</h3>
-        <form method="post" action="/account?op=register"  onsubmit="return checkRegist()" enctype="multipart/form-data">
+        <form method="post" action="/account?op=register" onsubmit="return checkRegist()" enctype="multipart/form-data">
             <div class="form-group">
-                <label>用户名:</label>
-                <input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z]{5,20}" class="form-control" name="Uname" required="required" minlength="5" max="20">
+                <label>*用户名:</label>
+                <input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required" minlength="5" max="20">
             </div>
 			<div class="form-group">
-                <label>姓名:</label>
-                <input type="text" class="form-control" name="Cname" required="required" minlength="2" max="20">
+                <label>*姓名:</label>
+                <input type="text" class="form-control" name="Cname" required="required" minlength="1" max="20">
             </div>
 			<div class="form-group">
-                <label>职位:</label>
+                <label>*职位:</label>
 				<select class="form-control" name="Title" required="required"> 
 				<option value =""></option>
 				<option value ="Manager">经理</option>
@@ -32,7 +32,7 @@
 				</select>
             </div>
 			<div class="form-group">
-                <label>经理:</label>
+                <label>*经理:</label>
 				<select class="form-control" name="Manager" required="required"> 
 				<option value =""></option>
 				{{range .Managers}}
@@ -41,12 +41,12 @@
 				</select>
             </div>
 			<div class="form-group">
-                <label>密码:</label>
-                <input type="password" placeholder="5-20位 数字，字母，下划线" class="form-control" id="Pwd" name="Pwd" required="required" minlength="1" max="20">
+                <label>*密码:</label>
+                <input type="password" placeholder="5-20位" class="form-control" id="Pwd" name="Pwd" required="required" minlength="5" max="20">
             </div>
            	<div class="form-group">
-                <label>重复密码:</label>
-                <input type="password" class="form-control" id="RePwd" name="RePwd" required="required" minlength="1" max="20">
+                <label>*重复密码:</label>
+                <input type="password" placeholder="5-20位" class="form-control" id="RePwd" name="RePwd" required="required" minlength="5" max="20">
             </div>
 			<div class="form-group">
                 <label>邮箱:</label>
@@ -70,10 +70,9 @@
 		if ($('#Pwd').val() != $('#RePwd').val()){
 			alert("密码不一致");
 			return false;
-		}else{
-				alert("密码一致");
-		}
+		} 
 		return true;
+		 
 	}
 	
 	</script>

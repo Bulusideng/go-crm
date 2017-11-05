@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
+	"strconv"
 )
 
 func Test(str string) {
@@ -43,25 +44,38 @@ func (this *AesEncrypt) getKey() []byte {
 	return arrKey[:16]
 }
 
-func (this *AesEncrypt) Encrypt(strMesg string) ([]byte, error) {
+func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 	key := this.getKey()
 	var iv = []byte(key)[:aes.BlockSize]
 	encrypted := make([]byte, len(strMesg))
 	aesBlockEncrypter, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	aesEncrypter := cipher.NewCFBEncrypter(aesBlockEncrypter, iv)
 	aesEncrypter.XORKeyStream(encrypted, []byte(strMesg))
-	return encrypted, nil
+
+	encstr := ""
+	for _, v := range encrypted {
+		encstr += fmt.Sprintf("%02x", v)
+	}
+
+	return encstr, nil
 }
 
-func (this *AesEncrypt) Decrypt(src []byte) (strDesc string, err error) {
+func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = e.(error)
 		}
 	}()
+	src := []byte{}
+	var b int64
+	for i := 0; i < len(srcStr)-1; i += 2 {
+		b, _ = strconv.ParseInt(srcStr[i:i+2], 16, 8)
+		src = append(src, byte(b))
+	}
+
 	key := this.getKey()
 	var iv = []byte(key)[:aes.BlockSize]
 	decrypted := make([]byte, len(src))

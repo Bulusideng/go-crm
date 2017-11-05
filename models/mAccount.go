@@ -10,6 +10,7 @@ import (
 
 func AddAccount(c *Account) error {
 	c.CreateDate = time.Now().Format(time.RFC3339)
+	c.SetPwd(c.Pwd) //Encrypt password
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 	if err != nil {
@@ -34,18 +35,23 @@ func GetAccount(uname string) (c *Account, err error) {
 		fmt.Printf("Get account failed: [%s]\n", uname)
 		return nil, errors.New("用户名不存在: " + uname)
 	}
-
 	return c, nil
 }
 
 func GetValidAcct(uname, pwd string) (c *Account, err error) {
+	epwd, _ := ENC.Encrypt(pwd)
+	return GetValidAcctEnc(uname, epwd)
+}
+
+func GetValidAcctEnc(uname, epwd string) (c *Account, err error) {
 	c, err = GetAccount(uname)
 	if err == nil {
 		if c.Disabled() {
 			return nil, errors.New("账户已禁用")
 		} else if c.Locked() {
 			return nil, errors.New("账户已锁定")
-		} else if c.Pwd != pwd {
+		} else if c.Pwd != epwd {
+			fmt.Printf("User:%s, epwd:%s, realpwd:%s,%s\n", uname, epwd, c.Pwd, c.GetPwd())
 			return c, errors.New("密码错误")
 		}
 	}
@@ -111,7 +117,7 @@ func UpdatePwd(uname, pwd string) error {
 	err := o.Read(usr)
 	if err == nil {
 		if usr.IsActive() {
-			usr.Pwd = pwd
+			usr.SetPwd(pwd)
 			_, err = o.Update(usr, "pwd")
 		} else {
 			return errors.New("Invalid user status")

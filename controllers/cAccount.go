@@ -128,8 +128,10 @@ func (this *AccountController) Post() {
 		curPwd := this.GetString("CurPwd", "")
 		RePwd := this.GetString("RePwd", "")
 		fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
-		if _, err := models.GetValidAcct(acct.Uname, curPwd); err != nil {
+
+		if !curUsr.ValidPwd(curPwd) {
 			this.RedirectTo("/status", "Update password failed, Current password incorrect", "/account/view", 302)
+			return
 		}
 		if curUsr.IsActive() {
 			if curUsr.Uname == acct.Uname {
@@ -148,12 +150,17 @@ func (this *AccountController) Post() {
 			}
 		}
 	case "manage_acct":
+		CurPwd := this.GetString("CurPwd", "")
+		if !curUsr.ValidPwd(CurPwd) {
+			this.RedirectTo("/status", "Manage account failed, incorrect password!", "/account", 302)
+			return
+		}
 		if curUsr.IsActive() {
 			if curUsr.IsManagerOf(acct) {
 				if err = models.ManageAccount(acct); err == nil {
 					this.RedirectTo("/status", "Manage account success", "/account", 302)
 					ct, _ := models.GetAccount(acct.Uname)
-					fmt.Printf("After manage: %+v\n\n", *ct)
+					fmt.Printf("After manage: %+v\n", *ct)
 					return
 				}
 			} else {
@@ -161,6 +168,9 @@ func (this *AccountController) Post() {
 				this.RedirectTo("/status", "Manage account failed, permission denied cur: "+curUsr.Uname+", Account: "+acct.Uname, "/account", 302)
 				return
 			}
+		} else {
+			this.RedirectTo("/status", "Manage account failed, current account is inactive!", "/account", 302)
+			return
 		}
 	default:
 		beego.Error("无效操作！！！")

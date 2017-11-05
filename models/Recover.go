@@ -51,8 +51,6 @@ type DefUsr struct {
 	manager string
 }
 
-var usrs = []DefUsr{}
-
 func RegisterAccounts() {
 	RegisterAdmin()
 	acct := &Account{
@@ -67,6 +65,7 @@ func RegisterAccounts() {
 			acct.Cname = u.cname
 			acct.Title = u.title
 			acct.Manager = u.manager
+			acct.Pwd = "1"
 			AddAccount(acct)
 		}
 	}

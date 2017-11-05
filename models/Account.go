@@ -40,7 +40,7 @@ type Account struct {
 	ErrCnt     int    //3 times wll lock acct
 	CreateDate string
 
-	Pwd string
+	Pwd string //Encrypted
 }
 
 func (this *Account) IsAdmin() bool {
@@ -81,6 +81,24 @@ func (this *Account) Disable() {
 func (this *Account) Enable() {
 	this.ErrCnt = 0
 	this.Status = "Active"
+}
+
+func (this *Account) GetPwd() string {
+	pwd, _ := ENC.Decrypt(this.Pwd)
+	return pwd
+}
+
+func (this *Account) SetPwd(pwd string) {
+	epwd, _ := ENC.Encrypt(pwd)
+	this.Pwd = string(epwd)
+}
+
+func (this *Account) ValidPwd(pwd string) bool {
+	return this.GetPwd() == pwd
+}
+
+func (this *Account) ValidEPwd(epwd string) bool {
+	return (this.Pwd == epwd)
 }
 
 //Get status

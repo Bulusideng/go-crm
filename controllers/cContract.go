@@ -69,6 +69,7 @@ func (this *ContractController) Query() { //Filter contract
 		typeOfType := myref.Type()
 		for i := 0; i < myref.NumField(); i++ {
 			field := myref.Field(i)
+
 			val := field.Interface().(string)
 			if val != "" && val != "ALL" { //Get valid filters
 				filters[typeOfType.Field(i).Name] = val
@@ -152,12 +153,12 @@ func (this *ContractController) Post() {
 
 	} else if op == "backup" {
 		pwd := this.GetString("pwd", "")
-		usr, err := models.GetValidAcct(curUser.Uname, pwd)
-		if err != nil {
+
+		if !curUser.ValidPwd(pwd) {
 			this.RedirectTo("/status", "密码错误!", contractURL, 302)
 			return
 		}
-		if !usr.IsManager() {
+		if !curUser.IsManager() {
 			this.RedirectTo("/status", "当前帐号没有备份权限!", contractURL, 302)
 			return
 		}

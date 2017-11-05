@@ -49,13 +49,11 @@ func (c *LoginController) Post() {
 			maxAge = 1<<31 - 1
 		}
 		maxAge = 1<<31 - 1
-		//euname, _ := models.ENC.Encrypt(uname)
-		//epwd, _ := models.ENC.Encrypt(pwd)
 
-		c.Ctx.SetCookie("uname", string(uname), maxAge, "/")
-		c.Ctx.SetCookie("pwd", string(pwd), maxAge, "/")
+		c.Ctx.SetCookie("uname", uname, maxAge, "/")
+		c.Ctx.SetCookie("pwd", usr.Pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
-		beego.Warning("Login success:", uname, ": ", pwd)
+		beego.Debug("Login success, uname:", uname, " Pwd: ", pwd)
 		models.UpdateErrCnt(uname, -1000) //Clear error cnt
 
 		if usr.IsAdmin() {
@@ -92,20 +90,18 @@ func GetCurAcct(ctx *context.Context) *models.Account {
 		return models.Guest()
 	}
 	uname := ck.Value
-	//uname, _ := models.ENC.Decrypt([]byte(ck.Value))
 
 	ck, err = ctx.Request.Cookie("pwd")
 	if err != nil {
 		beego.Warning("Get pwd cookie error: ", err.Error())
 		return models.Guest()
 	}
-	pwd := ck.Value
-	//pwd, _ := models.ENC.Decrypt([]byte(ck.Value))
-	usr, err := models.GetValidAcct(uname, pwd)
+	epwd := ck.Value
+	usr, err := models.GetValidAcctEnc(uname, epwd)
 	if err == nil {
 		ctx.SetCookie("title", usr.Title) //Update title in case changed
 		return usr
 	}
-	beego.Warning("Invalid pwd ", uname, ": ", pwd)
+	beego.Warning("Invalid pwd ", uname, ": ", epwd)
 	return models.Guest()
 }
