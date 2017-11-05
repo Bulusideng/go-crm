@@ -28,10 +28,10 @@ func RegisterAdmin() {
 		uname := beego.AppConfig.String("uname")
 		pwd := beego.AppConfig.String("pwd")
 		usr := &Account{
-			Uname:  uname,
-			Cname:  "管理员",
-			Title:  Titles[EAdmin],
-			Email:  "364718765@qq.com",
+			Uname: uname,
+			Cname: "管理员",
+			Title: Titles[EAdmin],
+			//Email:  "364718765@qq.com",
 			Pwd:    pwd,
 			Status: "Active",
 			ErrCnt: 0,

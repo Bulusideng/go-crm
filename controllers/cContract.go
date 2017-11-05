@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -122,7 +121,7 @@ func (this *ContractController) Post() {
 	} else if op == "update" {
 		c.Consulters = strings.Join(this.Ctx.Request.Form["Consulters"], "&")
 		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
-		fmt.Printf("New values: %+v\n", *c)
+		//fmt.Printf("New values: %+v\n", *c)
 		var changes *models.ChangeSlice
 		changes, err = models.UpdateContract(c)
 		if err == nil {
@@ -152,11 +151,11 @@ func (this *ContractController) Post() {
 		pwd := this.GetString("pwd", "")
 
 		if !curUser.ValidPwd(pwd) {
-			this.RedirectTo("/status", "密码错误!", contractURL, 302)
+			this.RedirectTo("/status", "密码错误!", "/contract/backup", 302)
 			return
 		}
 		if !curUser.IsManager() {
-			this.RedirectTo("/status", "当前帐号没有备份权限!", contractURL, 302)
+			this.RedirectTo("/status", "当前帐号没有备份权限!", "/contract", 302)
 			return
 		}
 
@@ -165,7 +164,7 @@ func (this *ContractController) Post() {
 		fn, err = models.ExportContracts()
 
 		if err != nil {
-			this.RedirectTo("/status", "备份失败:"+err.Error(), contractURL, 302)
+			this.RedirectTo("/status", "备份失败:"+err.Error(), "/contract/backup", 302)
 		} else {
 			this.Redirect("/contract/backup?file="+fn, 302)
 		}
@@ -173,11 +172,12 @@ func (this *ContractController) Post() {
 	} else {
 		beego.Error("Invalid op:%s", op)
 		err = errors.New("非法操作: " + op)
+		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
 	}
 
 	if err != nil {
 		beego.Error(err)
-		this.RedirectTo("/status", "操作失败: "+err.Error(), contractURL, 302)
+		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract/backup", 302)
 	}
 
 }
