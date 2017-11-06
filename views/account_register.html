@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
- {{template "mheader"}}
+{{if .RICH}}
+{{template "mheader"}}
+{{else}}
+{{template "header"}}
+{{end}}
   <title>账户管理 - 注册</title>  
   </head>
 
@@ -16,7 +20,11 @@
         <form method="post" action="/account?op=register" onsubmit="return checkRegist()" enctype="multipart/form-data">
             <div class="form-group">
                 <label>*用户名:</label>
-                <input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required" minlength="5" max="20">
+                <!--
+				<input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required" minlength="5" max="20">
+				-->
+				<input type="text" placeholder="5-20位 数字，字母，下划线" class="form-control" name="Uname" required="required" minlength="1" max="20">
+				
             </div>
 			<div class="form-group">
                 <label>*姓名:</label>
@@ -58,7 +66,7 @@
             </div>
 			<center>
             	<button type="submit" class="btn btn-danger">确定</button>
-				<a class="btn  btn-danger" href="/contract">取消</a>
+				<a class="btn btn-danger" href="/contract">取消</a>
 			</center>
         </form>
     </div>
@@ -76,7 +84,5 @@
 	}
 	
 	</script>
-    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
   </body>
 </html>

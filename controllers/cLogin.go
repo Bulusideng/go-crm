@@ -31,7 +31,7 @@ func (c *LoginController) Get() {
 		}
 		c.TplName = "login.html"
 	}
-
+	c.Data["RICH"] = RICH_DISPLAY
 }
 
 func (c *LoginController) Post() {
@@ -50,11 +50,16 @@ func (c *LoginController) Post() {
 		}
 		maxAge = 1<<31 - 1
 
+		fmt.Printf("Uname:%s, %s\n", uname, []byte(uname))
+
 		c.Ctx.SetCookie("uname", uname, maxAge, "/")
 		c.Ctx.SetCookie("pwd", usr.Pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
 		beego.Debug("Login success, uname:", uname, " Pwd: ", pwd)
 		models.UpdateErrCnt(uname, -1000) //Clear error cnt
+
+		c.Ctx.ResponseWriter.ResponseWriter.Header().Set("Accept-Charset", "GBK,utf-8;q=0.7,*;q=0.3")
+		c.Ctx.ResponseWriter.ResponseWriter.Header().Set("Accept-Language", "zh-CN,zh;q=0.8")
 
 		if usr.IsAdmin() {
 			c.Redirect("/account", 301)

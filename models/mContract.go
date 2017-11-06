@@ -114,7 +114,6 @@ func GetContract(cid string) (c *Contract, err error) {
 }
 
 func UpdateContract(c *Contract) (*ChangeSlice, error) {
-
 	o := orm.NewOrm()
 	old := *c
 	err := o.Read(&old)

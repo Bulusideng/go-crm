@@ -7,6 +7,11 @@ import (
 	"strconv"
 )
 
+var (
+	ENC_TO_HEX_STR = false
+	ENC            = AesEncrypt{"0123456789012345"}
+)
+
 func Test(str string) {
 	aesEnc := AesEncrypt{"1234567890123456"}
 	arrEncrypt, err := aesEnc.Encrypt(str)
@@ -22,8 +27,6 @@ func Test(str string) {
 	}
 	fmt.Println(strMsg)
 }
-
-var ENC = AesEncrypt{"0123456789012345"}
 
 type AesEncrypt struct {
 	strKey string
@@ -55,12 +58,16 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 	aesEncrypter := cipher.NewCFBEncrypter(aesBlockEncrypter, iv)
 	aesEncrypter.XORKeyStream(encrypted, []byte(strMesg))
 
-	encstr := ""
-	for _, v := range encrypted {
-		encstr += fmt.Sprintf("%02x", v)
+	if ENC_TO_HEX_STR {
+		encstr := ""
+		for _, v := range encrypted {
+			encstr += fmt.Sprintf("%02x", v)
+		}
+		return encstr, nil
+	} else {
+		return string(encrypted), nil
 	}
 
-	return encstr, nil
 }
 
 func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
@@ -69,11 +76,16 @@ func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
 			err = e.(error)
 		}
 	}()
+
 	src := []byte{}
-	var b int64
-	for i := 0; i < len(srcStr)-1; i += 2 {
-		b, _ = strconv.ParseInt(srcStr[i:i+2], 16, 8)
-		src = append(src, byte(b))
+	if ENC_TO_HEX_STR {
+		var b int64
+		for i := 0; i < len(srcStr)-1; i += 2 {
+			b, _ = strconv.ParseInt(srcStr[i:i+2], 16, 8)
+			src = append(src, byte(b))
+		}
+	} else {
+		src = []byte(srcStr)
 	}
 
 	key := this.getKey()

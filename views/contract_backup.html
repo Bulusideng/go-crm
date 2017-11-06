@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
+{{if .RICH}}
 {{template "mheader"}}
+{{else}}
+{{template "header"}}
+{{end}}
 	<title>备份</title>
 </head>
 
@@ -25,16 +29,18 @@
 		                        <input type="password" class="form-control px-3" name="pwd" data-form-field="Email" placeholder="密码" required="" id="pwd-header15-6">
 		                    </div>
 		                </div>
-		                <span class="input-group-btn">
-							<button type="submit" class="btn btn-secondary btn-form display-4" >生成备份</button> 
-					  		<a class="btn btn-secondary btn-form display-4" href="/contract">返回</a>
-		                </span>
+		                
+						<center>
+							<button type="submit" class="btn btn-danger btn-form display-4" >确定</button> 
+					  		<a class="btn btn-danger btn-form display-4" href="/contract">返回</a>
+							{{if .FILE}}
+							{{if eq .CurUser.Title "Manager"}}
+							<a class="btn btn-danger btn-form display-4" href={{.FILE}}>下载</a>
+							{{end}}
+							{{end}}
+						</center>
 		            </form>
-					{{if .FILE}}
-					{{if eq .CurUser.Title "Manager"}}
-					<a class="btn btn-secondary btn-form display-4" href={{.FILE}}>下载备份</a>
-					{{end}}
-					{{end}}
+					
 		        </div>
 		    </div>
 		</div>

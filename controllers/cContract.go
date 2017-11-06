@@ -42,6 +42,7 @@ func (this *ContractController) Get() {
 	this.TplName = "contracts.html"
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
+	this.Data["RICH"] = RICH_DISPLAY
 }
 
 func (this *ContractController) Query() { //Filter contract

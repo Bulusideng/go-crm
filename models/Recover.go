@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ func Init() {
 	ImportContracts()
 
 }
+
+var excelFileName = "./customer.xlsx"
 
 func RegisterAdmin() {
 	users, err := GetAcctounts(map[string]string{"title": "Admin"})
@@ -41,6 +44,8 @@ func RegisterAdmin() {
 	}
 
 }
+
+var usrs = []DefUsr{}
 
 type DefUsr struct {
 	uname   string
@@ -85,8 +90,13 @@ func ExportContracts() (string, error) {
 	var sheet *xlsx.Sheet
 	var ok bool
 	for _, c := range contracts {
-		sname := c.Country //+ c.Project_type
+		sname := c.Country + c.Project_type
+		if len(sname) > 30 {
+			beego.Warn("Cut sheet name from: ", sname, " to: ", sname[:30])
+			sname = sname[:30]
+		}
 		if sheet, ok = sm[sname]; !ok {
+
 			sm[sname], err = file.AddSheet(sname)
 			if err != nil {
 				beego.Error("Add sheet: " + sname + "panic, error:" + err.Error())
@@ -94,6 +104,7 @@ func ExportContracts() (string, error) {
 			}
 			row := sm[sname].AddRow()
 			row.SetHeightCM(1) //设置每行的高度
+
 			cell := row.AddCell()
 			cell.Value = "序号"
 			cell = row.AddCell()
@@ -152,7 +163,10 @@ func ExportContracts() (string, error) {
 		row := sheet.AddRow()
 
 		//row.SetHeightCM(1)
+
 		row.WriteStruct(c, 26)
+		cid, _ := strconv.ParseInt(c.Contract_id, 10, 64)
+		row.Cells[1].SetInt64(cid)
 	}
 
 	ts := strings.Replace(time.Now().Format(time.RFC1123), ":", "-", -1)
@@ -171,7 +185,7 @@ func ImportContracts() {
 	if err == nil && len(contracts) > 0 {
 		return
 	}
-	excelFileName := "./customer.xlsx"
+
 	xlFile, err := xlsx.OpenFile(excelFileName)
 
 	if err != nil {

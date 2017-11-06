@@ -38,12 +38,13 @@ func (this *AccountController) Get() {
 		this.Data["Reporters"] = reporters
 	}
 	this.TplName = "accounts.html"
+
 }
 
 func (this *AccountController) Register() {
 	this.TplName = "account_register.html"
 	this.Data["RegAcct"] = true
-
+	this.Data["RICH"] = RICH_DISPLAY
 	mgrs, _ := models.AcctByTitle("Manager")
 	admins, _ := models.AcctByTitle("Admin")
 	this.Data["Managers"] = append(mgrs, admins...)

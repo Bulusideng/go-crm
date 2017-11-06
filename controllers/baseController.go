@@ -7,6 +7,8 @@ import (
 	"github.com/astaxie/beego"
 )
 
+var RICH_DISPLAY = true
+
 type baseController struct {
 	beego.Controller
 }

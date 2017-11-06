@@ -132,6 +132,8 @@
     };
 
     var isSupportViewportUnits = (function() {
+		return true;
+		/*
         // modernizr implementation
         var $elem = $('<div style="height: 50vh; position: absolute; top: -1000px; left: -1000px;">').appendTo('body');
         var elem = $elem[0];
@@ -139,12 +141,11 @@
         var compStyle = parseInt((window.getComputedStyle ? getComputedStyle(elem, null) : elem.currentStyle)['height'], 10);
         $elem.remove();
         return compStyle == height;
+		*/
     }());
 
     $(function() {
-
         $('html').addClass($.isMobile() ? 'mobile' : 'desktop');
-
         // .mbr-navbar--sticky
         $(window).scroll(function() {
             $('.mbr-navbar--sticky').each(function() {
