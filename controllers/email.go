@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"crypto/tls"
@@ -7,29 +7,29 @@ import (
 	"net"
 	"net/mail"
 	"net/smtp"
+
+	"github.com/astaxie/beego"
 )
 
-func send(body string) {
-	from := "xianjun.deng@gmail.com"
-	pass := "."
-	to := "xianjun.deng@gmail.com"
+func SendEmail(to, body string) bool {
+	from := beego.AppConfig.String("mailaddr")
+	pwd := beego.AppConfig.String("mailpwd")
+	smtpaddr := beego.AppConfig.String("smtpaddr")
 
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +
-		"Subject: Hello there\n\n" +
+		"Subject: Reset pwd\n\n" +
 		body
 
-	err := smtp.SendMail("smtp.gmail.com:587",
-		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
+	err := smtp.SendMail(smtpaddr+":25",
+		smtp.PlainAuth("", from, pwd, smtpaddr),
 		from, []string{to}, []byte(msg))
 
 	if err != nil {
-
 		log.Printf("smtp error: %s", err)
-		return
+		return false
 	}
-
-	log.Print("sent, visit http://foobarbazz.mailinator.com")
+	return true
 }
 
 func send1() {
@@ -53,8 +53,7 @@ func send1() {
 	message += "\r\n" + body
 
 	// Connect to the SMTP Server
-	servername := "smtp.example.tld:465"
-	servername = "smtp.gmail.com:587"
+	servername := "smtp.gmail.com:587"
 
 	host, _, _ := net.SplitHostPort(servername)
 

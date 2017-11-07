@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-	{{template "mheader"}}
+{{if .RICH}}
+{{template "mheader"}}
+{{else}}
+{{template "header"}}
+{{end}}
 	</head>
 <body>
 
@@ -11,7 +15,7 @@
                 <h1 class="mbr-section-title mbr-bold pb-3 mbr-fonts-style display-1">
 
                 </h1>
-                
+
                 <p class="mbr-text pb-3 mbr-fonts-style display-5">
                     {{.Message}}
                 </p>
@@ -19,7 +23,7 @@
 					{{if .RedirectTo }}
 					<a id ="nxtPage" class="btn btn-md btn-secondary display-4" href={{.RedirectTo}}>返回</a>
 					{{else}}
-					<a class="btn btn-md btn-white-outline display-4" href="/">返回</a>
+					<a class="btn btn-danger btn-white-outline display-4" href="/">返回</a>
 					{{end}}                    
                 </div>
             </div>

@@ -188,7 +188,12 @@ func UpdateContract(c *Contract) (*ChangeSlice, error) {
 			if c.Fail_date != old.Fail_date {
 				changes = append(changes, Change{Item: "拒签", Last: old.Fail_date, Current: c.Fail_date})
 			}
-
+			if c.Create_date != old.Create_date {
+				changes = append(changes, Change{Item: "录入日期", Last: old.Create_date, Current: c.Create_date})
+			}
+			if c.Create_by != old.Create_by {
+				changes = append(changes, Change{Item: "录入人", Last: old.Create_by, Current: c.Create_by})
+			}
 			_, err = o.Update(c)
 		}
 	}

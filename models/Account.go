@@ -2,6 +2,11 @@ package models
 
 import (
 	"errors"
+	"time"
+
+	"math/rand"
+
+	"github.com/astaxie/beego/orm"
 )
 
 const (
@@ -39,8 +44,8 @@ type Account struct {
 	Status     string //"Locked":锁定 	"Disabled": 禁用 	"Active"：正常
 	ErrCnt     int    //3 times wll lock acct
 	CreateDate string
-
-	Pwd string //Encrypted
+	Random     string //Random string for resetpwd/activate account
+	Pwd        string //Encrypted
 }
 
 func (this *Account) IsAdmin() bool {
@@ -127,7 +132,38 @@ func (this *Account) Register() error {
 	this.ErrCnt = 0
 	this.Disable() //New account need manager enable
 	return AddAccount(this)
+}
 
+func (this *Account) ForgetPwd() error {
+	acct, err := GetAccount(this.Uname)
+	if err != nil {
+		return errors.New("用户名不存在!")
+	}
+	acct.Lock()
+	acct.Random = RandStringRunes(20)
+	o := orm.NewOrm()
+	_, err = o.Update(acct)
+	if err != nil {
+		return err
+	}
+	this.Random = acct.Random
+	this.Email = acct.Email
+	return nil
+
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }
 
 func (this *Account) GetReporters() ([]*Account, error) {

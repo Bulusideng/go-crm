@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+{{if .RICH}}
+{{template "mheader"}}
+{{else}}
+{{template "header"}}
+{{end}}
+  <title>账户管理 - 找回密码</title>  
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="text-center" >找回密码</h3>
+        <form method="post" action="/account?op=forgetpwd" onsubmit="return checkRegist()" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>*用户名:</label>
+				<input type="text" placeholder="5-20位 数字，字母，下划线"  class="form-control" name="Uname" required="required">
+            </div>
+			<center>
+            	<button type="submit" class="btn btn-danger">确定</button>
+				<a class="btn btn-danger" href="/contract">取消</a>
+			</center>
+        </form>
+    </div>
+  </body>
+</html>

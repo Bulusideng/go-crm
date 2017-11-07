@@ -31,7 +31,7 @@ func (c *LoginController) Get() {
 		}
 		c.TplName = "login.html"
 	}
-	c.Data["RICH"] = RICH_DISPLAY
+	c.Data["RICH"] = IsRichView()
 }
 
 func (c *LoginController) Post() {
@@ -70,6 +70,9 @@ func (c *LoginController) Post() {
 		}
 
 	} else {
+		c.Ctx.SetCookie("uname", "", -1, "/")
+		c.Ctx.SetCookie("title", "", -1, "/")
+		fmt.Printf("Clear cookie\n")
 		if usr != nil {
 			remainChance := 0
 			remainChance, err = models.UpdateErrCnt(uname, 1)
@@ -77,7 +80,7 @@ func (c *LoginController) Post() {
 				c.RedirectTo("/status", "登录失败，还有"+strconv.Itoa(remainChance)+"次机会!", "/login", 301)
 				return
 			} else {
-				c.RedirectTo("/status", "登录失败，账户锁定，请联系你的经理！", "", 302)
+				c.RedirectTo("/status", "登录失败，账户锁定，请联系你的经理: "+usr.Manager, "", 302)
 				return
 			}
 		}

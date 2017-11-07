@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	DO_ENC         = false
 	ENC_TO_HEX_STR = false
 	ENC            = AesEncrypt{"0123456789012345"}
 )
@@ -48,6 +49,9 @@ func (this *AesEncrypt) getKey() []byte {
 }
 
 func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
+	if !DO_ENC {
+		return strMesg, nil
+	}
 	key := this.getKey()
 	var iv = []byte(key)[:aes.BlockSize]
 	encrypted := make([]byte, len(strMesg))
@@ -71,6 +75,10 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 }
 
 func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
+	if !DO_ENC {
+		return srcStr, nil
+	}
+
 	defer func() {
 		if e := recover(); e != nil {
 			err = e.(error)

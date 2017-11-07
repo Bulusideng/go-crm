@@ -42,7 +42,8 @@ func (this *ContractController) Get() {
 	this.TplName = "contracts.html"
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
-	this.Data["RICH"] = RICH_DISPLAY
+	this.Data["RICH"] = IsRichView()
+
 }
 
 func (this *ContractController) Query() { //Filter contract
@@ -195,6 +196,7 @@ func (this *ContractController) Backup() {
 	this.TplName = "contract_backup.html"
 	this.Data["BakClient"] = true
 	this.Data["CurUser"] = curUser
+	this.Data["RICH"] = IsRichView()
 	fn := this.GetString("file", "")
 	if fn != "" {
 		this.Data["FILE"] = "/files/" + fn
@@ -214,6 +216,7 @@ func (this *ContractController) Add() {
 	this.TplName = "contract_add.html"
 	this.Data["AddClient"] = true
 	this.Data["CurUser"] = curUser
+	this.Data["RICH"] = IsRichView()
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
 

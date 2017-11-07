@@ -49,7 +49,7 @@
                 <select class="form-control" name="Status" required="required">
 				<option value ="Active" {{if eq .Status "Active"}} selected = "selected" {{end}} >正常</option>
 				<option value="Locked" {{if eq .Status "Locked"}} selected = "selected" {{end}} >锁定</option>
-				<option value="Disabled" {{if eq .Status "Disabled"}} selected = "selected" {{end}} >禁用</option>
+				<option value="Disabled" {{if eq .Status "Disabled"}} selected = "selected" {{end}}b >禁用</option>
 				</select>
             </div>
 			{{end}}

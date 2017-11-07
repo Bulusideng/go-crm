@@ -180,6 +180,8 @@ func ExportContracts() (string, error) {
 	}
 }
 
+var legacy = false
+
 func ImportContracts() {
 	contracts, err := GetAllContracts()
 	if err == nil && len(contracts) > 0 {
@@ -196,87 +198,129 @@ func ImportContracts() {
 		rowId := 0
 		for rowId = 1; rowId < len(sheet.Rows); rowId++ {
 			row := sheet.Rows[rowId]
-			if len(row.Cells) >= 12 {
-				c := &Contract{
-					Seq:          strings.TrimSpace(row.Cells[0].String()),
-					Client_name:  strings.TrimSpace(row.Cells[2].String()),
-					Country:      strings.TrimSpace(row.Cells[3].String()),
-					Project_type: strings.TrimSpace(row.Cells[4].String()),
-					//备注
-					Contract_date: strings.TrimSpace(row.Cells[6].String()),
-					Consulters:    strings.TrimSpace(row.Cells[7].String()),
-					//合同明细
-					Secretaries:   strings.TrimSpace(row.Cells[9].String()),
-					Zhuan_an_date: strings.TrimSpace(row.Cells[10].String()),
-					Current_state: strings.TrimSpace(row.Cells[11].String()),
-				}
-				if len(row.Cells) > 12 {
-					c.Didang_date = strings.TrimSpace(row.Cells[12].String())
-				}
-				if len(row.Cells) > 13 {
-					c.Danganhao_date = strings.TrimSpace(row.Cells[13].String())
-				}
-				if len(row.Cells) > 14 {
-					c.Buliao_date = strings.TrimSpace(row.Cells[14].String())
-				}
-				//面试排队
-				if len(row.Cells) > 16 {
-					c.Interview_date1 = strings.TrimSpace(row.Cells[16].String())
-				}
-				if len(row.Cells) > 17 {
-					c.Interview_date2 = strings.TrimSpace(row.Cells[17].String())
-				}
-				if len(row.Cells) > 18 {
-					c.Pay_date1 = strings.TrimSpace(row.Cells[18].String())
-				}
-				if len(row.Cells) > 19 {
-					c.Pay_date2 = strings.TrimSpace(row.Cells[19].String())
-				}
-				if len(row.Cells) > 20 {
-					c.Nominate_date = strings.TrimSpace(row.Cells[20].String())
-				}
-				if len(row.Cells) > 21 {
-					c.Federal_date1 = strings.TrimSpace(row.Cells[21].String())
-				}
-				if len(row.Cells) > 22 {
-					c.Federal_date2 = strings.TrimSpace(row.Cells[22].String())
-				}
-				if len(row.Cells) > 23 {
-					c.Physical_date = strings.TrimSpace(row.Cells[23].String())
-				}
-				if len(row.Cells) > 24 {
-					c.Visa_date = strings.TrimSpace(row.Cells[24].String())
-				}
-				if len(row.Cells) > 25 {
-					c.Fail_date = strings.TrimSpace(row.Cells[25].String())
-				}
 
-				if len(row.Cells) >= 28 {
-					c.Create_date = strings.TrimSpace(row.Cells[26].String())
-					c.Create_by = strings.TrimSpace(row.Cells[27].String())
-				} else {
-					c.Create_date = time.Now().Format(time.RFC1123)
-					c.Create_by = "liupan"
-				}
-				c.Contract_id = strings.TrimSpace(row.Cells[1].String())
-				if c.Contract_id != "" {
-					c.Create_by = "liupan"
-					c.Create_date = time.Now().Format(time.RFC1123)
-					if err := AddContract(c); err != nil {
-						fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n", err.Error(), sheet.Name, rowId, *c)
-					} else {
-						//fmt.Printf("IMPORT_CONTRACT_SUCCESS: sheet:%s row:%d. %+v\n", sheet.Name, rowId, *c)
-					}
-				} else {
-					fmt.Printf("IMPORT_CONTRACT_FAILED, Empty contract id, sheet:%s row: %d, parsed:%+v\n", sheet.Name, rowId, *c)
-				}
-			} else {
+			if len(row.Cells) < 12 {
 				fmt.Printf("IMPORT_CONTRACT_FAILED, Missing field in sheet:%s row: %d, cell cnt:%d: .", sheet.Name, rowId, len(row.Cells))
 				for _, cell := range row.Cells {
 					fmt.Printf("%s; ", cell.String())
 				}
 				fmt.Println()
 				break
+			}
+
+			c := &Contract{}
+			idx := 0
+			c.Seq = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			c.Contract_id = strings.TrimSpace(row.Cells[1].String())
+			idx += 1
+			c.Client_name = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			if !legacy {
+				c.Client_tel = strings.TrimSpace(row.Cells[idx].String())
+				idx += 1
+			}
+			c.Country = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			c.Project_type = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			if legacy {
+				idx += 1 //备注
+			}
+			c.Contract_date = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			c.Consulters = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			if legacy {
+				idx += 1 //合同明细
+			}
+			c.Secretaries = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			c.Zhuan_an_date = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+			c.Current_state = strings.TrimSpace(row.Cells[idx].String())
+			idx += 1
+
+			//Optional fields
+			if len(row.Cells) > idx {
+				c.Didang_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Danganhao_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Buliao_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if legacy {
+				idx += 1 //面试排队
+			}
+			if len(row.Cells) > idx {
+				c.Interview_date1 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Interview_date2 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Pay_date1 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Pay_date2 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Nominate_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Federal_date1 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Federal_date2 = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Physical_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+
+			if len(row.Cells) > idx {
+				c.Visa_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Fail_date = strings.TrimSpace(row.Cells[idx].String())
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Create_date = strings.TrimSpace(row.Cells[idx].String())
+			} else {
+				c.Create_date = time.Now().Format(time.RFC1123)
+			}
+			idx += 1
+			if len(row.Cells) > idx {
+				c.Create_by = strings.TrimSpace(row.Cells[idx].String())
+			} else {
+				c.Create_by = "liupan"
+			}
+			idx += 1
+
+			if c.Contract_id != "" {
+				c.Create_by = "liupan"
+				c.Create_date = time.Now().Format(time.RFC1123)
+				if err := AddContract(c); err != nil {
+					fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n", err.Error(), sheet.Name, rowId, *c)
+				} else {
+					//fmt.Printf("IMPORT_CONTRACT_SUCCESS: sheet:%s row:%d. %+v\n", sheet.Name, rowId, *c)
+				}
+			} else {
+				fmt.Printf("IMPORT_CONTRACT_FAILED, Empty contract id, sheet:%s row: %d, parsed:%+v\n", sheet.Name, rowId, *c)
 			}
 		}
 		fmt.Printf("Sheet:%d %s contracts: %d\n", sheetId, sheet.Name, rowId)

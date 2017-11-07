@@ -109,16 +109,24 @@ func UpdateContact(uname, email, mobile string) error {
 	return err
 }
 
-func UpdatePwd(uname, pwd string) error {
+func UpdatePwd(uname, pwd string, force bool) error {
 	o := orm.NewOrm()
 	usr := &Account{Uname: uname}
 	err := o.Read(usr)
 	if err == nil {
-		if usr.IsActive() {
-			usr.SetPwd(pwd)
-			_, err = o.Update(usr, "pwd")
+		if usr.Disabled() {
+			return errors.New("User is disabled, please contact your manager!")
+		}
+		usr.SetPwd(pwd)
+		if usr.Locked() {
+			if force {
+				usr.UnLock()
+				_, err = o.Update(usr, "pwd", "status")
+			} else {
+				return errors.New("User is locked!")
+			}
 		} else {
-			return errors.New("Invalid user status")
+			_, err = o.Update(usr, "pwd")
 		}
 	}
 	return err

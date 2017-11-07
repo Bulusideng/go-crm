@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+{{if .RICH}}
+{{template "mheader"}}
+{{else}}
+{{template "header"}}
+{{end}}
+  <title>账户管理 - 激活</title>  
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            {{template "navbar" .}}
+        </div>
+    </nav>
+
+    <div class="container">
+		
+        <h3 class="text-center" >重置密码</h3>
+        <form method="post" action="/account?op=resetpwd" onsubmit="return checkRegist()" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>*用户名:</label>{{.Uname}}
+				<input type="text" name="Uname" style="display:none" value={{.Uname}}>	
+            </div>
+			<div class="form-group">
+                <label>*新密码:</label>
+                <input type="password" placeholder="5-20位" class="form-control" id="Pwd" name="Pwd" required="required" minlength="5" max="20">
+            </div>
+           	<div class="form-group">
+                <label>*重复密码:</label>
+                <input type="password" placeholder="5-20位" class="form-control" id="RePwd" name="RePwd" required="required" minlength="5" max="20">
+            </div>
+			<center>
+            	<button type="submit" class="btn btn-danger">重置</button>
+				<a class="btn btn-danger" href="/login">取消</a>
+			</center>
+        </form>
+    </div>
+	<script>
+	
+	function checkRegist()
+	{
+		if ($('#Pwd').val() != $('#RePwd').val()){
+			alert("密码不一致");
+			return false;
+		} 
+		return true;
+		 
+	}
+	
+	</script>
+  </body>
+</html>
