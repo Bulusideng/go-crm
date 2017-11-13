@@ -69,6 +69,8 @@ func ManageAccount(nAcct *Account) error {
 				acct.Cname = nAcct.Cname
 				acct.Title = nAcct.Title
 				acct.Manager = nAcct.Manager
+				acct.Email = nAcct.Email
+				acct.Mobile = nAcct.Mobile
 				switch nAcct.Status {
 				case "Active":
 					acct.Enable()
@@ -78,7 +80,7 @@ func ManageAccount(nAcct *Account) error {
 					acct.Lock()
 				}
 				acct.Status = nAcct.Status
-				_, err = o.Update(acct, "Cname", "Title", "Manager", "Status", "ErrCnt")
+				_, err = o.Update(acct, "Cname", "Title", "Manager", "Email", "Mobile", "Status", "ErrCnt")
 				beego.Debug("manage acct success: ", *acct)
 			} else {
 				beego.Error("manage acct error: ", err)

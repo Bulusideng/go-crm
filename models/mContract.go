@@ -13,33 +13,32 @@ import (
 //递档日期	档案号	补料	 通知面试	面试	打款通知	打款确认	省提名	递交联邦	联邦档案号	通知体检	获签	拒签
 
 type Contract struct {
-	Seq             string //序号
-	Contract_id     string `orm:"pk"` //合同号
-	Client_name     string //客户姓名
-	Client_tel      string //客户电话
-	Country         string //申请国家
-	Project_type    string //项目
-	Contract_date   string //签约日期
-	Consulters      string //顾问
-	Secretaries     string //文案
-	Zhuan_an_date   string //转案日期
-	Current_state   string //状态（案件进度）
-	Didang_date     string //递档日期
-	Danganhao_date  string //档案号
-	Buliao_date     string //补料
-	Interview_date1 string //通知面试
-	Interview_date2 string //面试
-	Pay_date1       string //打款通知
-	Pay_date2       string //打款确认
-	Nominate_date   string //省提名
-	Federal_date1   string //递交联邦
-	Federal_date2   string //联邦档案号
-	Physical_date   string //通知体检
-	Visa_date       string //获签
-	Fail_date       string //拒签
-
-	Create_date string
-	Create_by   string
+	Seq             string `xlsx:"0"`          //序号
+	Contract_id     string `xlsx:"1" orm:"pk"` //合同号
+	Client_name     string `xlsx:"2"`          //客户姓名
+	Client_tel      string `xlsx:"3"`          //客户电话
+	Country         string `xlsx:"4"`          //申请国家
+	Project_type    string `xlsx:"5"`          //项目
+	Contract_date   string `xlsx:"6"`          //签约日期
+	Consulters      string `xlsx:"7"`          //顾问
+	Secretaries     string `xlsx:"8"`          //文案
+	Zhuan_an_date   string `xlsx:"9"`          //转案日期
+	Current_state   string `xlsx:"10"`         //状态（案件进度）
+	Didang_date     string `xlsx:"11"`         //递档日期
+	Danganhao_date  string `xlsx:"12"`         //档案号
+	Buliao_date     string `xlsx:"13"`         //补料
+	Interview_date1 string `xlsx:"14"`         //通知面试
+	Interview_date2 string `xlsx:"15"`         //面试
+	Pay_date1       string `xlsx:"16"`         //打款通知
+	Pay_date2       string `xlsx:"17"`         //打款确认
+	Nominate_date   string `xlsx:"18"`         //省提名
+	Federal_date1   string `xlsx:"19"`         //递交联邦
+	Federal_date2   string `xlsx:"20"`         //联邦档案号
+	Physical_date   string `xlsx:"21"`         //通知体检
+	Visa_date       string `xlsx:"22"`         //获签
+	Fail_date       string `xlsx:"23"`         //拒签
+	Create_date     string `xlsx:"24"`         //录入时间
+	Create_by       string `xlsx:"25"`         //录入人
 }
 
 type ContractSelector struct {

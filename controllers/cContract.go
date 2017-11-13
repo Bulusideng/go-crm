@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"path"
 	"reflect"
 	"strings"
 	"time"
@@ -199,9 +200,8 @@ func (this *ContractController) Backup() {
 	this.Data["RICH"] = IsRichView()
 	fn := this.GetString("file", "")
 	if fn != "" {
-		this.Data["FILE"] = "/files/" + fn
+		this.Data["FILE"] = path.Join("/files", fn)
 	}
-
 }
 
 func (this *ContractController) Add() {

@@ -164,7 +164,7 @@ func ExportContracts() (string, error) {
 
 		//row.SetHeightCM(1)
 
-		row.WriteStruct(c, 26)
+		row.WriteStruct(c, -1)
 		cid, _ := strconv.ParseInt(c.Contract_id, 10, 64)
 		row.Cells[1].SetInt64(cid)
 	}
@@ -180,9 +180,10 @@ func ExportContracts() (string, error) {
 	}
 }
 
-var legacy = false
-
 func ImportContracts() {
+	legacy := false
+	legacy, _ = beego.AppConfig.Bool("old_form")
+	beego.BeeLogger.Warn("Old format:%t", legacy)
 	contracts, err := GetAllContracts()
 	if err == nil && len(contracts) > 0 {
 		return
@@ -207,113 +208,21 @@ func ImportContracts() {
 				fmt.Println()
 				break
 			}
-
 			c := &Contract{}
-			idx := 0
-			c.Seq = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			c.Contract_id = strings.TrimSpace(row.Cells[1].String())
-			idx += 1
-			c.Client_name = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
 			if !legacy {
-				c.Client_tel = strings.TrimSpace(row.Cells[idx].String())
-				idx += 1
-			}
-			c.Country = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			c.Project_type = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			if legacy {
-				idx += 1 //备注
-			}
-			c.Contract_date = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			c.Consulters = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			if legacy {
-				idx += 1 //合同明细
-			}
-			c.Secretaries = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			c.Zhuan_an_date = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-			c.Current_state = strings.TrimSpace(row.Cells[idx].String())
-			idx += 1
-
-			//Optional fields
-			if len(row.Cells) > idx {
-				c.Didang_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Danganhao_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Buliao_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if legacy {
-				idx += 1 //面试排队
-			}
-			if len(row.Cells) > idx {
-				c.Interview_date1 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Interview_date2 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Pay_date1 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Pay_date2 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Nominate_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Federal_date1 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Federal_date2 = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Physical_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-
-			if len(row.Cells) > idx {
-				c.Visa_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Fail_date = strings.TrimSpace(row.Cells[idx].String())
-			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Create_date = strings.TrimSpace(row.Cells[idx].String())
+				row.ReadStruct(c)
 			} else {
-				c.Create_date = time.Now().Format(time.RFC1123)
+				c = readOldForm(row)
 			}
-			idx += 1
-			if len(row.Cells) > idx {
-				c.Create_by = strings.TrimSpace(row.Cells[idx].String())
-			} else {
-				c.Create_by = "liupan"
-			}
-			idx += 1
 
 			if c.Contract_id != "" {
-				c.Create_by = "liupan"
-				c.Create_date = time.Now().Format(time.RFC1123)
+				if c.Create_by == "" {
+					c.Create_by = "liupan"
+				}
+				if c.Create_date == "" {
+					c.Create_date = time.Now().Format("2006-01-02")
+				}
+				c.Create_date = getDate(c.Create_date)
 				if err := AddContract(c); err != nil {
 					fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n", err.Error(), sheet.Name, rowId, *c)
 				} else {
@@ -325,4 +234,114 @@ func ImportContracts() {
 		}
 		fmt.Printf("Sheet:%d %s contracts: %d\n", sheetId, sheet.Name, rowId)
 	}
+}
+
+func readOldForm(row *xlsx.Row) (c *Contract) {
+
+	idx := 0
+	c.Seq = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+	c.Contract_id = strings.TrimSpace(row.Cells[1].String())
+	idx += 1
+	c.Client_name = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+	c.Country = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+	c.Project_type = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+
+	idx += 1 //备注
+
+	c.Contract_date = getDateCell(row.Cells[idx])
+	idx += 1
+	c.Consulters = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+
+	idx += 1 //合同明细
+
+	c.Secretaries = strings.TrimSpace(row.Cells[idx].String())
+	idx += 1
+	c.Zhuan_an_date = getDateCell(row.Cells[idx])
+	idx += 1
+	c.Current_state = getDateCell(row.Cells[idx])
+	idx += 1
+
+	//Optional fields
+	if len(row.Cells) > idx {
+		c.Didang_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Danganhao_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Buliao_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+
+	idx += 1 //面试排队
+
+	if len(row.Cells) > idx {
+		c.Interview_date1 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Interview_date2 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Pay_date1 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Pay_date2 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Nominate_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Federal_date1 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Federal_date2 = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Physical_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+
+	if len(row.Cells) > idx {
+		c.Visa_date = getDateCell(row.Cells[idx])
+	}
+	idx += 1
+	if len(row.Cells) > idx {
+		c.Fail_date = getDateCell(row.Cells[idx])
+	}
+	return
+}
+
+func getDateCell(cel *xlsx.Cell) string {
+	return getDate(cel.String())
+}
+
+func getDate(str string) string {
+	str = strings.TrimSpace(str)
+	str = strings.Replace(str, ".", "-", -1)
+	strs := strings.Split(str, "-")
+	if len(strs) != 3 { //YYYY-MM-DD
+		beego.BeeLogger.Warn("Invalid date format: %s", str)
+		return ""
+	}
+	if len(strs[1]) == 1 {
+		strs[1] = "0" + strs[1]
+	}
+	if len(strs[2]) == 1 {
+		strs[2] = "0" + strs[2]
+	}
+	return strs[0] + "-" + strs[1] + "-" + strs[2]
 }
