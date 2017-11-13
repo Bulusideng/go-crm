@@ -18,6 +18,8 @@ func Init() {
 
 }
 
+//var usrs = []DefUsr{}
+
 var excelFileName = "./customer.xlsx"
 
 func RegisterAdmin() {
@@ -44,8 +46,6 @@ func RegisterAdmin() {
 	}
 
 }
-
-var usrs = []DefUsr{}
 
 type DefUsr struct {
 	uname   string
@@ -190,12 +190,13 @@ func ImportContracts() {
 	}
 
 	xlFile, err := xlsx.OpenFile(excelFileName)
-
+	total_cnt := 0
 	if err != nil {
 		beego.Error("invalid file name")
 		return
 	}
 	for sheetId, sheet := range xlFile.Sheets {
+		cnt := 0
 		rowId := 0
 		for rowId = 1; rowId < len(sheet.Rows); rowId++ {
 			row := sheet.Rows[rowId]
@@ -212,7 +213,11 @@ func ImportContracts() {
 			if !legacy {
 				row.ReadStruct(c)
 			} else {
-				c = readOldForm(row)
+				c, err = readOldForm(row)
+				if err != nil {
+					fmt.Printf("%s: %+v\n", err.Error(), row.Cells)
+					break
+				}
 			}
 
 			if c.Contract_id != "" {
@@ -226,17 +231,22 @@ func ImportContracts() {
 				if err := AddContract(c); err != nil {
 					fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n", err.Error(), sheet.Name, rowId, *c)
 				} else {
+					cnt++
 					//fmt.Printf("IMPORT_CONTRACT_SUCCESS: sheet:%s row:%d. %+v\n", sheet.Name, rowId, *c)
 				}
 			} else {
 				fmt.Printf("IMPORT_CONTRACT_FAILED, Empty contract id, sheet:%s row: %d, parsed:%+v\n", sheet.Name, rowId, *c)
 			}
 		}
-		fmt.Printf("Sheet:%d %s contracts: %d\n", sheetId, sheet.Name, rowId)
+		fmt.Printf("Sheet:%d %s rows: %d, contracts: %d\n", sheetId, sheet.Name, rowId, cnt)
+		total_cnt += cnt
 	}
+
+	fmt.Printf("Total contracts: %d\n", total_cnt)
 }
 
-func readOldForm(row *xlsx.Row) (c *Contract) {
+func readOldForm(row *xlsx.Row) (*Contract, error) {
+	c := &Contract{}
 
 	idx := 0
 	c.Seq = strings.TrimSpace(row.Cells[idx].String())
@@ -249,6 +259,10 @@ func readOldForm(row *xlsx.Row) (c *Contract) {
 	idx += 1
 	c.Project_type = strings.TrimSpace(row.Cells[idx].String())
 	idx += 1
+
+	if c.Seq == "" && c.Contract_id == "" && c.Client_name == "" {
+		return nil, errors.New("Invalid contract")
+	}
 
 	idx += 1 //备注
 
@@ -263,7 +277,7 @@ func readOldForm(row *xlsx.Row) (c *Contract) {
 	idx += 1
 	c.Zhuan_an_date = getDateCell(row.Cells[idx])
 	idx += 1
-	c.Current_state = getDateCell(row.Cells[idx])
+	c.Current_state = strings.TrimSpace(row.Cells[idx].String())
 	idx += 1
 
 	//Optional fields
@@ -322,7 +336,7 @@ func readOldForm(row *xlsx.Row) (c *Contract) {
 	if len(row.Cells) > idx {
 		c.Fail_date = getDateCell(row.Cells[idx])
 	}
-	return
+	return c, nil
 }
 
 func getDateCell(cel *xlsx.Cell) string {
@@ -331,9 +345,12 @@ func getDateCell(cel *xlsx.Cell) string {
 
 func getDate(str string) string {
 	str = strings.TrimSpace(str)
+	if len(str) == 0 {
+		return ""
+	}
 	str = strings.Replace(str, ".", "-", -1)
 	strs := strings.Split(str, "-")
-	if len(strs) != 3 { //YYYY-MM-DD
+	if len(strs) < 3 { //YYYY-MM-DD
 		beego.BeeLogger.Warn("Invalid date format: %s", str)
 		return ""
 	}
