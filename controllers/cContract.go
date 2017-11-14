@@ -167,13 +167,15 @@ func (this *ContractController) Post() {
 
 		cat := this.GetString("cat", "")
 		fn := ""
-		fn, err = models.ExportContracts(cat)
+		withComments := (this.GetString("withComments", "") == "on")
+		fn, err = models.ExportContracts(cat, withComments)
 
 		if err != nil {
 			this.RedirectTo("/status", "备份失败:"+err.Error(), "/contract/backup", 302)
 		} else {
 			this.Redirect("/contract/backup?file="+fn, 302)
 		}
+
 		return
 	} else {
 		beego.Error("Invalid op:%s", op)

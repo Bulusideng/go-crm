@@ -17,6 +17,10 @@ func Init() {
 
 }
 
+var (
+	CommentSheet = "History"
+)
+
 //var usrs = []DefUsr{}
 
 func RegisterAdmin() {
@@ -71,7 +75,7 @@ func RegisterAccounts() {
 	}
 }
 
-func ExportContracts(cat string) (string, error) {
+func ExportContracts(cat string, withComments bool) (string, error) {
 	beego.Warn("cat:", cat)
 	contracts, err := GetAllContracts()
 	if err != nil {
@@ -111,71 +115,25 @@ func ExportContracts(cat string) (string, error) {
 				return "", err
 			}
 			row := sm[sname].AddRow()
-			row.SetHeightCM(1) //设置每行的高度
-
-			cell := row.AddCell()
-			cell.Value = "序号"
-			cell = row.AddCell()
-			cell.NumFmt = "general"
-			cell.Value = "合同号"
-			cell = row.AddCell()
-			cell.Value = "客户姓名"
-			cell = row.AddCell()
-			cell.Value = "客户电话"
-			cell = row.AddCell()
-			cell.Value = "申请国家"
-			cell = row.AddCell()
-			cell.Value = "项目"
-			cell = row.AddCell()
-			cell.Value = "签约日期"
-			cell = row.AddCell()
-			cell.Value = "顾问"
-			cell = row.AddCell()
-			cell.Value = "文案"
-			cell = row.AddCell()
-			cell.Value = "转案日期"
-			cell = row.AddCell()
-			cell.Value = "状态"
-			cell = row.AddCell()
-			cell.Value = "递档日期"
-			cell = row.AddCell()
-			cell.Value = "档案号"
-			cell = row.AddCell()
-			cell.Value = "补料"
-			cell = row.AddCell()
-			cell.Value = "通知面试"
-			cell = row.AddCell()
-			cell.Value = "面试"
-			cell = row.AddCell()
-			cell.Value = "打款通知"
-			cell = row.AddCell()
-			cell.Value = "打款确认"
-			cell = row.AddCell()
-			cell.Value = "省提名"
-			cell = row.AddCell()
-			cell.Value = "递交联邦"
-			cell = row.AddCell()
-			cell.Value = "联邦档案号"
-			cell = row.AddCell()
-			cell.Value = "通知体检"
-			cell = row.AddCell()
-			cell.Value = "获签"
-			cell = row.AddCell()
-			cell.Value = "拒签"
-			cell = row.AddCell()
-			cell.Value = "录入时间"
-			cell = row.AddCell()
-			cell.Value = "录入人"
-
+			row.WriteSlice(&[]string{
+				"序号", "合同号", "客户姓名", "客户电话", "申请国家", "项目", "签约日期",
+				"顾问", "文案", "转案日期", "状态", "递档日期", "档案号", "补料", "通知面试",
+				"面试", "打款通知", "打款确认", "省提名", "递交联邦", "联邦档案号", "通知体检",
+				"获签", "拒签", "录入时间", "录入人"}, -1)
 		}
 		sheet = sm[sname]
 		row := sheet.AddRow()
-
-		//row.SetHeightCM(1)
-
 		row.WriteStruct(c, -1)
-		//cid, _ := strconv.ParseInt(c.Contract_id, 10, 64)
-		//row.Cells[1].SetInt64(cid)
+	}
+	if withComments {
+		history, _ := file.AddSheet(CommentSheet)
+
+		row := history.AddRow()
+		row.WriteSlice(&[]string{"Id", "合同号", "修改者职位", "用户名", "姓名", "日期", "改动", "内容"}, -1)
+		comments, _ := GetComments("")
+		for _, comment := range comments {
+			history.AddRow().WriteStruct(comment, -1)
+		}
 	}
 
 	ts := strings.Replace(time.Now().Format(time.RFC1123), ":", "-", -1)
@@ -220,6 +178,12 @@ func ImportContracts() {
 		sheetName = sheet.Name
 		for rowId = 1; rowId < len(sheet.Rows); rowId++ {
 			row := sheet.Rows[rowId]
+			if sheetName == CommentSheet {
+				comment := &Comment{}
+				row.ReadStruct(comment)
+				AddComment(comment)
+				continue
+			}
 
 			if len(row.Cells) < 12 {
 				fmt.Printf("IMPORT_CONTRACT_FAILED, Missing field in sheet:%s row: %d, cell cnt:%d: .", sheet.Name, rowId, len(row.Cells))
