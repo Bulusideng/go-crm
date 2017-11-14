@@ -40,9 +40,13 @@
 				{{with .Contract}}
 				<div class="tab-pane active" id="panel-995855">
 					<p>
+					<input type="text" class="form-control" id = "oldContractId" name="oldContractId" value={{.Contract_id}} readonly style="display:none">
 					<div class="form-group">
 		                <label>合同号:</label>
-		                <input type="number" class="form-control" name="Contract_id" value={{.Contract_id}} readonly>
+						{{if eq $CurUser.Title "Manager"}}
+						<input type="checkbox" class="MgrWrite" id="changeCid" />修改</br>
+						{{end}}
+		                <input type="text" class="form-control" id="Contract_id" name="Contract_id" value={{.Contract_id}} readonly>
 		            </div>
 		            <div class="form-group">
 		                <label>序号:</label>
@@ -84,7 +88,7 @@
 						        <div class="panel-heading">  
 						            <h5 class="panel-title">  
 						                <a id="cons_id" data-toggle="collapse" data-parent="#collapse_cons" href="#collapse_cons1"
-										aria-expanded="true" aria-controls="collapse_cons1">咨询: <div id="curCons">{{.Consulters}}</div></a>
+										aria-expanded="true" aria-controls="collapse_cons1">顾问: <div id="curCons">{{.Consulters}}</div></a>
 										
 						            </h5>
 						        </div>  
@@ -201,7 +205,6 @@
 				
 				<div class="tab-pane" id="panel-309888">
 					<div class="form-group">
-					
 					<h4>更新:<textarea class="form-control" style="height:auto;overflow-x:visible;overflow-y:visible;"  name="NewComment"></textarea></h4>
 					</div>
 					<ol>
@@ -218,12 +221,7 @@
 				
 				
 			</div>
-			
-		</div>			
-			
-		
-		
-		
+		</div>
 		<center>
 			<button type="submit" class="btn  btn-danger">更新</button>
 			{{if eq $CurUser.Title "Manager"}}
@@ -241,8 +239,6 @@
   </body>
 	<script>
 	$(document).ready(function () {
-		
-		
 		var checked = false;
 		$("#curCons").val($("#curCons").val().replace(/[ ]/g,""));    //去掉空格
 		$("#curCons").val($("#curCons").val().replace(/[\r\n]/g,""));//去掉回车换行
@@ -253,7 +249,7 @@
 		$(".Consulters").each(function(idx, elem){
 			for(var i in conArr) {	
 				if (conArr[i].length>0 && $(elem).val().indexOf(conArr[i]) >=0){
-					$(elem).attr('checked', true);
+					$(elem).prop('checked', true);
 					checked = true;
 				}
 			}	
@@ -271,7 +267,7 @@
 		$(".Secretaries").each(function(idx, elem){
 			for(var i in secArr) {
 				if (secArr[i].length>0 && $(elem).val().indexOf(secArr[i]) >=0){
-					$(elem).attr('checked', true);
+					$(elem).prop('checked', true);
 					checked = true;
 				}
 			}
@@ -281,19 +277,26 @@
 		}
 		
 		
-		switch ($('#container').attr('Perm')){
+		switch ($('#container').prop('Perm')){
 			case "Read"://Disable all
-			$('#container').find('input, textarea, button, select').attr('disabled',true);
+			$('#container').find('input, textarea, button, select').prop('readonly',true);
 			break;
 			case "ParWrite":
-			$('.MgrWrite').attr('disabled',true);
+			$('.MgrWrite').prop('readonly',true);
 			break;	
 		}
+	});
+	$("#changeCid").change(function() {
+		if (!this.checked){
+			$("#Contract_id").val($("#oldContractId").val())	
+		}
+	    $("#Contract_id").prop('readonly', !this.checked)
+
 	});
 	
 	function postSubmit()
 	{
-		$('#container').find('input, textarea, button, select').attr('disabled',false);	
+		$('#container').find('input, textarea, button, select').prop('disabled',false);	
 	}
 	
 	</script>

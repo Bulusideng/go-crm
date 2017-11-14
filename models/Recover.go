@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"path"
-	"strconv"
 	"strings"
 	"time"
 
@@ -19,8 +18,6 @@ func Init() {
 }
 
 //var usrs = []DefUsr{}
-
-var excelFileName = "./customer.xlsx"
 
 func RegisterAdmin() {
 	users, err := GetAcctounts(map[string]string{"title": "Admin"})
@@ -72,10 +69,10 @@ func RegisterAccounts() {
 			AddAccount(acct)
 		}
 	}
-
 }
 
-func ExportContracts() (string, error) {
+func ExportContracts(cat string) (string, error) {
+	beego.Warn("cat:", cat)
 	contracts, err := GetAllContracts()
 	if err != nil {
 		return "", err
@@ -90,13 +87,24 @@ func ExportContracts() (string, error) {
 	var sheet *xlsx.Sheet
 	var ok bool
 	for _, c := range contracts {
-		sname := c.Country + c.Project_type
+		sname := "不分类"
+		switch cat {
+		case "国家":
+			sname = c.Country
+		case "项目":
+			sname = c.Country + c.Project_type
+		case "顾问":
+			sname = c.Consulters
+		case "文案":
+			sname = c.Secretaries
+		}
+
 		if len(sname) > 30 {
 			beego.Warn("Cut sheet name from: ", sname, " to: ", sname[:30])
 			sname = sname[:30]
 		}
+		sname = strings.Replace(sname, "/", ",", -1)
 		if sheet, ok = sm[sname]; !ok {
-
 			sm[sname], err = file.AddSheet(sname)
 			if err != nil {
 				beego.Error("Add sheet: " + sname + "panic, error:" + err.Error())
@@ -108,6 +116,7 @@ func ExportContracts() (string, error) {
 			cell := row.AddCell()
 			cell.Value = "序号"
 			cell = row.AddCell()
+			cell.NumFmt = "general"
 			cell.Value = "合同号"
 			cell = row.AddCell()
 			cell.Value = "客户姓名"
@@ -165,13 +174,13 @@ func ExportContracts() (string, error) {
 		//row.SetHeightCM(1)
 
 		row.WriteStruct(c, -1)
-		cid, _ := strconv.ParseInt(c.Contract_id, 10, 64)
-		row.Cells[1].SetInt64(cid)
+		//cid, _ := strconv.ParseInt(c.Contract_id, 10, 64)
+		//row.Cells[1].SetInt64(cid)
 	}
 
 	ts := strings.Replace(time.Now().Format(time.RFC1123), ":", "-", -1)
 
-	fn := "客户备份" + ts + ".xlsx"
+	fn := "客户备份 " + cat + ts + ".xlsx"
 	err = file.Save(path.Join(`files`, fn))
 	if err != nil {
 		return "", errors.New("保存备份文件失败: " + err.Error())
@@ -180,13 +189,23 @@ func ExportContracts() (string, error) {
 	}
 }
 
+var (
+	sheetName = ""
+	rowId     = 0
+)
+
 func ImportContracts() {
-	legacy := false
-	legacy, _ = beego.AppConfig.Bool("old_form")
-	beego.BeeLogger.Warn("Old format:%t", legacy)
+	orig_format := false
+	orig_format, _ = beego.AppConfig.Bool("orig_format")
+	beego.BeeLogger.Warn("Old format:%t", orig_format)
 	contracts, err := GetAllContracts()
 	if err == nil && len(contracts) > 0 {
 		return
+	}
+
+	var excelFileName = "./backup.xlsx"
+	if orig_format {
+		excelFileName = "./orig.xlsx"
 	}
 
 	xlFile, err := xlsx.OpenFile(excelFileName)
@@ -197,7 +216,8 @@ func ImportContracts() {
 	}
 	for sheetId, sheet := range xlFile.Sheets {
 		cnt := 0
-		rowId := 0
+		rowId = 0
+		sheetName = sheet.Name
 		for rowId = 1; rowId < len(sheet.Rows); rowId++ {
 			row := sheet.Rows[rowId]
 
@@ -210,7 +230,7 @@ func ImportContracts() {
 				break
 			}
 			c := &Contract{}
-			if !legacy {
+			if !orig_format {
 				row.ReadStruct(c)
 			} else {
 				c, err = readOldForm(row)
@@ -228,8 +248,12 @@ func ImportContracts() {
 					c.Create_date = time.Now().Format("2006-01-02")
 				}
 				c.Create_date = getDate(c.Create_date)
-				if err := AddContract(c); err != nil {
-					fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n", err.Error(), sheet.Name, rowId, *c)
+				err := AddContract(c)
+				if err != nil {
+					fmt.Printf("IMPORT_CONTRACT_FAILED:%s, sheet:%s row:%d. %+v\n\n", err.Error(), sheet.Name, rowId, *c)
+					c.Contract_id = c.Contract_id + "_dup"
+					err = AddContract(c)
+
 				} else {
 					cnt++
 					//fmt.Printf("IMPORT_CONTRACT_SUCCESS: sheet:%s row:%d. %+v\n", sheet.Name, rowId, *c)
@@ -261,7 +285,7 @@ func readOldForm(row *xlsx.Row) (*Contract, error) {
 	idx += 1
 
 	if c.Seq == "" && c.Contract_id == "" && c.Client_name == "" {
-		return nil, errors.New("Invalid contract")
+		return nil, errors.New("Invalid contract sheet[" + sheetName + "], row:" + string(rowId))
 	}
 
 	idx += 1 //备注
@@ -351,7 +375,7 @@ func getDate(str string) string {
 	str = strings.Replace(str, ".", "-", -1)
 	strs := strings.Split(str, "-")
 	if len(strs) < 3 { //YYYY-MM-DD
-		beego.BeeLogger.Warn("Invalid date format: %s", str)
+		beego.BeeLogger.Warn("Invalid date format: %s in sheet[%s], row:%d", str, sheetName, rowId)
 		return ""
 	}
 	if len(strs[1]) == 1 {

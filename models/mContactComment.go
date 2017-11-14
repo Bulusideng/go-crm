@@ -47,6 +47,18 @@ func AddComment(c *Comment) error {
 	return nil
 }
 
+func UpdateComment(c *Comment) error {
+	o := orm.NewOrm()
+	_, err := o.Update(c)
+	if err != nil {
+		beego.Error("Update Comment failed: ", err.Error(), *c)
+		return err
+	} else {
+		beego.Debug("Update Comment success: ", *c)
+	}
+	return nil
+}
+
 func DelComment(id int) error {
 	o := orm.NewOrm()
 	if _, err := o.Delete(&Comment{Id: id}); err != nil {

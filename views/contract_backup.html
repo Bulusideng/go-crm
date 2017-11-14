@@ -12,7 +12,7 @@
 	
 <section class="cid-qzSo5TIW7e mbr-fullscreen mbr-parallax-background" id="header15-6" data-rv-view="76">
     <div class="mbr-overlay" style="opacity: 0.5; background-color: rgb(7, 59, 76);"></div>
-    <div class="container align-right">
+    <div class="container align-left">
 		<div class="row">
 		    <div class="mbr-white col-lg-4 col-md-7 content-container">
 		        <h1 class="mbr-section-title mbr-bold pb-3 mbr-fonts-style display-1">
@@ -23,10 +23,22 @@
 		    <div class="form-container">
 		        <div class="media-container-column" data-form-type="formoid">
 		            <form class="mbr-form" action="/contract?op=backup" method="post">
+						<div data-for="cat">
+		                    <div class="form-group">
+								<h3 class="mbr-white col-lg-8 col-md-7 content-container" for="cat-header15-6">分类方式</h3>
+								<select class="form-control MgrWrite px-3" id="cat" name="cat" required="required">
+								<option value = "不分类">不分类</option>
+								<option value = "国家">按国家</option>
+								<option value = "项目">按项目</option>
+								<option value = "顾问">按顾问</option>
+								<option value = "文案">按文案</option>		
+								</select>								
+		                    </div>
+		                </div>
 		                <div data-for="pwd">
 		                    <div class="form-group">
-								<h3 class="mbr-white col-lg-8 col-md-7 content-container" for="pwd-header15-6">请输入当前密码</h3>
-		                        <input type="password" class="form-control px-3" name="pwd" data-form-field="Email" placeholder="密码" required="" id="pwd-header15-6">
+								<h3 class="mbr-white col-lg-8 col-md-7 content-container" for="pwd-header15-6">当前密码</h3>
+		                        <input type="password" class="form-control px-3" name="pwd" data-form-field="Pwd" placeholder="密码" required="" id="pwd-header15-6">
 		                    </div>
 		                </div>
 		                

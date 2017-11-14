@@ -41,6 +41,37 @@ type Contract struct {
 	Create_by       string `xlsx:"25"`         //录入人
 }
 
+func NewAllFilter() *Contract {
+	return &Contract{
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+		"ALL",
+	}
+}
+
 type ContractSelector struct {
 	Contract_id   FieldSelector
 	Seq           FieldSelector
@@ -48,6 +79,7 @@ type ContractSelector struct {
 	Client_tel    FieldSelector
 	Country       FieldSelector
 	Project_type  FieldSelector
+	Contract_date FieldSelector
 	Consulters    FieldSelector
 	Secretaries   FieldSelector
 	Create_date   FieldSelector
@@ -68,6 +100,7 @@ func NewContractSelectors() *ContractSelector {
 		Client_tel:    FieldSelector{"ALL", map[string]bool{}},
 		Country:       FieldSelector{"ALL", map[string]bool{}},
 		Project_type:  FieldSelector{"ALL", map[string]bool{}},
+		Contract_date: FieldSelector{"ALL", map[string]bool{}},
 		Consulters:    FieldSelector{"ALL", map[string]bool{}},
 		Secretaries:   FieldSelector{"ALL", map[string]bool{}},
 		Create_date:   FieldSelector{"ALL", map[string]bool{}},
@@ -78,11 +111,21 @@ func NewContractSelectors() *ContractSelector {
 }
 
 func AddContract(c *Contract) error {
+	if c.Consulters == "" {
+		c.Consulters = "空缺"
+	}
+	if c.Secretaries == "" {
+		c.Secretaries = "空缺"
+	}
+	if c.Zhuan_an_date == "" {
+		c.Zhuan_an_date = "空缺"
+	}
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
+
 	if err != nil {
-		p, err := GetContract(c.Contract_id)
-		if err == nil {
+		p, err1 := GetContract(c.Contract_id)
+		if err1 == nil {
 			beego.Error("Previous contract: ", *p)
 		}
 		//fmt.Printf("Add Contract failed:%s %+v\n", err.Error(), *c)
@@ -112,13 +155,21 @@ func GetContract(cid string) (c *Contract, err error) {
 	return c, err
 }
 
-func UpdateContract(c *Contract) (*ChangeSlice, error) {
+func UpdateContract(oldContractId string, c *Contract) (*ChangeSlice, error) {
 	o := orm.NewOrm()
-	old := *c
-	err := o.Read(&old)
+	old := &Contract{
+		Contract_id: oldContractId,
+	}
+	err := o.Read(old)
+	if c.Zhuan_an_date == "" {
+		c.Zhuan_an_date = "空缺"
+	}
 	changes := ChangeSlice{}
 	if err == nil {
 		if !reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
+			if c.Contract_id != old.Contract_id {
+				changes = append(changes, Change{Item: "合同号", Last: old.Contract_id, Current: c.Contract_id})
+			}
 			if c.Client_name != old.Client_name {
 				changes = append(changes, Change{Item: "客户姓名", Last: old.Client_name, Current: c.Client_name})
 			}
@@ -193,7 +244,19 @@ func UpdateContract(c *Contract) (*ChangeSlice, error) {
 			if c.Create_by != old.Create_by {
 				changes = append(changes, Change{Item: "录入人", Last: old.Create_by, Current: c.Create_by})
 			}
-			_, err = o.Update(c)
+			if old.Contract_id == c.Contract_id {
+				_, err = o.Update(c)
+			} else {
+				_, err = o.Insert(c)
+				if err == nil {
+					_, err = o.Delete(old)
+					comments, _ := GetComments(old.Contract_id) //Update contract id for comments
+					for _, comment := range comments {
+						comment.Contract_id = c.Contract_id
+						UpdateComment(comment)
+					}
+				}
+			}
 		}
 	}
 	if err != nil {

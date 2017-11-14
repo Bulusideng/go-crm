@@ -62,7 +62,7 @@ func (this *ContractController) Query() { //Filter contract
 			filters[kv[0]] = kv[1]
 		}
 	} else { //Filter in form
-		cfilter := &models.Contract{}
+		cfilter := models.NewAllFilter()
 		this.ParseForm(cfilter)
 		object := reflect.ValueOf(cfilter)
 		myref := object.Elem()
@@ -70,9 +70,9 @@ func (this *ContractController) Query() { //Filter contract
 		for i := 0; i < myref.NumField(); i++ {
 			field := myref.Field(i)
 			val := field.Interface().(string)
-			if val != "" && val != "ALL" { //Get valid filters
+			if val != "ALL" { //Get valid filters
 				filters[typeOfType.Field(i).Name] = val
-				//fmt.Printf("%d. %s %s = %v \n", i, typeOfType.Field(i).Name, field.Type(), field.Interface())
+				beego.BeeLogger.Debug("%d. %s %s = %v \n", i, typeOfType.Field(i).Name, field.Type(), field.Interface())
 			}
 		}
 	}
@@ -122,11 +122,15 @@ func (this *ContractController) Post() {
 			this.RedirectTo("/status", "添加成功!", contractURL, 302)
 		}
 	} else if op == "update" {
+		oldContractId := this.GetString("oldContractId", "")
+		if oldContractId == "" {
+			oldContractId = c.Contract_id
+		}
 		c.Consulters = strings.Join(this.Ctx.Request.Form["Consulters"], "&")
 		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
 		//fmt.Printf("New values: %+v\n", *c)
 		var changes *models.ChangeSlice
-		changes, err = models.UpdateContract(c)
+		changes, err = models.UpdateContract(oldContractId, c)
 		if err == nil {
 			txt := this.GetString("NewComment", "")
 			if len(txt) > 0 || len(*changes) > 0 {
@@ -152,7 +156,6 @@ func (this *ContractController) Post() {
 
 	} else if op == "backup" {
 		pwd := this.GetString("pwd", "")
-
 		if !curUser.ValidPwd(pwd) {
 			this.RedirectTo("/status", "密码错误!", "/contract/backup", 302)
 			return
@@ -162,9 +165,9 @@ func (this *ContractController) Post() {
 			return
 		}
 
+		cat := this.GetString("cat", "")
 		fn := ""
-
-		fn, err = models.ExportContracts()
+		fn, err = models.ExportContracts(cat)
 
 		if err != nil {
 			this.RedirectTo("/status", "备份失败:"+err.Error(), "/contract/backup", 302)
@@ -308,6 +311,7 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 		selectors.Secretaries.List[c.Secretaries] = true
 		selectors.Country.List[c.Country] = true
 		selectors.Project_type.List[c.Project_type] = true
+		selectors.Contract_date.List[c.Contract_date] = true
 		selectors.Zhuan_an_date.List[c.Zhuan_an_date] = true
 		selectors.Create_date.List[c.Create_date] = true
 		selectors.Create_by.List[c.Create_by] = true
@@ -333,6 +337,9 @@ func GetSelectors(contracts []*models.Contract, filters map[string]string) *mode
 	}
 	if key, ok := filters["Project_type"]; ok {
 		selectors.Project_type.CurSelected = key
+	}
+	if key, ok := filters["Contract_date"]; ok {
+		selectors.Contract_date.CurSelected = key
 	}
 	if key, ok := filters["Zhuan_an_date"]; ok {
 		selectors.Zhuan_an_date.CurSelected = key

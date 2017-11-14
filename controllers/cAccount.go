@@ -149,7 +149,7 @@ func (this *AccountController) Post() {
 		}
 		link := "/account/pwdreset?Uname=" + acct.Uname + "&Random=" + acct.Random
 		//TODO send link through email
-		if false {
+		if true {
 			beego.Debug("Host: ", this.Ctx.Request.Host)
 			this.RedirectTo("/status", "重置密码链接已发送至邮箱！", link, 302)
 		} else {
