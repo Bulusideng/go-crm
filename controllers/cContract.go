@@ -16,14 +16,21 @@ type ContractController struct {
 }
 
 func (this *ContractController) valid(curUser *models.Account) bool {
-	if !curUser.IsWorker() {
-		if curUser.IsAdmin() {
-			this.Redirect("/account", 302)
-			return false
-		} else {
-			this.Redirect("/login", 302)
-			return false
+
+	/*
+		if !curUser.IsWorker() {
+			if curUser.IsAdmin() {
+				this.Redirect("/account", 302)
+				return false
+			} else {
+				this.Redirect("/login", 302)
+				return false
+			}
 		}
+	*/
+	if curUser.IsGuest() {
+		this.Redirect("/login", 302)
+		return false
 	}
 	return true
 }
@@ -161,7 +168,7 @@ func (this *ContractController) Post() {
 			this.RedirectTo("/status", "密码错误!", "/contract/backup", 302)
 			return
 		}
-		if !curUser.IsManager() {
+		if !(curUser.IsManager() || curUser.IsAdmin()) {
 			this.RedirectTo("/status", "当前帐号没有备份权限!", "/contract", 302)
 			return
 		}
@@ -196,7 +203,8 @@ func (this *ContractController) Backup() {
 	if !this.valid(curUser) {
 		return
 	}
-	if !curUser.IsManager() {
+	if !(curUser.IsManager() || curUser.IsAdmin()) {
+		this.RedirectTo("/status", "没有权限！", "/account", 302)
 		return
 	}
 
@@ -215,7 +223,8 @@ func (this *ContractController) Add() {
 	if !this.valid(curUser) {
 		return
 	}
-	if !curUser.IsManager() {
+	if !(curUser.IsManager() || curUser.IsAdmin()) {
+		this.RedirectTo("/status", "没有权限！", "/account", 302)
 		return
 	}
 
@@ -266,7 +275,7 @@ func (this *ContractController) View() {
 	}
 	Perm := "Read"
 	//Manager, full write permission, consulter or secretary, partial wirte permission
-	if curUser.IsManager() {
+	if curUser.IsManager() || curUser.IsAdmin() {
 		Perm = "Write"
 	} else {
 		if strings.Contains(contract.Consulters, curUser.Cname) || strings.Contains(contract.Secretaries, curUser.Cname) {

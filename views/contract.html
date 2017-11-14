@@ -11,11 +11,11 @@
         </div>
     </nav>
 	<!--Disable form if not adim/manager or customer's worker-->
-    <div class="container" id="Permission" Perm={{.Perm}}>
+    <div class="container" id="mainform" Perm={{.Perm}}>
 	
 	</br><h3 class="text-center" >客户详情</h3>
 	
-	<form id="mainform" class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
+	<form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
 
 		{{$Team := .Team}}
 		{{$CurUser := .CurUser}}
@@ -43,7 +43,7 @@
 					<input type="text" class="form-control" id = "oldContractId" name="oldContractId" value={{.Contract_id}} readonly style="display:none">
 					<div class="form-group">
 		                <label>合同号:</label>
-						{{if eq $CurUser.Title "Manager"}}
+						{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
 						<input type="checkbox" class="MgrWrite" id="changeCid" />修改</br>
 						{{end}}
 		                <input type="text" class="form-control" id="Contract_id" name="Contract_id" value={{.Contract_id}} readonly>
@@ -64,7 +64,7 @@
 		            </div>
 					<div class="form-group">
 		                <label>国家:</label>
-						<input type="text" class="form-control MgrWrite" name="Country" required value={{.Country}}>
+						<input type="text" class="form-control MgrWrite" name="Country" required="required" value={{.Country}}>
 		            </div>
 					<div class="form-group">
 		                <label>项目:</label>
@@ -127,7 +127,7 @@
 							<option value = "N/A">N/A</option>
 							{{$cby := .Create_by}}
 							{{range $Team}}
-							<option value = {{.Uname}} {{if eq $cby .Uname}} selected="selected" {{end}}>{{.Cname}}[{{.Uname}}]</option>
+							<option value = {{.Uname}} {{if eq $cby .Uname}} class="MgrWrite" selected="selected" {{end}}>{{.Cname}}[{{.Uname}}]</option>
 							{{end}}
 							</select>
 			            </div>
@@ -222,8 +222,8 @@
 			</div>
 		</div>
 		<center>
-			<button type="submit" class="btn  btn-danger">更新</button>
-			{{if eq $CurUser.Title "Manager"}}
+			<button type="submit" id="btn_submit" class="btn  btn-danger">更新</button>
+			{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
 			<a class="btn  btn-danger" href="/contract/delete?cid={{.Contract.Contract_id}}" onclick="return doConfirm()">删除</a>
 			{{end}}
 			<a id="#toBotton" class="btn  btn-danger" href="/contract">返回</a>
@@ -274,13 +274,14 @@
 		if (!checked && curSecs.length>0){							
 			$(".secsCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Secretaries' value = '"+curSecs+"' checked=true name='Secretaries'/>"+curSecs);
 		}
-		
-		switch ($('#Permission').attr("Perm")){
+		switch ($('#mainform').attr("Perm")){
 			case "Read"://Disable all
-			$('#mainform').find('input, textarea, button, select').prop('readonly',true);
+			//readonly do not apply to select and checkbox
+			$('#mainform').find('input, textarea, button, select').prop('disabled',true);
+			$('#btn_submit').css("visibility","hidden");
 			break;
 			case "ParWrite":
-			$('.MgrWrite').prop('readonly',true);
+			$('.MgrWrite').prop('disabled',true);
 			break;
 		}
 	});
@@ -294,7 +295,7 @@
 	
 	function postSubmit()
 	{
-	//	$('#container').find('input, textarea, button, select').prop('disabled',false);	
+		$('#container').find('input, textarea, button, select').prop('disabled',false);	
 	}
 	
 	</script>

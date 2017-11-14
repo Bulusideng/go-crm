@@ -19,11 +19,24 @@ func (this *ConfigController) Get() {
 	this.Data["CurUser"] = curUser
 }
 
+func SetViewType(rich bool) {
+	RICH_VIEW = rich
+}
+
+var (
+	RICH_VIEW = true
+)
+
 func IsRichView() bool {
-	rich, err := beego.AppConfig.Bool("rich_view")
-	if err != nil {
-		rich = false
+	if false {
+		rich, err := beego.AppConfig.Bool("rich_view")
+		if err != nil {
+			rich = false
+		}
+		beego.Warn("Rich display: ", rich)
+		return rich
+	} else {
+		return RICH_VIEW
 	}
-	beego.Warn("Rich display: ", rich)
-	return rich
+
 }

@@ -35,7 +35,7 @@
 								</select>								
 		                    </div>
 		                </div>
-						<h3 class="mbr-white  col-lg-8 col-md-7 content-container">保留日志:<input name="withComments" type="checkbox" value=""/></h3>
+						<h3 class="mbr-white  col-lg-8 col-md-7 content-container">保留日志:<input name="withComments" type="checkbox"/></h3>
 						
 		                <div data-for="pwd">
 		                    <div class="form-group">
@@ -48,7 +48,7 @@
 							<button type="submit" class="btn btn-danger btn-form display-4" >确定</button> 
 					  		<a class="btn btn-danger btn-form display-4" href="/contract">返回</a>
 							{{if .FILE}}
-							{{if eq .CurUser.Title "Manager"}}
+							{{if or (eq .CurUser.Title "Manager") (eq .CurUser.Title "Admin")}}
 							<a class="btn btn-danger btn-form display-4" href={{.FILE}}>下载</a>
 							{{end}}
 							{{end}}

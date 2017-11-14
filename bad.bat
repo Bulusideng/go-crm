@@ -1,0 +1,1 @@
+go-crm.exe -rich_view=false

@@ -78,6 +78,11 @@ func (this *AccountController) PwdReset() {
 }
 
 func (this *AccountController) View() {
+	curUsr := GetCurAcct(this.Ctx)
+	if curUsr.IsGuest() {
+		this.Redirect("/login", 302)
+		return
+	}
 	this.TplName = "account.html"
 	this.Data["ViewAcct"] = true
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"flag"
+
+	"github.com/Bulusideng/go-crm/controllers"
 	"github.com/Bulusideng/go-crm/models"
 	"github.com/Bulusideng/go-crm/routers"
 	"github.com/astaxie/beego"
@@ -9,10 +12,14 @@ import (
 )
 
 func main() {
+	rich_view := flag.Bool("rich_view", false, "using rich display")
+	flag.Parse()
 
 	models.Register()
 	orm.Debug = false
 	orm.RunSyncdb("default", false, true)
+
+	controllers.SetViewType(*rich_view)
 	models.Init()
 	routers.Register()
 	//logs.SetLogger(logs.AdapterConsole, `{"level":3}`)
