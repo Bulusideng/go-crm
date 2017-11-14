@@ -6,6 +6,7 @@ import (
 
 	"math/rand"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -99,6 +100,7 @@ func (this *Account) SetPwd(pwd string) {
 }
 
 func (this *Account) ValidPwd(pwd string) bool {
+	beego.Debug("pwd:", this.GetPwd(), " VS ", pwd)
 	return this.GetPwd() == pwd
 }
 

@@ -11,11 +11,11 @@
         </div>
     </nav>
 	<!--Disable form if not adim/manager or customer's worker-->
-    <div id="container" class="container" Perm={{.Perm}}>
+    <div class="container" id="Permission" Perm={{.Perm}}>
 	
 	</br><h3 class="text-center" >客户详情</h3>
 	
-	<form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
+	<form id="mainform" class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
 
 		{{$Team := .Team}}
 		{{$CurUser := .CurUser}}
@@ -101,8 +101,7 @@
 						        </div>
 						    </div>
 						</div>
-						
-						
+
 						<div class="panel-group" id="collapse_sec" role="tablist"  
 						    aria-multiselectable="true">
 						    <div class="panel panel-info">
@@ -276,14 +275,13 @@
 			$(".secsCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Secretaries' value = '"+curSecs+"' checked=true name='Secretaries'/>"+curSecs);
 		}
 		
-		
-		switch ($('#container').prop('Perm')){
+		switch ($('#Permission').attr("Perm")){
 			case "Read"://Disable all
-			$('#container').find('input, textarea, button, select').prop('readonly',true);
+			$('#mainform').find('input, textarea, button, select').prop('readonly',true);
 			break;
 			case "ParWrite":
 			$('.MgrWrite').prop('readonly',true);
-			break;	
+			break;
 		}
 	});
 	$("#changeCid").change(function() {
@@ -296,7 +294,7 @@
 	
 	function postSubmit()
 	{
-		$('#container').find('input, textarea, button, select').prop('disabled',false);	
+	//	$('#container').find('input, textarea, button, select').prop('disabled',false);	
 	}
 	
 	</script>

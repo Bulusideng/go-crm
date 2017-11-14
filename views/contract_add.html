@@ -26,7 +26,7 @@
             </div>
 			<div class="form-group">
                 <label>客户电话:</label>
-                <input type="text" class="form-control" name="Client_tel" required>
+                <input type="tel" class="form-control" name="Client_tel" required>
             </div>
 			<div class="form-group">
                 <label>国家:</label>
@@ -38,22 +38,36 @@
             </div>
 			<div class="form-group">
                 <label>顾问:</label>
-				<select class="form-control" name="Consulter" required="required">
+				<select class="form-control" name="Consulters" required="required">
 				<option value = "N/A">N/A</option>
 				{{range .Team}}
-				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
+				<option value = {{.Cname}}>{{.Uname}}: {{.Cname}}</option>
 				{{end}}
 				</select>
             </div>
 			<div class="form-group">
-                <label>文案:</label>
-				<select class="form-control" name="Secretary" required="required">
-				<option value = "N/A">N/A</option>
-				{{range .Team}}
-				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
-				{{end}}
-				</select>
+				<div class="panel-group" id="collapse_sec" role="tablist" aria-multiselectable="true">
+				    <div class="panel panel-info">
+				        <div class="panel-heading">  
+			                <a id="cons_id" data-toggle="collapse" data-parent="#collapse_sec" href="#collapse_sec1"
+							aria-expanded="true" aria-controls="collapse_sec1">文案: <div id="curSecs">{{.Secretaries}}</div></a>
+				        </div>
+				        <div id="collapse_sec1" class="panel-collapse collapse" role="collapse_sec1">  
+				            <div class="panel-body secsCheckGroup">
+								{{range .Team}}
+								<input type="checkbox" class="Secretaries" name="Secretaries" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
+								{{end}}
+				            </div>
+				        </div>
+				    </div>
+				</div>
             </div>
+			
+			<div class="form-group">
+                <label>签约日期:</label>
+                <input type="date" id='cDate' class="form-control" name="Contract_date" required>
+            </div>	
+         
 			<div class="form-group">
                 <label>转案日期:</label>
                 <input type="date" id='zaDate' class="form-control" name="Zhuan_an_date">
@@ -74,7 +88,8 @@
     </div>
 	<script>
 	window.onload = function(){
-		document.getElementById('zaDate').valueAsDate = new Date();
+		//document.getElementById('cDate').valueAsDate = new Date();
+		//document.getElementById('zaDate').valueAsDate = new Date();
 	};
 	</script>
   </body>

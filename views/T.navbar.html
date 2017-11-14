@@ -4,7 +4,10 @@
     <ul class="nav nav-pills pull-right">
 	{{if .CurUser }}
 		{{if (eq .CurUser.Title "Admin")}}
-			<li {{if .SysConfig}} class="active"{{end}}><a href="/config">系统配置</a></li>
+			<!--<li {{if .SysConfig}} class="active"{{end}}><a href="/config">系统配置</a></li>-->
+			<li {{if .MgrClient}} class="active"{{end}}><a href="/contract">客户管理</a></li>
+			<li {{if .AddClient}} class="active" {{end}}><a href="/contract/add">添加客户</a></li>
+			<li {{if .BakClient}} class="active" {{end}}><a href="/contract/backup">备份客户</a></li>
 			<li {{if .MgrAcct}} class="active"{{end}}><a href="/account">账户管理</a></li>	
 		{{else if  (eq .CurUser.Title "Manager")}}
 			<li {{if .MgrClient}} class="active"{{end}}><a href="/contract">客户管理</a></li>

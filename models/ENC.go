@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	DO_ENC         = true
-	ENC_TO_HEX_STR = true
+	DO_ENC         = false
+	ENC_TO_HEX_STR = false
 	ENC            = AesEncrypt{"0123456789012345"}
 )
 

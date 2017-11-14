@@ -117,6 +117,7 @@ func (this *ContractController) Post() {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
 		c.Create_by = curUser.Uname
 		c.Create_date = time.Now().Format(time.RFC822)
+		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
 		err = models.AddContract(c)
 		if err == nil {
 			this.RedirectTo("/status", "添加成功!", contractURL, 302)
