@@ -60,7 +60,7 @@
 		            </div>
 					<div class="form-group">
 		                <label>客户电话:</label>
-		                <input type="text" class="form-control MgrWrite" name="Client_tel" value={{.Client_tel}}>
+		                <input type="tel" class="form-control MgrWrite" name="Client_tel" value={{.Client_tel}}>
 		            </div>
 					<div class="form-group">
 		                <label>国家:</label>
@@ -236,6 +236,7 @@
     </div>
 
   </body>
+ {{template "sscript"}}
 	<script>
 	$(document).ready(function () {
 		var checked = false;
@@ -271,10 +272,9 @@
 				}
 			}
 		});
-		if (!checked && curSecs.length>0){							
+		if (!checked && curSecs.length>0){
 			$(".secsCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Secretaries' value = '"+curSecs+"' checked=true name='Secretaries'/>"+curSecs);
 		}
-		/*
 		switch ($('#mainform').attr("Perm")){
 			case "Read"://Disable all
 			//readonly do not apply to select and checkbox
@@ -285,8 +285,8 @@
 			$('.MgrWrite').prop('disabled',true);
 			break;
 		}
-		*/
 	});
+	
 	$("#changeCid").change(function() {
 		if (!this.checked){
 			$("#Contract_id").val($("#oldContractId").val())	
@@ -298,6 +298,15 @@
 	function postSubmit()
 	{
 		$('#container').find('input, textarea, button, select').prop('disabled',false);	
+	}
+	
+	
+	function doConfirm(){
+		if (confirm('确认?')) {
+	          return true;
+	      } else {
+	          return false;
+	      }
 	}
 	
 	</script>

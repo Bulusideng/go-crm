@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 {{if .RICH}}
-{{template "mheader"}}
+{{template "rheader"}}
 {{else}}
 {{template "header"}}
 {{end}}
@@ -20,11 +20,7 @@
         <form method="post" action="/account?op=register" onsubmit="return checkRegist()" enctype="multipart/form-data">
             <div class="form-group">
                 <label>*用户名:</label>
-                <!--
 				<input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required">
-				-->
-				<input type="text" placeholder="5-20位 数字，字母，下划线" class="form-control" name="Uname" required="required">
-				
             </div>
 			<div class="form-group">
                 <label>*姓名:</label>
@@ -71,6 +67,7 @@
         </form>
     </div>
 	
+	<script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
 	<script>
 	
 	function checkRegist()

@@ -113,7 +113,7 @@ func (this *ContractController) Post() {
 	}
 
 	op := this.Input().Get("op")
-	beego.Debug("op: [", op, "] on: ", *c)
+	beego.Debug(curUser.Cname, " op: [", op, "] on: ", *c)
 
 	for k, v := range this.Ctx.Request.Form {
 		beego.Debug("Param ", k, ":", v)

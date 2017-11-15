@@ -136,7 +136,7 @@ func (this *AccountController) Post() {
 		//fmt.Printf("p:[%s], rep:[%s]\n", acct.Pwd, RePwd)
 		if RePwd == acct.Pwd {
 			if err = acct.Register(); err == nil {
-				this.RedirectTo("/status", "Register success, please wait manager approve", "/account/register", 302)
+				this.RedirectTo("/status", "Register success, please wait manager approve", "/login", 302)
 				return
 			} else {
 				this.RedirectTo("/status", "Register failed: 用户名已存在", "/account/register", 302)

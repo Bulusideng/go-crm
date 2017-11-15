@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	rich_view := flag.Bool("rich_view", false, "using rich display")
+	rich_view := flag.Bool("rich_view", true, "using rich display")
 	flag.Parse()
 
 	models.Register()
@@ -24,6 +24,5 @@ func main() {
 	routers.Register()
 	//logs.SetLogger(logs.AdapterConsole, `{"level":3}`)
 	logs.SetLogger(logs.AdapterFile, `{"filename":"log.log","level":7}`)
-
 	beego.Run()
 }

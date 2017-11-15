@@ -21,7 +21,7 @@ func (c *LoginController) Get() {
 	if isExit || failed {
 		c.Ctx.SetCookie("uname", "", -1, "/")
 		c.Ctx.SetCookie("title", "", -1, "/")
-		fmt.Printf("Clear cookie\n")
+		beego.Debug("Clear cookie...")
 	}
 	if isExit {
 		c.Redirect("/", 302)
@@ -38,7 +38,7 @@ func (c *LoginController) Post() {
 	uname := c.Input().Get("uname")
 	pwd := c.Input().Get("pwd")
 
-	beego.Debug("Login ", uname, ":", pwd)
+	//beego.Debug("Login ", uname, ":", pwd)
 
 	autoLogin := c.Input().Get("autoLogin") == "on"
 
@@ -50,12 +50,10 @@ func (c *LoginController) Post() {
 		}
 		maxAge = 1<<31 - 1
 
-		fmt.Printf("Uname:%s, %s\n", uname, []byte(uname))
-
 		c.Ctx.SetCookie("uname", uname, maxAge, "/")
 		c.Ctx.SetCookie("pwd", usr.Pwd, maxAge, "/")
 		c.Ctx.SetCookie("title", usr.Title, maxAge, "/")
-		beego.Debug("Login success, uname:", uname, " Pwd: ", pwd)
+		beego.Debug("Login success, uname:", uname)
 		models.UpdateErrCnt(uname, -1000) //Clear error cnt
 
 		c.Ctx.ResponseWriter.ResponseWriter.Header().Set("Accept-Charset", "GBK,utf-8;q=0.7,*;q=0.3")
