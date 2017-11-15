@@ -274,6 +274,7 @@
 		if (!checked && curSecs.length>0){							
 			$(".secsCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Secretaries' value = '"+curSecs+"' checked=true name='Secretaries'/>"+curSecs);
 		}
+		/*
 		switch ($('#mainform').attr("Perm")){
 			case "Read"://Disable all
 			//readonly do not apply to select and checkbox
@@ -284,6 +285,7 @@
 			$('.MgrWrite').prop('disabled',true);
 			break;
 		}
+		*/
 	});
 	$("#changeCid").change(function() {
 		if (!this.checked){

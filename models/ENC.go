@@ -14,19 +14,19 @@ var (
 )
 
 func Test(str string) {
+	fmt.Println("Encrypt:", str)
 	aesEnc := AesEncrypt{"1234567890123456"}
 	arrEncrypt, err := aesEnc.Encrypt(str)
 	if err != nil {
 		fmt.Println(arrEncrypt)
 		return
 	}
-	fmt.Println("Enced:", arrEncrypt)
 	strMsg, err := aesEnc.Decrypt(arrEncrypt)
 	if err != nil {
 		fmt.Println(arrEncrypt)
 		return
 	}
-	fmt.Println(strMsg)
+	fmt.Println("Decrypted:", strMsg)
 }
 
 type AesEncrypt struct {
@@ -61,7 +61,6 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 	}
 	aesEncrypter := cipher.NewCFBEncrypter(aesBlockEncrypter, iv)
 	aesEncrypter.XORKeyStream(encrypted, []byte(strMesg))
-
 	if ENC_TO_HEX_STR {
 		encstr := ""
 		for _, v := range encrypted {
@@ -89,13 +88,12 @@ func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
 	if ENC_TO_HEX_STR {
 		var b int64
 		for i := 0; i < len(srcStr)-1; i += 2 {
-			b, _ = strconv.ParseInt(srcStr[i:i+2], 16, 8)
+			b, _ = strconv.ParseInt(srcStr[i:i+2], 16, 16)
 			src = append(src, byte(b))
 		}
 	} else {
 		src = []byte(srcStr)
 	}
-
 	key := this.getKey()
 	var iv = []byte(key)[:aes.BlockSize]
 	decrypted := make([]byte, len(src))

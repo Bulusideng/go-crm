@@ -24,5 +24,6 @@ func main() {
 	routers.Register()
 	//logs.SetLogger(logs.AdapterConsole, `{"level":3}`)
 	logs.SetLogger(logs.AdapterFile, `{"filename":"log.log","level":7}`)
+
 	beego.Run()
 }

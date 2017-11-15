@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
@@ -155,45 +156,68 @@ func GetContract(cid string) (c *Contract, err error) {
 	return c, err
 }
 
-func UpdateContract(oldContractId string, c *Contract) (*ChangeSlice, error) {
+func UpdateContract(curUser *Account, oldContractId string, c *Contract) (*ChangeSlice, error) {
+	perm := "read"
+	if curUser.IsManager() || curUser.IsAdmin() {
+		perm = "write"
+	}
+
 	o := orm.NewOrm()
 	old := &Contract{
 		Contract_id: oldContractId,
 	}
 	err := o.Read(old)
+
+	if perm == "read" {
+		if strings.Contains(old.Secretaries, curUser.Cname) || strings.Contains(old.Consulters, curUser.Cname) {
+			perm = "parWrite"
+		} else {
+			return nil, errors.New("当前用户没有权限修改该合同！")
+		}
+	}
+
 	if c.Zhuan_an_date == "" {
 		c.Zhuan_an_date = "空缺"
 	}
 	changes := ChangeSlice{}
 	if err == nil {
 		if !reflect.DeepEqual(*c, old) { //compae and update reflect.DeepEqual()
-			if c.Contract_id != old.Contract_id {
-				changes = append(changes, Change{Item: "合同号", Last: old.Contract_id, Current: c.Contract_id})
+			if perm == "write" {
+				if c.Contract_id != old.Contract_id {
+					changes = append(changes, Change{Item: "合同号", Last: old.Contract_id, Current: c.Contract_id})
+				}
+				if c.Client_name != old.Client_name {
+					changes = append(changes, Change{Item: "客户姓名", Last: old.Client_name, Current: c.Client_name})
+				}
+				if c.Client_tel != old.Client_tel {
+					changes = append(changes, Change{Item: "客户电话", Last: old.Client_tel, Current: c.Client_tel})
+				}
+				if c.Country != old.Country {
+					changes = append(changes, Change{Item: "国家", Last: old.Country, Current: c.Country})
+				}
+				if c.Project_type != old.Project_type {
+					changes = append(changes, Change{Item: "项目", Last: old.Project_type, Current: c.Project_type})
+				}
+				if c.Contract_date != old.Contract_date {
+					changes = append(changes, Change{Item: "签约日期", Last: old.Contract_date, Current: c.Contract_date})
+				}
+				if c.Consulters != old.Consulters {
+					changes = append(changes, Change{Item: "顾问", Last: old.Consulters, Current: c.Consulters})
+				}
+				if c.Secretaries != old.Secretaries {
+					changes = append(changes, Change{Item: "文案", Last: old.Secretaries, Current: c.Secretaries})
+				}
+				if c.Zhuan_an_date != old.Zhuan_an_date {
+					changes = append(changes, Change{Item: "转案日期", Last: old.Zhuan_an_date, Current: c.Zhuan_an_date})
+				}
+				if c.Create_date != old.Create_date {
+					changes = append(changes, Change{Item: "录入日期", Last: old.Create_date, Current: c.Create_date})
+				}
+				if c.Create_by != old.Create_by {
+					changes = append(changes, Change{Item: "录入人", Last: old.Create_by, Current: c.Create_by})
+				}
 			}
-			if c.Client_name != old.Client_name {
-				changes = append(changes, Change{Item: "客户姓名", Last: old.Client_name, Current: c.Client_name})
-			}
-			if c.Client_tel != old.Client_tel {
-				changes = append(changes, Change{Item: "客户电话", Last: old.Client_tel, Current: c.Client_tel})
-			}
-			if c.Country != old.Country {
-				changes = append(changes, Change{Item: "国家", Last: old.Country, Current: c.Country})
-			}
-			if c.Project_type != old.Project_type {
-				changes = append(changes, Change{Item: "项目", Last: old.Project_type, Current: c.Project_type})
-			}
-			if c.Contract_date != old.Contract_date {
-				changes = append(changes, Change{Item: "签约日期", Last: old.Contract_date, Current: c.Contract_date})
-			}
-			if c.Consulters != old.Consulters {
-				changes = append(changes, Change{Item: "顾问", Last: old.Consulters, Current: c.Consulters})
-			}
-			if c.Secretaries != old.Secretaries {
-				changes = append(changes, Change{Item: "文案", Last: old.Secretaries, Current: c.Secretaries})
-			}
-			if c.Zhuan_an_date != old.Zhuan_an_date {
-				changes = append(changes, Change{Item: "转案日期", Last: old.Zhuan_an_date, Current: c.Zhuan_an_date})
-			}
+
 			if c.Current_state != old.Current_state {
 				changes = append(changes, Change{Item: "状态", Last: old.Current_state, Current: c.Current_state})
 			}
@@ -203,7 +227,6 @@ func UpdateContract(oldContractId string, c *Contract) (*ChangeSlice, error) {
 			if c.Danganhao_date != old.Danganhao_date {
 				changes = append(changes, Change{Item: "档案号", Last: old.Danganhao_date, Current: c.Danganhao_date})
 			}
-
 			if c.Buliao_date != old.Buliao_date {
 				changes = append(changes, Change{Item: "补料", Last: old.Buliao_date, Current: c.Buliao_date})
 			}
@@ -238,12 +261,7 @@ func UpdateContract(oldContractId string, c *Contract) (*ChangeSlice, error) {
 			if c.Fail_date != old.Fail_date {
 				changes = append(changes, Change{Item: "拒签", Last: old.Fail_date, Current: c.Fail_date})
 			}
-			if c.Create_date != old.Create_date {
-				changes = append(changes, Change{Item: "录入日期", Last: old.Create_date, Current: c.Create_date})
-			}
-			if c.Create_by != old.Create_by {
-				changes = append(changes, Change{Item: "录入人", Last: old.Create_by, Current: c.Create_by})
-			}
+
 			if old.Contract_id == c.Contract_id {
 				_, err = o.Update(c)
 			} else {

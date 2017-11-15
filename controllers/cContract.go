@@ -138,7 +138,7 @@ func (this *ContractController) Post() {
 		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
 		//fmt.Printf("New values: %+v\n", *c)
 		var changes *models.ChangeSlice
-		changes, err = models.UpdateContract(oldContractId, c)
+		changes, err = models.UpdateContract(curUser, oldContractId, c)
 		if err == nil {
 			txt := this.GetString("NewComment", "")
 			if len(txt) > 0 || len(*changes) > 0 {
@@ -193,7 +193,7 @@ func (this *ContractController) Post() {
 
 	if err != nil {
 		beego.Error(err)
-		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract/backup", 302)
+		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
 	}
 
 }
