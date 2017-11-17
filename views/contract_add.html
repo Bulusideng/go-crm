@@ -1,93 +1,171 @@
 <!DOCTYPE html>
 <html>
-{{if .RICH}}
-{{template "rheader"}}
-{{else}}
-{{template "header"}}
-{{end}}
-  <title>客户管理  - 添加客户</title>  
-  </head>
 
-  <body class="mbr-white cid-qzO6FIBSpg mbr-fullscreen mbr-parallax-background" id="header2-2" data-rv-view="38">
+{{template "header"}}
+
+<title>客户管理  - 添加客户</title>  
+	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		display:flex;  /*Center*/
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+	
+	h2,	label {
+	  color: #FFF;
+	}
+	
+	</style>
+</head>
+
+<body>
     <div class="container">
-        </br><h3 class="text-center" >添加客户</h3>
-        <form method="post" action="/contract?op=add"  enctype="multipart/form-data">
-            <div class="form-group">
-                <label>合同号:</label>
-                <input type="number" class="form-control" name="Contract_id" required min="1" max="99999999999999999999">
+        <div class="row">
+            <div class="col-md-3">
             </div>
-            <div class="form-group">
-                <label>序号:</label>
-                <input type="number" class="form-control" name="Seq" required min="1" max="4294967295">
+            <div class="col-md-6">
+                <h2 class="text-center" >添加客户</h2></br>
+                <div class="row">
+                    <form method="post" action="/contract?op=add"  enctype="multipart/form-data">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>合同号:</label>
+                                <input type="number" class="form-control" name="Contract_id" required min="1" max="99999999999999999999">
+                            </div>
+                            <div class="form-group">
+                                <label>序号:</label>
+                                <input type="number" class="form-control" name="Seq" required min="1" max="4294967295">
+                            </div>
+                            <div class="form-group">
+                                <label>客户姓名:</label>
+                                <input type="text" class="form-control" name="Client_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>客户电话:</label>
+                                <input type="tel" class="form-control" name="Client_tel" required>
+                            </div>
+                            <div class="form-group">
+                                <label>国家:</label>
+                                <input type="text" class="form-control" name="Country" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>项目:</label>
+                                <input type="text" class="form-control" name="Project_type" required>
+                            </div>
+                            <div class="form-group">
+                                <label>顾问:</label>
+                                <select class="form-control" name="Consulters" required="required">
+                                <option value = "N/A">N/A</option>
+                                {{range .Team}}
+                                <option value = {{.Cname}}>{{.Uname}}: {{.Cname}}</option>
+                                {{end}}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>文案:</label>
+                                <a id="modal-secretary" href="#modal-container-secretary" role="button" data-toggle="modal">
+                                    <input type="text" class="form-control MgrWrite" id="Secretaries" name="Secretaries" value="选择文案">
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                <label>签约日期:</label>
+                                <input type="date" id='cDate' class="form-control" name="Contract_date" required>
+                            </div>	
+                            <div class="form-group">
+                                <label>状态:</label>
+                                <input type="text" class="form-control" name="Current_state">
+                            </div>
+                            <div style="display:none" class="form-group">
+                                <label>转案日期:</label>
+                                <input type="date" id='zaDate' class="form-control" name="Zhuan_an_date">
+                            </div>
+                            <div style="display:none" class="form-group">
+                                <label>附件:</label>
+                                <input type="file" class="form-control" name="attachment">
+                            </div>
+                        </div>
+                    
+                        <center>
+                            <button type="submit" class="btn btn-danger" >确定</button>
+                            <a class="btn btn-danger" href="/contract">取消</a>
+                        </center>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label>客户姓名:</label>
-                <input type="text" class="form-control" name="Client_name" required>
+            <div class="col-md-3">
             </div>
-			<div class="form-group">
-                <label>客户电话:</label>
-                <input type="tel" class="form-control" name="Client_tel" required>
-            </div>
-			<div class="form-group">
-                <label>国家:</label>
-				<input type="text" class="form-control" name="Country" required>
-            </div>
-			<div class="form-group">
-                <label>项目:</label>
-                <input type="text" class="form-control" name="Project_type" required>
-            </div>
-			<div class="form-group">
-                <label>顾问:</label>
-				<select class="form-control" name="Consulters" required="required">
-				<option value = "N/A">N/A</option>
-				{{range .Team}}
-				<option value = {{.Cname}}>{{.Uname}}: {{.Cname}}</option>
-				{{end}}
-				</select>
-            </div>
-			<div class="form-group mbr-black">
-				<div class="panel-group" id="collapse_sec" role="tablist" aria-multiselectable="true">
-				    <div class="panel panel-info">
-				        <div class="panel-heading">  
-			                <a id="cons_id" data-toggle="collapse" data-parent="#collapse_sec" href="#collapse_sec1"
-							aria-expanded="true" aria-controls="collapse_sec1">文案: <div id="curSecs">{{.Secretaries}}</div></a>
-				        </div>
-				        <div id="collapse_sec1" class="panel-collapse collapse" role="collapse_sec1">  
-				            <div class="panel-body secsCheckGroup">
-								{{range .Team}}
-								<input type="checkbox" class="Secretaries" name="Secretaries" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
-								{{end}}
-				            </div>
-				        </div>
-				    </div>
-				</div>
-            </div>
-			
-			<div class="form-group">
-                <label>签约日期:</label>
-                <input type="date" id='cDate' class="form-control" name="Contract_date" required>
-            </div>	
-         
-			<div class="form-group">
-                <label>转案日期:</label>
-                <input type="date" id='zaDate' class="form-control" name="Zhuan_an_date">
-            </div>
-			<div class="form-group">
-                <label>状态:</label>
-                <input type="text" class="form-control" name="Current_state">
-            </div>
-            <div style="display:none" class="form-group">
-                <label>附件:</label>
-                <input type="file" class="form-control" name="attachment">
-            </div>
-			<center>
-            	<button type="submit" class="btn btn-danger" >确定</button>
-				<a class="btn btn-danger" href="/contract">取消</a>
-			</center>
-        </form>
+        </div>
     </div>
-  </body>
-	<script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
-	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+    
+    <div class="modal fade" id="modal-container-secretary" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        取消
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        用户列表
+                    </h4>
+                </div>
+                <div class="modal-body" id="secsCheckGroup">
+                {{range .Team}}
+                <input type="checkbox" class="TeamSecretary" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
+                {{end}} 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消
+                    </button> 
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveSecretary">
+                        保存
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+</body>
+<script>
+    $("#saveSecretary").click(function(){
+        $("#Secretaries").val("");
+        $(".TeamSecretary").each(function(idx, elem){
+            if ($(elem).prop('checked')){
+                if ($("#Secretaries").val().length == 0){
+                    $("#Secretaries").val($(elem).val());
+                }else{
+                    $("#Secretaries").val($("#Secretaries").val() + "&" + $(elem).val());
+                }
+            }
+        });
+        return true;
+    });
+</script>
+	{{template "script"}}
 </html>
 

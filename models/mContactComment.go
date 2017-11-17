@@ -73,7 +73,7 @@ func GetComments(contract_id string) ([]*Comment, error) {
 	comments := make([]*Comment, 0)
 	qs := o.QueryTable("Comment")
 	if contract_id != "" {
-		qs = qs.Limit(-1).Filter("contract_id", contract_id)
+		qs = qs.Limit(-1).Filter("contract_id", contract_id).OrderBy("-id")
 	}
 	_, err := qs.All(&comments)
 	return comments, err

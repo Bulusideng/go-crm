@@ -1,19 +1,47 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title> 账户管理 </title>  
+  <title> 账户管理 </title>
+	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		display:flex;  /*Center*/
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+    
+    h3{
+	  color: #FFF;
+	}
+	
+	</style>
   </head>
 
   <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            {{template "navbar" .}}
-        </div>
-    </div>
-	<div class="container-fluid">
+	<div class="container">
+        
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped table-hover">
+            <h3 class="text-center" >账户管理</h3>
+				<table class="table table-striped table-hover table-bordered">
 					<thead>
 						<tr class="warning">
 							<th>
@@ -55,6 +83,7 @@
 						{{if ne .Status "Active"}}
 						class="warning"
 						{{end}}
+						style="color:#7d42f4"
 						>
 							<td>
 								{{.Uname}}
@@ -108,6 +137,7 @@
 						{{end}}
 					</tbody>
 				</table>
+                <center><a class="btn  btn-danger" href="/contract">返回</a></center>
 			</div>
 		</div>
 	</div>

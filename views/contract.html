@@ -2,253 +2,307 @@
 <html>
  {{template "header"}}
   <title> 客户管理 - 更新客户</title>  
+  	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+	
+	li, h3,	label{
+	  color: #FFF;
+	}
+    
+    
+    a.disabled {
+       pointer-events: none;
+       cursor: default;
+    }
+	
+	</style>
   </head>
-  <body >
-
- <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            {{template "navbar" .}}
-        </div>
-    </nav>
+  
+  
+<body >    
 	<!--Disable form if not adim/manager or customer's worker-->
     <div class="container" id="mainform" Perm={{.Perm}}>
-	
-	</br><h3 class="text-center" >客户详情</h3>
-	
-	<form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
+        <h3 class="text-center" >客户详情</h3>
+        <form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
+            {{$Team := .Team}}
+            {{$CurUser := .CurUser}}
+                <div class="row">
+                    {{with .Contract}}
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id = "oldContractId" name="oldContractId" value={{.Contract_id}} readonly style="display:none">
+                        <div class="form-group">
+                            <label>合同号:</label>
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            </label><input type="checkbox" class="MgrWrite" id="changeCid" /><label>修改</label>
+                            {{end}}
+                            <input type="text" class="form-control" id="Contract_id" name="Contract_id" value={{.Contract_id}} readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>序号:</label>
+                            <input type="number" class="form-control MgrWrite" name="Seq" 
+                            value={{.Seq}}>
+                        </div>
+                        <div class="form-group">
+                            <label>客户姓名:</label>
+                            <input type="text" class="form-control MgrWrite" name="Client_name" 
+                            value={{.Client_name}}>
+                        </div>
+                        <div class="form-group">
+                            <label>客户电话:</label>
+                            <input type="tel" class="form-control MgrWrite" name="Client_tel" value={{.Client_tel}}>
+                        </div>
+                        <div class="form-group">
+                            <label>国家:</label>
+                            <input type="text" class="form-control MgrWrite" name="Country" required="required" value={{.Country}}>
+                        </div>
+                        <div class="form-group">
+                            <label>项目:</label>
+                            <input type="text" class="form-control MgrWrite" name="Project_type" value={{.Project_type}}>
+                        </div>
+                        <div class="form-group">
+                            <label>签约日期:</label>
+                            <input type="date" class="form-control MgrWrite" name="Contract_date" value={{.Contract_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>状态:</label>
+                            <textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"  name="Current_state">{{.Current_state}}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            
 
-		{{$Team := .Team}}
-		{{$CurUser := .CurUser}}
-		
-		<div class="tabbable" id="tabs-728566">
-			<ul class="nav nav-pills">
-			
-				<li class="active">
-					<a href="#panel-995855" data-toggle="tab">合同信息</a>
-				</li>
-				<li>
-					<a href="#panel-309866" data-toggle="tab">客户分配</a>
-				</li>
-				<li>
-					<a href="#panel-309877" data-toggle="tab">节点日期</a>
-				</li>
-				<li>
-					<a href="#panel-309888" data-toggle="tab">更新记录</a>
-				</li>
-			</ul>
-			<div class="tab-content">
-				{{with .Contract}}
-				<div class="tab-pane active" id="panel-995855">
-					<p>
-					<input type="text" class="form-control" id = "oldContractId" name="oldContractId" value={{.Contract_id}} readonly style="display:none">
-					<div class="form-group">
-		                <label>合同号:</label>
-						{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
-						<input type="checkbox" class="MgrWrite" id="changeCid" />修改</br>
-						{{end}}
-		                <input type="text" class="form-control" id="Contract_id" name="Contract_id" value={{.Contract_id}} readonly>
-		            </div>
-		            <div class="form-group">
-		                <label>序号:</label>
-		                <input type="number" class="form-control MgrWrite" name="Seq" 
-						value={{.Seq}}>
-		            </div>
-		            <div class="form-group">
-		                <label>客户姓名:</label>
-		                <input type="text" class="form-control MgrWrite" name="Client_name" 
-						value={{.Client_name}}>
-		            </div>
-					<div class="form-group">
-		                <label>客户电话:</label>
-		                <input type="tel" class="form-control MgrWrite" name="Client_tel" value={{.Client_tel}}>
-		            </div>
-					<div class="form-group">
-		                <label>国家:</label>
-						<input type="text" class="form-control MgrWrite" name="Country" required="required" value={{.Country}}>
-		            </div>
-					<div class="form-group">
-		                <label>项目:</label>
-		                <input type="text" class="form-control MgrWrite" name="Project_type" value={{.Project_type}}>
-		            </div>
-					<div class="form-group">
-		                <label>签约日期:</label>
-		                <input type="date" class="form-control MgrWrite" name="Contract_date" value={{.Contract_date}}>
-		            </div>
-	               	<div class="form-group">
-		            	<label>状态:</label>
-						<textarea class="form-control" style="height:auto;overflow-x:visible;overflow-y:visible;"  name="Current_state">{{.Current_state}}</textarea>
-		            </div>  
-					</p>
-				</div>
-				<div class="tab-pane" id="panel-309866">
-					<p>
-						<div class="panel-group" id="collapse_cons" role="tablist"  
-						    aria-multiselectable="true">
-						    <div class="panel panel-info">
-						        <div class="panel-heading">  
-						            <h5 class="panel-title">  
-						                <a id="cons_id" data-toggle="collapse" data-parent="#collapse_cons" href="#collapse_cons1"
-										aria-expanded="true" aria-controls="collapse_cons1">顾问: <div id="curCons">{{.Consulters}}</div></a>
-										
-						            </h5>
-						        </div>  
-						        <div id="collapse_cons1" class="panel-collapse collapse" role="collapse_cons1">  
-						            <div class="panel-body consCheckGroup">  
-										{{range $Team}}
-										<input type="checkbox" class="MgrWrite Consulters" name="Consulters" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
-										{{end}}
-						            </div>
-						        </div>
-						    </div>
-						</div>
+                            <a id="modal-consulter" href="#modal-container-consulter" role="button" data-toggle="modal"
+                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                {{else}}
+                                class="disabled"
+                                {{end}}
+                            ><label>顾问:</label></a>
+                            
+                            <input type="text" class="form-control MgrWrite" id="Consulters" name="Consulters" readonly value={{.Consulters}}>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label>文案:</label>
+                            <a id="modal-secretaries" href="#modal-container-secretaries" role="button" data-toggle="modal"
+                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                {{else}}
+                                class="disabled"
+                                {{end}}
+                            ><input type="text" class="form-control MgrWrite" id="Secretaries" name="Secretaries" readonly value={{.Secretaries}}></a>
+                        </div>
+                        <div class="form-group">
+                            <label>录入人:</label>
+                            <select class="form-control MgrWrite" id="Create_by" name="Create_by" required="required">
+                            <option value = "N/A">N/A</option>
+                            {{$cby := .Create_by}}
+                            {{range $Team}}
+                            <option value = {{.Uname}} {{if eq $cby .Uname}} class="MgrWrite" selected="selected" {{end}}>{{.Cname}}[{{.Uname}}]</option>
+                            {{end}}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>录入日期:</label>
+                            <input type="date" class="form-control MgrWrite" name="Create_date" value={{.Create_date}}>
+                        </div>	
+                        <div class="form-group">
+                            <label>转案:</label>
+                            <input type="date" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>递档:</label>
+                            <input type="date" class="form-control" name="Didang_date" value={{.Didang_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>档案号:</label>
+                            <input type="date" class="form-control" name="Danganhao_date" value={{.Danganhao_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>补料:</label>
+                            <input type="date" class="form-control" name="Buliao_date" value={{.Buliao_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>通知面试:</label>
+                            <input type="date" class="form-control" name="Interview_date1" value={{.Interview_date1}}>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>面试:</label>
+                            <input type="date" class="form-control" name="Interview_date2" value={{.Interview_date2}}>
+                        </div>
+                        <div class="form-group">
+                            <label>打款通知:</label>
+                            <input type="date" class="form-control" name="Pay_date1" value={{.Pay_date1}}>
+                        </div>
+                        <div class="form-group">
+                            <label>打款确认:</label>
+                            <input type="date" class="form-control" name="Pay_date2" value={{.Pay_date2}}>
+                        </div>
+                        <div class="form-group">
+                            <label>省提名:</label>
+                            <input type="date" class="form-control" name="Nominate_date" value={{.Nominate_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>递交联邦:</label>
+                            <input type="date" class="form-control" name="Federal_date1" value={{.Federal_date1}}>
+                        </div>
+                        <div class="form-group">
+                            <label>联邦档案号:</label>
+                            <input type="date" class="form-control" name="Federal_date2" value={{.Federal_date2}}>
+                        </div>
+                        <div class="form-group">
+                            <label>通知体检:</label>
+                            <input type="date" class="form-control" name="Physical_date" value={{.Physical_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>获签:</label>
+                            <input type="date" class="form-control" name="Visa_date" value={{.Visa_date}}>
+                        </div>
+                        <div class="form-group">
+                            <label>拒签:</label>
+                            <input type="date" class="form-control" name="Fail_date" value={{.Fail_date}}>
+                        </div>
+                        <div style="display:none" class="form-group">
+                            <label>附件:</label>
+                            <input type="file" class="form-control" name="attachment" >
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                <div class="row">            
+                    <div class="col-md-12">
+                        <label>更新:</label><textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"  name="NewComment"></textarea></br>
+                        <center>
+                            {{if ne .Perm "Read"}}
+                            <button type="submit" id="btn_submit" class="btn  btn-danger">更新</button>
+                            {{end}}
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            <a class="btn  btn-danger" href="/contract/delete?cid={{.Contract.Contract_id}}" onclick="return doConfirm()">删除</a>
+                            {{end}}
+                            <a id="#toBotton" class="btn  btn-danger" href="/contract">返回</a>
+                        </center>
+                        <label>历史记录:</label>
+                        <ol>
+                            {{range .Comments}}
+                            <li>
+                                <b>{{.Cname}}[{{.Uname}}] - [{{.Date}}]: {{.Content}}</b></br>
+                                {{if ne .Changes ""}}
+                                状态变化: {{.Changes}}
+                                {{end}}
+                            </li>
+                            {{end}}
+                        </ol>
+                    </div>
+                </div>
 
-						<div class="panel-group" id="collapse_sec" role="tablist"  
-						    aria-multiselectable="true">
-						    <div class="panel panel-info">
-						        <div class="panel-heading">  
-						            <h5 class="panel-title">  
-						                <a id="cons_id" data-toggle="collapse" data-parent="#collapse_sec" href="#collapse_sec1"
-										aria-expanded="true" aria-controls="collapse_sec1">文案: <div id="curSecs">{{.Secretaries}}</div></a>
-						            </h5>
-						        </div>
-						        <div id="collapse_sec1" class="panel-collapse collapse" role="collapse_sec1">  
-						            <div class="panel-body secsCheckGroup">
-										{{range $Team}}
-										<input type="checkbox" class="MgrWrite Secretaries" name="Secretaries" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
-										{{end}}
-						            </div>
-						        </div>
-						    </div>
-						</div>
-	
-						<div class="form-group">
-			                <label>录入人:</label>
-							<select class="form-control MgrWrite" id="Create_by" name="Create_by" required="required">
-							<option value = "N/A">N/A</option>
-							{{$cby := .Create_by}}
-							{{range $Team}}
-							<option value = {{.Uname}} {{if eq $cby .Uname}} class="MgrWrite" selected="selected" {{end}}>{{.Cname}}[{{.Uname}}]</option>
-							{{end}}
-							</select>
-			            </div>
-						<div class="form-group">
-			                <label>录入日期:</label>
-			                <input type="date" class="form-control MgrWrite" name="Create_date" value={{.Create_date}}>
-			            </div>	
-					</p>
-				</div>
-				
-				<div class="tab-pane" id="panel-309877">
-					<div class="form-group">
-		                <label>转案:</label>
-		                <input type="date" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>递档:</label>
-		                <input type="date" class="form-control" name="Didang_date" value={{.Didang_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>档案号:</label>
-		                <input type="date" class="form-control" name="Danganhao_date" value={{.Danganhao_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>补料:</label>
-		                <input type="date" class="form-control" name="Buliao_date" value={{.Buliao_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>通知面试:</label>
-		                <input type="date" class="form-control" name="Interview_date1" value={{.Interview_date1}}>
-		            </div>
-					<div class="form-group">
-		                <label>面试:</label>
-		                <input type="date" class="form-control" name="Interview_date2" value={{.Interview_date2}}>
-		            </div>
-					<div class="form-group">
-		                <label>打款通知:</label>
-		                <input type="date" class="form-control" name="Pay_date1" value={{.Pay_date1}}>
-		            </div>
-					<div class="form-group">
-		                <label>打款确认:</label>
-		                <input type="date" class="form-control" name="Pay_date2" value={{.Pay_date2}}>
-		            </div>
-					<div class="form-group">
-		                <label>省提名:</label>
-		                <input type="date" class="form-control" name="Nominate_date" value={{.Nominate_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>递交联邦:</label>
-		                <input type="date" class="form-control" name="Federal_date1" value={{.Federal_date1}}>
-		            </div>
-					<div class="form-group">
-		                <label>联邦档案号:</label>
-		                <input type="date" class="form-control" name="Federal_date2" value={{.Federal_date2}}>
-		            </div>
-					<div class="form-group">
-		                <label>通知体检:</label>
-		                <input type="date" class="form-control" name="Physical_date" value={{.Physical_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>获签:</label>
-		                <input type="date" class="form-control" name="Visa_date" value={{.Visa_date}}>
-		            </div>
-					<div class="form-group">
-		                <label>拒签:</label>
-		                <input type="date" class="form-control" name="Fail_date" value={{.Fail_date}}>
-		            </div>
-		            <div style="display:none" class="form-group">
-		                <label>附件:</label>
-		                <input type="file" class="form-control" name="attachment" >
-		            </div>
-				</div>
-				{{end}}
-				
-				<div class="tab-pane" id="panel-309888">
-					<div class="form-group">
-					<h4>更新:<textarea class="form-control" style="height:auto;overflow-x:visible;overflow-y:visible;"  name="NewComment"></textarea></h4>
-					</div>
-					<ol>
-					 {{range .Comments}}
-						<li>
-							<b>{{.Cname}}[{{.Uname}}] - [{{.Date}}]: {{.Content}}</b></br>
-							{{if ne .Changes ""}}
-							状态变化: {{.Changes}}
-							{{end}}
-						</li>
-						{{end}}
-					</ol>
-				</div>
-				
-				
-			</div>
-		</div>
-		<center>
-			<button type="submit" id="btn_submit" class="btn  btn-danger">更新</button>
-			{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
-			<a class="btn  btn-danger" href="/contract/delete?cid={{.Contract.Contract_id}}" onclick="return doConfirm()">删除</a>
-			{{end}}
-			<a id="#toBotton" class="btn  btn-danger" href="/contract">返回</a>
-		</center>
-		
-    </form>
-		
-	
-		
+        </form>
     </div>
 
+<div class="row">    
+    <div class="modal fade" id="modal-container-consulter" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        取消
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        用户列表
+                    </h4>
+                </div>
+                <div class="modal-body" id="consCheckGroup">
+                {{range $Team}}
+                <input type="checkbox" class="TeamConsulter" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
+                {{end}} 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消
+                    </button> 
+                    {{if or (eq .CurUser.Title "Manager") (eq .CurUser.Title "Admin")}}
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveConsulter">
+                        保存
+                    </button>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="modal fade" id="modal-container-secretaries" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        取消
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        用户列表
+                    </h4>
+                </div>
+                <div class="modal-body" id="secsCheckGroup">
+                {{range $Team}}
+                <input type="checkbox" class="TeamSecretary" value = {{.Cname}} />{{.Cname}}[{{.Uname}}]</br>
+                {{end}} 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消
+                    </button> 
+                    {{if or (eq .CurUser.Title "Manager") (eq .CurUser.Title "Admin")}}
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveSecretary">
+                        保存
+                    </button>
+                    {{end}}
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+</div>
+    
+    
   </body>
- {{template "sscript"}}
+ {{template "script"}}
 	<script>
 	$(document).ready(function () {
+    /*
 		var checked = false;
-		$("#curCons").val($("#curCons").val().replace(/[ ]/g,""));    //去掉空格
-		$("#curCons").val($("#curCons").val().replace(/[\r\n]/g,""));//去掉回车换行
-		var curCons = $("#curCons").text();
+		$("#Consulters").val($("#Consulters").val().replace(/[ ]/g,""));    //去掉空格
+		$("#Consulters").val($("#Consulters").val().replace(/[\r\n]/g,""));//去掉回车换行
+		var curCons = $("#Consulters").val();
 		var conArr=curCons.split("&");
 		
-		
-		$(".Consulters").each(function(idx, elem){
-			for(var i in conArr) {	
-				if (conArr[i].length>0 && $(elem).val().indexOf(conArr[i]) >=0){
+		$(".TeamConsulter").each(function(idx, elem){
+			for(var i in conArr) {
+				if (conArr[i].length>0 && $(elem).val().indexOf(conArr[i])>=0){
 					$(elem).prop('checked', true);
 					checked = true;
 				}
@@ -258,13 +312,13 @@
 			$(".consCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Consulters' value = '"+curCons+"' checked=true name='Consulters'/>"+curCons);
 		}
 		
-		//////////////
+		//Set up the initial values
 		checked = false;
-		$("#curSecs").val($("#curSecs").val().replace(/[ ]/g,""));    //去掉空格
-		$("#curSecs").val($("#curSecs").val().replace(/[\r\n]/g,""));//去掉回车换行
-		var curSecs = $("#curSecs").text();
+		$("#Secretaries").val($("#Secretaries").val().replace(/[ ]/g,""));    //去掉空格
+		$("#Secretaries").val($("#Secretaries").val().replace(/[\r\n]/g,""));//去掉回车换行
+		var curSecs = $("#Secretaries").val();
 		var secArr=curSecs.split("&");
-		$(".Secretaries").each(function(idx, elem){
+		$(".TeamSecretary").each(function(idx, elem){
 			for(var i in secArr) {
 				if (secArr[i].length>0 && $(elem).val().indexOf(secArr[i]) >=0){
 					$(elem).prop('checked', true);
@@ -275,11 +329,15 @@
 		if (!checked && curSecs.length>0){
 			$(".secsCheckGroup").append("<input type='checkbox' class='MgrWrite' name='Secretaries' value = '"+curSecs+"' checked=true name='Secretaries'/>"+curSecs);
 		}
+        */
+        
+        
+        
 		switch ($('#mainform').attr("Perm")){
 			case "Read"://Disable all
 			//readonly do not apply to select and checkbox
 			$('#mainform').find('input, textarea, button, select').prop('disabled',true);
-			$('#btn_submit').css("visibility","hidden");
+			//$('#btn_submit').css("visibility","hidden");
 			break;
 			case "ParWrite":
 			$('.MgrWrite').prop('disabled',true);
@@ -294,6 +352,35 @@
 	    $("#Contract_id").prop('readonly', !this.checked)
 
 	});
+    
+    $("#saveConsulter").click(function(){
+        $("#Consulters").val("");
+        $(".TeamConsulter").each(function(idx, elem){
+			if ($(elem).prop('checked')){
+                if ($("#Consulters").val().length == 0){
+                    $("#Consulters").val($(elem).val());
+                }else{
+                    $("#Consulters").val($("#Consulters").val() + "&" + $(elem).val());
+                }
+            }
+		});
+        return true;
+    });
+    
+    
+    $("#saveSecretary").click(function(){
+        $("#Secretaries").val("");
+        $(".TeamSecretary").each(function(idx, elem){
+            if ($(elem).prop('checked')){
+                if ($("#Secretaries").val().length == 0){
+                    $("#Secretaries").val($(elem).val());
+                }else{
+                    $("#Secretaries").val($("#Secretaries").val() + "&" + $(elem).val());
+                }
+            }
+        });
+        return true;
+    });
 	
 	function postSubmit()
 	{

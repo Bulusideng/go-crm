@@ -1,144 +1,172 @@
 <!DOCTYPE html>
 <html>
  {{template "header"}}
-  <title>个人信息</title>  
+  <title>个人信息</title>
+	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.3);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		display:flex;  /*Center*/
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+	
+	h3,	label {
+	  color: #FFF;
+	}
+	</style>
   </head>
 
   <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            {{template "navbar" .}}
-        </div>
-    </nav>
 	
-	
-	
-	<div class="container">
-		<div class="row-fluid">
-			<div class="span12">
-				<div class="tabbable" id="tabs-728565">
-					<ul class="nav nav-pills">
-						<li class="active">
-							<a href="#panel-995844" data-toggle="tab">个人信息</a>
-						</li>
-						<li>
-							<a href="#panel-309865" data-toggle="tab">修改联系方式</a>
-						</li>
-						<li>
-							<a href="#panel-309867" data-toggle="tab">修改密码</a>
-						</li>
-					</ul>
-					<div class="tab-content">
-						<div class="tab-pane active" id="panel-995844">
-							<p>
-							    <div class="container">
-									{{with .CurUser}}
-							        <div class="form-group">
-							            <label>用户名: {{.Uname}}</label>
-							        </div>
-									<div class="form-group">
-							               <label>姓名: {{.Cname}}</label>
-							           </div>
-									<div class="form-group">
-										<label>职  位: 
-											{{if eq .Title "Admin"}}
-											管理员
-											{{else if eq .Title "Manager"}}
-											经理
-											{{else if eq .Title "Consulter"}}
-											顾问
-											{{else if eq .Title "Secretary"}}
-											文案
-											{{else}}
-											{{.Title}}
-											{{end}}
-										</label>
-										
-										
-										
-							        </div>
-									<div class="form-group">
-										<label>经  理：{{.Manager}}</label>
-									</div>
-									<div class="form-group">
-							               <label>邮箱: {{.Email}}</label>
-							           </div>
-									<div class="form-group">
-							               <label>电话: {{.Mobile}}</label>
-							        </div>
-									<div class="form-group">
-							               <label>
-										状态: {{if eq .Status "Disabled"}}
-										禁用
-										{{else if eq .Status "Locked"}}
-										锁定
-										{{else if eq .Status "Active"}}
-										正常
-										{{else}}
-										未知状态：{{.Status}}
-										{{end}}
-										</label>
-							        </div>
-									{{end}}
-							    </div>
-							</p>
-						</div>
-						<div class="tab-pane" id="panel-309865">
-							<p>
-								<form class ="table table-hover" method="post" action="/account?op=change_contact"  enctype="multipart/form-data">
+	<div class="container">		
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6">
+			<div class="tabbable" id="tabs-728565">
+				<ul class="nav nav-pills">
+					<li class="active">
+						<a href="#panel-995844" data-toggle="tab">个人信息</a>
+					</li>
+					<li>
+						<a href="#panel-309865" data-toggle="tab">修改联系方式</a>
+					</li>
+					<li>
+						<a href="#panel-309867" data-toggle="tab">修改密码</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="panel-995844">
+						<p>
+						    <div class="container">
 								{{with .CurUser}}
+						        <div class="form-group">
+						            <label>用户名: {{.Uname}}</label>
+						        </div>
 								<div class="form-group">
-					                <label>用户名:</label>
-					                <input type="text" class="form-control" name="Uname" readonly value={{.Uname}}>
-					            </div>
+						               <label>姓名: {{.Cname}}</label>
+						           </div>
 								<div class="form-group">
-					                <label>邮箱:</label>
-					                <input type="email" class="form-control" name="Email" required="required" value={{.Email}}>
-					            </div>
+									<label>职  位: 
+										{{if eq .Title "Admin"}}
+										管理员
+										{{else if eq .Title "Manager"}}
+										经理
+										{{else if eq .Title "Consulter"}}
+										顾问
+										{{else if eq .Title "Secretary"}}
+										文案
+										{{else}}
+										{{.Title}}
+										{{end}}
+									</label>
+									
+									
+									
+						        </div>
 								<div class="form-group">
-					                <label>电话:</label>
-					                <input type="tel" class="form-control" name="Mobile" required="required"  value={{.Mobile}} >
-					            </div>
+									<label>经  理：{{.Manager}}</label>
+								</div>
+								<div class="form-group">
+						               <label>邮箱: {{.Email}}</label>
+						           </div>
+								<div class="form-group">
+						               <label>电话: {{.Mobile}}</label>
+						        </div>
+								<div class="form-group">
+						               <label>
+									状态: {{if eq .Status "Disabled"}}
+									禁用
+									{{else if eq .Status "Locked"}}
+									锁定
+									{{else if eq .Status "Active"}}
+									正常
+									{{else}}
+									未知状态：{{.Status}}
+									{{end}}
+									</label>
+						        </div>
 								{{end}}
-								<center>
-					            	<button type="submit" class="btn btn-danger">确定</button>
-									<a class="btn  btn-danger" href="/account/view">取消</a>
-								</center>
-					        </form>
-							</p>
-						</div>
-						
-						<div class="tab-pane" id="panel-309867">
-							<form class ="table table-hover" method="post" onsubmit="return checkPwd()" action="/account?op=change_pwd"  enctype="multipart/form-data">
-								<div class="form-group">
-					                <label>用户名:</label>
-					                <input type="text" class="form-control" readonly name="Uname" value={{.CurUser.Uname}}>
-					            </div>
-								<div class="form-group">
-					                <label>新密码:</label>
-					                <input type="password" class="form-control" id="Pwd" name="Pwd" required="required" minlength="1" max="20">
-					            </div>
-					           	<div class="form-group">
-					                <label>重复新密码:</label>
-					                <input type="password" class="form-control" id="RePwd" name="RePwd" required="required" minlength="1" max="20">
-					            </div>
-								<div class="form-group">
-					                <label>当前密码:</label>
-					                <input type="password" class="form-control" name="CurPwd" required="required" >
-					            </div>
-									<center>
-					            	<button type="submit" class="btn btn-danger">确定</button>
-									<a class="btn  btn-danger" href="/account/view">取消</a>
-									</center>
-					        </form>
-						</div>
-						
+						    </div>
+                            <center><a class="btn  btn-danger" href="/contract">返回</a></center>
+						</p>
 					</div>
+					<div class="tab-pane" id="panel-309865">
+						<p>
+							<form class ="table table-hover" method="post" action="/account?op=change_contact"  enctype="multipart/form-data">
+							{{with .CurUser}}
+							<div class="form-group">
+				                <label>用户名:</label>
+				                <input type="text" class="form-control" name="Uname" readonly value={{.Uname}}>
+				            </div>
+							<div class="form-group">
+				                <label>邮箱:</label>
+				                <input type="email" class="form-control" name="Email" required="required" value={{.Email}}>
+				            </div>
+							<div class="form-group">
+				                <label>电话:</label>
+				                <input type="tel" class="form-control" name="Mobile" required="required"  value={{.Mobile}} >
+				            </div>
+							{{end}}
+							<center>
+				            	<button type="submit" class="btn btn-danger">确定</button>
+								<a class="btn  btn-danger" href="/account/view">取消</a>
+							</center>
+				        </form>
+						</p>
+					</div>
+					
+					<div class="tab-pane" id="panel-309867">
+						<form class ="table table-hover" method="post" onsubmit="return checkPwd()" action="/account?op=change_pwd"  enctype="multipart/form-data">
+							<div class="form-group">
+				                <label>用户名:</label>
+				                <input type="text" class="form-control" readonly name="Uname" value={{.CurUser.Uname}}>
+				            </div>
+							<div class="form-group">
+				                <label>新密码:</label>
+				                <input type="password" class="form-control" id="Pwd" name="Pwd" required="required" minlength="1" max="20">
+				            </div>
+				           	<div class="form-group">
+				                <label>重复新密码:</label>
+				                <input type="password" class="form-control" id="RePwd" name="RePwd" required="required" minlength="1" max="20">
+				            </div>
+							<div class="form-group">
+				                <label>当前密码:</label>
+				                <input type="password" class="form-control" name="CurPwd" required="required" >
+				            </div>
+								<center>
+				            	<button type="submit" class="btn btn-danger">确定</button>
+								<a class="btn  btn-danger" href="/account/view">取消</a>
+								</center>
+				        </form>
+					</div>
+					
 				</div>
 			</div>
 		</div>
+		<div class="col-md-3">
+		</div>
+        
 	</div>
-	{{template "sscript"}}
+    
+	{{template "script"}}
 
 	<script>
 	function checkPwd()
