@@ -2,21 +2,48 @@
 <html>
  {{template "header"}}
   <title> 首页 - 客户管理</title>  
+    	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+    
+    
+   </style>
   </head>
 
   <body>
     
-	<div class="container-fluid success">
+	<div class="container-fluid">
         {{template "navbar" .}}
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped table-hover table-bordered table-fixed" >
+				<table class="table" >
 					<thead>
-						<tr class="warning">
+						<tr>
 							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
 								{{with .Selectors}}
 								<th></th>
-								<th>合同号:
+								<th><label>合同号:</label>
 									<select  name="Contract_id">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Contract_id.List}}
@@ -26,7 +53,7 @@
 									</select>
 								</th>
 								<th>
-									客户姓名:
+									<label>客户姓名:</label>
 									<select  name="Client_name">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Client_name.List}}
@@ -36,7 +63,7 @@
 									</select>
 								</th>
 								<th>
-									国家:
+									<label>国家:</label>
 									<select  name="Country">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Country.List}}
@@ -46,7 +73,7 @@
 									</select>
 								</th>
 								<th>
-									项目:
+									<label>项目:</label>
 									<select  name="Project_type">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Project_type.List}}
@@ -56,7 +83,7 @@
 									</select>
 								</th>
 								<th>
-									签约日期:
+									<label>签约日期:</label>
 									<select  name="Contract_date">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Contract_date.List}}
@@ -66,7 +93,7 @@
 									</select>
 								</th>
 								<th>
-									顾问:
+									<label>顾问:</label>
 									<select  name="Consulters">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Consulters.List}}
@@ -76,7 +103,7 @@
 									</select>
 								</th>
 								<th>
-									文案:
+									<label>文案:</label>
 									<select  name="Secretaries">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Secretaries.List}}
@@ -86,7 +113,7 @@
 									</select>
 								</th>
 								<th>
-									转案日期:
+									<label>转案日期:</label>
 									<select  name="Zhuan_an_date">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Zhuan_an_date.List}}
@@ -99,7 +126,7 @@
 									<button type="submit" class="btn btn-success">查询</button>
 								</th>
 								<th>
-									状态:
+									<label>状态:</label>
 									<select  name="Current_state">
 										<option value="ALL" selected = "selected">全部</option>
 										{{range $k,$v := .Current_state.List}}

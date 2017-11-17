@@ -28,7 +28,7 @@
 		-moz-opacity:0.3;
 	}
     
-    h3{
+    h3, th, td{
 	  color: #FFF;
 	}
 	
@@ -41,9 +41,9 @@
 		<div class="row">
 			<div class="col-md-12">
             <h3 class="text-center" >账户管理</h3>
-				<table class="table table-striped table-hover table-bordered">
+				<table class="table">
 					<thead>
-						<tr class="warning">
+						<tr>
 							<th>
 								用户名
 							</th>
@@ -78,12 +78,12 @@
 						{{range .Reporters}}
 						<tr 
 						{{if eq $curUsr.Uname .Uname}}
-						class="success"
+						style="color:#F00"
 						{{end}}
 						{{if ne .Status "Active"}}
 						class="warning"
 						{{end}}
-						style="color:#7d42f4"
+						
 						>
 							<td>
 								{{.Uname}}

@@ -92,26 +92,25 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            
-
-                            <a id="modal-consulter" href="#modal-container-consulter" role="button" data-toggle="modal"
-                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
-                                {{else}}
-                                class="disabled"
-                                {{end}}
-                            ><label>顾问:</label></a>
-                            
-                            <input type="text" class="form-control MgrWrite" id="Consulters" name="Consulters" readonly value={{.Consulters}}>
+                            <label>顾问:</label>
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            <a id="modal-consulter" href="#modal-container-consulter" role="button" data-toggle="modal">
+                            {{end}}
+                                <input type="text" class="form-control MgrWrite" id="Consulters" name="Consulters" readonly value={{.Consulters}}>
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            </a>
+                            {{end}}
                             
                         </div>
                         <div class="form-group">
                             <label>文案:</label>
-                            <a id="modal-secretaries" href="#modal-container-secretaries" role="button" data-toggle="modal"
-                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
-                                {{else}}
-                                class="disabled"
-                                {{end}}
-                            ><input type="text" class="form-control MgrWrite" id="Secretaries" name="Secretaries" readonly value={{.Secretaries}}></a>
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            <a id="modal-secretaries" href="#modal-container-secretaries" role="button" data-toggle="modal">
+                            {{end}}
+                                <input type="text" class="form-control MgrWrite" id="Secretaries" name="Secretaries" readonly value={{.Secretaries}}>
+                            {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                            </a>
+                            {{end}}
                         </div>
                         <div class="form-group">
                             <label>录入人:</label>
