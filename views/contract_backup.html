@@ -11,7 +11,6 @@
 		margin:0;
 	
 		background: url("/static/images/01.jpg") no-repeat center center fixed; 
-		background-color: rgba(0,0,0,0.3);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
 		
 		-webkit-background-size: cover;
 		-moz-background-size: cover;
@@ -22,7 +21,7 @@
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.3);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
 		display:flex;  /*Center*/
 	}
 	.container {
@@ -30,41 +29,48 @@
 		filter:alpha(opacity=30);
 		-moz-opacity:0.3;
 	}
+	h1, h3{
+		color:#FFF	
+	}
+	
+	
 	</style>
 </head>
 
 <body class ="success">
 	
 <div class="container">
+	<h1 class="text-center" >备份客户</h1></br>
 	<div class="col-md-4">
 	</div>
 	<div class="col-md-4" style="border:2px solid #FFF; padding:30px">
         <form class="mbr-form" action="/contract?op=backup" method="post">
 			<div data-for="cat">
                 <div class="form-group">
-				<h3 style="color:#FFF" class="col-lg-8 col-md-7 content-container" for="cat-header15-6">分类方式</h3>
+				<h3>分类方式</h3>
 				<select class="form-control px-3" id="cat" name="cat" required="required">
 				<option value = "不分类">不分类</option>
 				<option value = "国家">按国家</option>
 				<option value = "项目">按项目</option>
 				<option value = "顾问">按顾问</option>
 				<option value = "文案">按文案</option>		
+				<option value = "年份">按年份</option>	
 				</select>								
                   </div>
               </div>
-			<h3 class="col-lg-8 col-md-7 content-container" style="color:#FFF">保留日志:
+			<h3>保留日志:
 			<input name="withComments" type="checkbox"/></h3>
 			
 			<div data-for="pwd">
 			    <div class="form-group">
-					<h3 class="col-lg-8 col-md-7 content-container" for="pwd-header15-6" style="color:#FFF">当前密码</h3>
+					<h3>当前密码</h3>
 			        <input type="password" class="form-control px-3" name="pwd" data-form-field="Pwd" placeholder="密码" required="" id="pwd-header15-6">
 			    </div>
 			</div>
 	              
 			<center>
 				<button type="submit" class="btn btn-danger btn-form display-4" >确定</button> 
-		  		<a class="btn btn-danger btn-form display-4" href="/contract">返回</a>
+		  		<a class="btn btn-danger btn-form display-4" href="/contract">取消</a>
 				{{if .FILE}}
 				{{if or (eq .CurUser.Title "Manager") (eq .CurUser.Title "Admin")}}
 				<a class="btn btn-danger btn-form display-4" href={{.FILE}}>下载</a>
@@ -76,8 +82,6 @@
 	<div class="col-md-4">
 	</div>
 </div>
-{{template "script"}}
-
 
 </body>
 </html>

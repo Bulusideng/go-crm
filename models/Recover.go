@@ -101,15 +101,22 @@ func ExportContracts(cat string, withComments bool) (string, error) {
 			sname = c.Consulters
 		case "文案":
 			sname = c.Secretaries
+		case "年份":
+			sname = c.Contract_date
+			if len(sname) >= 4 { //Get the year
+				sname = sname[:4]
+			}
 		}
-
-		if len(sname) > 30 {
+		if len(sname) == 0 {
+			sname = "未知" + cat
+		} else if len(sname) > 30 {
 			beego.Warn("Cut sheet name from: ", sname, " to: ", sname[:30])
 			sname = sname[:30]
 		}
 		sname = strings.Replace(sname, "/", ",", -1)
 		if sheet, ok = sm[sname]; !ok {
 			sm[sname], err = file.AddSheet(sname)
+			beego.Error("Add sheet: " + sname)
 			if err != nil {
 				beego.Error("Add sheet: " + sname + "panic, error:" + err.Error())
 				return "", err
@@ -119,7 +126,7 @@ func ExportContracts(cat string, withComments bool) (string, error) {
 				"序号", "合同号", "客户姓名", "客户电话", "申请国家", "项目", "签约日期",
 				"顾问", "文案", "转案日期", "状态", "递档日期", "档案号", "补料", "通知面试",
 				"面试", "打款通知", "打款确认", "省提名", "递交联邦", "联邦档案号", "通知体检",
-				"获签", "拒签", "录入时间", "录入人"}, -1)
+				"获签", "拒签", "录入时间", "录入人", "状态"}, -1)
 		}
 		sheet = sm[sname]
 		row := sheet.AddRow()

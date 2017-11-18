@@ -103,7 +103,7 @@ func (this *AccountController) Manage() {
 		this.Redirect("/login", 302)
 		return
 	} else if !curUsr.IsManagerOf(acct) {
-		this.RedirectTo("/status", "Current user: "+curUsr.Uname+"is not manager of: "+uname, "/account", 302)
+		this.RedirectTo("/status", "Current user: "+curUsr.Uname+"is not manager of: "+uname, "/contract", 302)
 		beego.Warn("User ", *curUsr, " want to update ", uname)
 		return
 	}

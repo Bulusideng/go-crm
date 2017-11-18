@@ -40,10 +40,12 @@ type Contract struct {
 	Fail_date       string `xlsx:"23"`         //拒签
 	Create_date     string `xlsx:"24"`         //录入时间
 	Create_by       string `xlsx:"25"`         //录入人
+	Status          string `xlsx:"26"`         //Active, Deleted ...
 }
 
 func NewAllFilter() *Contract {
 	return &Contract{
+		"ALL",
 		"ALL",
 		"ALL",
 		"ALL",
@@ -121,6 +123,9 @@ func AddContract(c *Contract) error {
 	if c.Zhuan_an_date == "" {
 		c.Zhuan_an_date = "空缺"
 	}
+	if c.Status == "" { //Default active
+		c.Status = "Active"
+	}
 	o := orm.NewOrm()
 	_, err := o.Insert(c)
 
@@ -137,7 +142,19 @@ func AddContract(c *Contract) error {
 	return nil
 }
 
-func DelContract(cid string) error {
+func DelContract(cid string) error { //Don'd delete, only set the status
+	c := &Contract{}
+	c.Contract_id = cid
+	o := orm.NewOrm()
+	err := o.Read(c)
+	if err == nil {
+		c.Status = "Deleted"
+		_, err = o.Update(c)
+	}
+	return err
+}
+
+func DelContract1(cid string) error {
 	c := &Contract{}
 	c.Contract_id = cid
 	o := orm.NewOrm()
@@ -301,7 +318,7 @@ func GetAllContracts() ([]*Contract, error) {
 
 	contracts := make([]*Contract, 0)
 
-	qs := o.QueryTable("Contract")
+	qs := o.QueryTable("Contract").Filter("Status", "Active")
 	_, err := qs.Limit(-1).OrderBy("contract_id").All(&contracts)
 	return contracts, err
 }
@@ -336,7 +353,7 @@ func NewContract() *Contract {
 		"N/A",
 		"N/A",
 		"N/A",
-		"N/A",
+		"Active",
 	*/
 
 }

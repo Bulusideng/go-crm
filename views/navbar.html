@@ -1,7 +1,5 @@
 {{define "navbar"}}
-    
-    </style>
-	<div id="div_nav" class="row" style="padding:20px; padding-left:300px;">
+	<div id="div_nav" class="row" style="padding:20px; padding-left:300px; font-size:1.2em; font-family:微软雅黑; font-weight:bold;">
 		<div class="col-md-12">
             <center>
 			<ul class="nav nav-pills">
@@ -28,7 +26,7 @@
 						<li {{if .RegAcct}} class="active"{{end}}><a href="/account/register">注册</a></li>
 						<li><a href="/login">登录</a></li>
 					{{end}}
-					<li class="active"><a>当前用户 {{.CurUser.Title}}: {{.CurUser.Cname}}[{{.CurUser.Uname}}]</a></li>
+					<li class="active"><a>当前用户: {{.CurUser.Cname}}[{{.CurUser.Uname}}]</a></li>
 				{{end}}
 			</ul>
             </center>

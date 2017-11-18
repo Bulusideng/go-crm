@@ -59,7 +59,7 @@ func (c *LoginController) Post() {
 		c.Ctx.ResponseWriter.ResponseWriter.Header().Set("Accept-Charset", "GBK,utf-8;q=0.7,*;q=0.3")
 		c.Ctx.ResponseWriter.ResponseWriter.Header().Set("Accept-Language", "zh-CN,zh;q=0.8")
 
-		if usr.IsAdmin() {
+		if usr.IsAdmin() && false {
 			c.Redirect("/account", 301)
 			return
 		} else {

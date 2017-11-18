@@ -1,83 +1,115 @@
 <!DOCTYPE html>
 <html>
+	{{template "header"}}
+  		<title>账户管理 - 注册</title>
+		<style>
 
-{{template "header"}}
+			html,body {
+				height:100%;
+				width:100%;
+				margin:0;
+				background: url("/static/images/01.jpg") no-repeat center center fixed; 
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-o-background-size: cover;
+				background-size: cover;
+			}
+			body{
+				background: url();
+				background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+				display:flex;  /*Center*/
+			}
 
-  <title>账户管理 - 注册</title>  
-  </head>
+			.container {
+				margin:auto;
+				filter:alpha(opacity=50);
+				-moz-opacity:0.5;
+			}
+			label,th,td, h1{
+			  	color: #FFF;
+			 	font-family:"仿宋";
+				font-weight:bold;
+			}
+			
+			label, th, td{
+				font-size : 1.5em;
+			}
+		</style>
+	</head>
 
-  <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            {{template "navbar" .}}
-        </div>
-    </nav>
-
-    <div class="container">
-        <h3 class="text-center" >用户注册</h3>
-        <form method="post" action="/account?op=register" onsubmit="return checkRegist()" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>*用户名:</label>
-				<input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required">
-            </div>
-			<div class="form-group">
-                <label>*姓名:</label>
-                <input type="text" class="form-control" name="Cname" required="required" minlength="2" max="20">
-            </div>
-			<div class="form-group">
-                <label>*职位:</label>
-				<select class="form-control" name="Title" required="required"> 
-				<option value =""></option>
-				<option value ="Manager">经理</option>
-				<option value="Consulter">顾问</option>
-				<option value="Secretary">文案</option>
-				</select>
-            </div>
-			<div class="form-group">
-                <label>*经理:</label>
-				<select class="form-control" name="Manager" required="required"> 
-				<option value =""></option>
-				{{range .Managers}}
-				<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
-				{{end}}
-				</select>
-            </div>
-			<div class="form-group">
-                <label>*密码:</label>
-                <input type="password" placeholder="5-20位" class="form-control" id="Pwd" name="Pwd" required="required" minlength="5" max="20">
-            </div>
-           	<div class="form-group">
-                <label>*重复密码:</label>
-                <input type="password" placeholder="5-20位" class="form-control" id="RePwd" name="RePwd" required="required" minlength="5" max="20">
-            </div>
-			<div class="form-group">
-                <label>*邮箱:</label>
-                <input type="email" class="form-control" name="Email" required="required">
-            </div>
-			<div class="form-group">
-                <label>电话:</label>
-                <input type="tel" class="form-control" name="Mobile" minlength="1" max="20">
-            </div>
-			<center>
-            	<button type="submit" class="btn btn-danger">确定</button>
-				<a class="btn btn-danger" href="/contract">取消</a>
-			</center>
-        </form>
-    </div>
-	
-	<script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
-	<script>
-	
-	function checkRegist()
-	{
-		if ($('#Pwd').val() != $('#RePwd').val()){
-			alert("密码不一致");
-			return false;
-		} 
-		return true;
-		 
-	}
-	
-	</script>
-  </body>
+  	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+				</div>
+				<div class="col-md-4">
+					<h1 class="text-center" >用户注册</h1>
+			        <form method="post" action="/account?op=register" onsubmit="return checkRegist()" enctype="multipart/form-data">
+			            <div class="form-group">
+			                <label>*用户名:</label>
+							<input type="text" placeholder="5-20位 数字，字母，下划线" pattern="[0-9a-zA-Z_]{5,20}" class="form-control" name="Uname" required="required">
+			            </div>
+						<div class="form-group">
+			                <label>*姓名:</label>
+			                <input type="text" class="form-control" name="Cname" required="required" minlength="2" max="20">
+			            </div>
+						<div class="form-group">
+			                <label>*职位:</label>
+							<select class="form-control" name="Title" required="required"> 
+							<option value =""></option>
+							<option value ="Manager">经理</option>
+							<option value="Consulter">顾问</option>
+							<option value="Secretary">文案</option>
+							</select>
+			            </div>
+						<div class="form-group">
+			                <label>*经理:</label>
+							<select class="form-control" name="Manager" required="required"> 
+							<option value =""></option>
+							{{range .Managers}}
+							<option value = {{.Uname}}>{{.Uname}}: {{.Cname}}</option>
+							{{end}}
+							</select>
+			            </div>
+						<div class="form-group">
+			                <label>*密码:</label>
+			                <input type="password" placeholder="5-20位" class="form-control" id="Pwd" name="Pwd" required="required" minlength="5" max="20">
+			            </div>
+			           	<div class="form-group">
+			                <label>*重复密码:</label>
+			                <input type="password" placeholder="5-20位" class="form-control" id="RePwd" name="RePwd" required="required" minlength="5" max="20">
+			            </div>
+						<div class="form-group">
+			                <label>*邮箱:</label>
+			                <input type="email" class="form-control" name="Email" required="required">
+			            </div>
+						<div class="form-group">
+			                <label>电话:</label>
+			                <input type="tel" class="form-control" name="Mobile" minlength="1" max="20">
+			            </div>
+						<center>
+			            	<button type="submit" class="btn btn-danger">确定</button>
+							<a class="btn btn-danger" href="/contract">取消</a>
+						</center>
+			        </form>
+				</div>
+				<div class="col-md-4">
+				</div>
+			</div>
+		</div>	
+			
+		<script type="text/javascript" src="/static/js/jquery-2.2.0.min.js"></script>
+		
+		<script>
+			function checkRegist()
+			{
+				if ($('#Pwd').val() != $('#RePwd').val()){
+					alert("密码不一致");
+					return false;
+				} 
+				return true;
+				 
+			}
+		</script>
+	</body>
 </html>

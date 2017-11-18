@@ -141,7 +141,7 @@ func (this *Account) ForgetPwd() error {
 	if err != nil {
 		return errors.New("用户名不存在!")
 	}
-	acct.Lock()
+	//acct.Lock() //Do we need lock it?
 	acct.Random = RandStringRunes(20)
 	o := orm.NewOrm()
 	_, err = o.Update(acct)

@@ -19,7 +19,7 @@
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
 		display:flex;  /*Center*/
 	}
 	.container {
@@ -28,19 +28,24 @@
 		-moz-opacity:0.3;
 	}
     
-    h3, th, td{
-	  color: #FFF;
-	}
+		*{
+		  	color: #FFF;
+		 	font-family:"仿宋";
+			font-weight:bold;
+		}
+		
+		label, th, td{
+			font-size : 1.3em;
+		}
 	
 	</style>
   </head>
 
   <body>
 	<div class="container">
-        
 		<div class="row">
 			<div class="col-md-12">
-            <h3 class="text-center" >账户管理</h3>
+            <h1 class="text-center" >账户管理</h1>
 				<table class="table">
 					<thead>
 						<tr>
@@ -78,10 +83,10 @@
 						{{range .Reporters}}
 						<tr 
 						{{if eq $curUsr.Uname .Uname}}
-						style="color:#F00"
+						style="background-color:#050"
 						{{end}}
 						{{if ne .Status "Active"}}
-						class="warning"
+						style="background-color:#500"
 						{{end}}
 						
 						>
@@ -137,7 +142,7 @@
 						{{end}}
 					</tbody>
 				</table>
-                <center><a class="btn  btn-danger" href="/contract">返回</a></center>
+                <center><a class="btn  btn-danger" href="/contract">主页</a></center>
 			</div>
 		</div>
 	</div>

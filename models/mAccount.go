@@ -200,7 +200,7 @@ func GetNonAdmins() ([]*Account, error) {
 
 	users := make([]*Account, 0)
 
-	qs := o.QueryTable("Account")
+	qs := o.QueryTable("Account").Filter("Status", "Active")
 	qs.Limit(-1)
 	_, err := qs.Exclude("Title", "Admin").OrderBy("Title").All(&users) //All account exclude admin
 	if err != nil {

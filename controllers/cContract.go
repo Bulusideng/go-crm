@@ -123,7 +123,7 @@ func (this *ContractController) Post() {
 	if op == "add" {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
 		c.Create_by = curUser.Uname
-		c.Create_date = time.Now().Format(time.RFC822)
+		c.Create_date = time.Now().Format("2006-01-02")
 		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
 		err = models.AddContract(c)
 		if err == nil {
@@ -158,7 +158,7 @@ func (this *ContractController) Post() {
 					this.RedirectTo("/status", "更新失败: "+err.Error(), contractURL, 302)
 				}
 			} else {
-				this.RedirectTo("/status", "没有改动!", contractURL, 302)
+				this.RedirectTo("/status", "没有更新项!", contractURL, 302)
 			}
 		}
 
@@ -193,7 +193,14 @@ func (this *ContractController) Post() {
 
 	if err != nil {
 		beego.Error(err)
-		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			this.RedirectTo("/status", "操作失败: "+"合同号已存在:"+c.Contract_id, "/contract", 302)
+		} else if strings.Contains(err.Error(), "no row found") {
+			this.RedirectTo("/status", "操作失败: "+"合同号不存在:"+c.Contract_id, "/contract", 302)
+		} else {
+			this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
+		}
+
 	}
 
 }

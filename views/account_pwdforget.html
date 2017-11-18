@@ -1,30 +1,63 @@
 <!DOCTYPE html>
 <html>
+	{{template "header"}}
+  		<title>账户管理 - 找回密码</title>
+		<style>
+			html,body {
+				height:100%;
+				width:100%;
+				margin:0;
+			
+				background: url("/static/images/01.jpg") no-repeat center center fixed; 
+				
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-o-background-size: cover;
+				background-size: cover;
+			}
+			
+			body{
+				background: url();
+				background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+				display:flex;  /*Center*/
+			}
+			.container {
+				margin:auto;
+				filter:alpha(opacity=50);
+				-moz-opacity:0.5;
+			}
+			*{
+			  	color: #FFF;
+			 	font-family:"仿宋";
+				font-weight:bold;
+			}
+			
+			label, th, td{
+				font-size : 1.5em;
+			}
+		</style>
+	</head>
 
-{{template "header"}}
-
-  <title>账户管理 - 找回密码</title>  
-  </head>
-
-  <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            {{template "navbar" .}}
-        </div>
-    </nav>
-
-    <div class="container">
-        <h3 class="text-center" >找回密码</h3>
-        <form method="post" action="/account?op=forgetpwd" onsubmit="return checkRegist()" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>*用户名:</label>
-				<input type="text" placeholder="5-20位 数字，字母，下划线"  class="form-control" name="Uname" required="required">
-            </div>
-			<center>
-            	<button type="submit" class="btn btn-danger">确定</button>
-				<a class="btn btn-danger" href="/contract">取消</a>
-			</center>
-        </form>
-    </div>
-  </body>
+  	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-6">
+			        <h1 class="text-center" >找回密码</h1>
+			        <form method="post" action="/account?op=forgetpwd" onsubmit="return checkRegist()" enctype="multipart/form-data">
+			            <div class="form-group">
+							<input type="text" placeholder="请输入用户名"  class="form-control" name="Uname" required="required">
+			            </div>
+						<center>
+			            	<button type="submit" class="btn btn-danger">确定</button>
+							<a class="btn btn-danger" href="/contract">取消</a>
+						</center>
+			        </form>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

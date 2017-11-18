@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html>
- {{template "header"}}
-  <title> 首页 - 客户管理</title>  
-    	<style>
-	html,body {
+	{{template "header"}}
+		<title> 首页 - 客户管理</title>  
+		<style>
+		
+			
+		html{
 		height:100%;
 		width:100%;
 		margin:0;
-	
-		
+				background: url("/static/images/01.jpg") no-repeat center center fixed; 
 		
 		-webkit-background-size: cover;
 		-moz-background-size: cover;
 		-o-background-size: cover;
 		background-size: cover;
-		
 	}
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */		
+		display:flex;  /*Center*/
+		
 	}
-	.container {
-		margin:auto;
-		filter:alpha(opacity=30);
-		-moz-opacity:0.3;
-	}
-    
-    
-   </style>
-  </head>
+			
+			
+			
+			label,a{
+				color:#FFF;
+			}
 
+		</style>
+	</head>
   <body>
     
 	<div class="container-fluid">
@@ -144,7 +145,7 @@
 						{{range $idx, $contract:= .Contracts}}
 						<tr>
 							<td>
-							{{$idx}}
+							<label>{{$idx}}</label>
 							</td>
 							<td>
 								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">{{.Contract_id}}</a>

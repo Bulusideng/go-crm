@@ -19,16 +19,16 @@
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
 		display:flex;  /*Center*/
 	}
 	.container {
 		margin:auto;
-		filter:alpha(opacity=30);
-		-moz-opacity:0.3;
+		filter:alpha(opacity=50);
+		-moz-opacity:0.5;
 	}
 	
-	h3,	label {
+	h1,	label {
 	  color: #FFF;
 	}
 	
@@ -41,7 +41,7 @@
 			<div class="col-md-3">
 			</div>
 			<div class="col-md-6">
-		        <h3 class="text-center" >账户管理</h3>
+		        <h1 class="text-center" >账户管理</h1>
 		        <form method="post" action="/account?op=manage_acct"  enctype="multipart/form-data">
 					{{$mgrs := .Managers}}
 					{{with .Acct}}
@@ -80,7 +80,7 @@
 		            </div>
 					<div class="form-group">
 		                <label>电话:</label>
-		                <input type="tel" class="form-control" name="Mobile" required="required" value={{.Mobile}}>
+		                <input type="tel" class="form-control" name="Mobile" value={{.Mobile}}>
 		            </div>
 					<div class="form-group">
 		                <label>状态:</label>
