@@ -24,4 +24,7 @@ func Register() {
 	os.Mkdir("files", os.ModePerm)
 	beego.Router("/files/*", &controllers.FileController{})
 
+	beego.Router("/attachment/*", &controllers.AttachmentController{})
+	beego.AutoRouter(&controllers.AttachmentController{})
+
 }

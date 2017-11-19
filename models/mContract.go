@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -300,29 +301,66 @@ func UpdateContract(curUser *Account, oldContractId string, c *Contract) (*Chang
 	return &changes, nil
 }
 
-func GetContracts(filters map[string]string) ([]*Contract, error) {
-	o := orm.NewOrm()
+var (
+	doFilter = true
+)
 
-	qs := o.QueryTable("Contract")
-	qs.Limit(-1)
-	for k, v := range filters {
-		qs = qs.Filter(strings.ToLower(k), v)
+func getCond(usr *Account) *orm.Condition {
+	cond := orm.NewCondition()
+	cond = cond.And("status", "Active")
+	if usr.IsManager() || usr.IsAdmin() || !doFilter {
+		return cond
 	}
+
+	cond1 := orm.NewCondition().And("consulters__contains", usr.Cname).Or("secretaries__contains", usr.Cname)
+
+	return cond.AndCond(cond1)
+}
+
+func GetContracts(usr *Account, filters map[string]string) ([]*Contract, error) {
+	o := orm.NewOrm()
+	qs := o.QueryTable("Contract").Filter("Status", "Active")
+	qs.Limit(-1)
+	cond := getCond(usr)
+	if cond != nil {
+		qs = qs.SetCond(cond)
+	}
+	fmt.Printf("Condition 0: %+v\n", qs.GetCond())
+	if filters != nil {
+		for k, v := range filters {
+			beego.Warn(k, v)
+			if k == "Consulters" || k == "Secretaries" {
+				qs = qs.Filter(strings.ToLower(k)+"__contains", v)
+			} else {
+				qs = qs.Filter(strings.ToLower(k), v)
+			}
+			fmt.Printf("Condition i: %+v\n", qs.GetCond())
+		}
+	}
+	fmt.Printf("Condition n: %+v\n", qs.GetCond())
+
 	contracts := []*Contract{}
+
 	_, err := qs.OrderBy("contract_id").All(&contracts)
 	return contracts, err
 }
 
-func GetAllContracts() ([]*Contract, error) {
+/*
+func GetAllContracts(usr *Account) ([]*Contract, error) {
 	o := orm.NewOrm()
 
 	contracts := make([]*Contract, 0)
 
-	qs := o.QueryTable("Contract").Filter("Status", "Active")
+	qs := o.QueryTable("Contract") //.Filter("Status", "Active").Filter("consulters__contains", "刘曾武")
+	cond := getCond(usr)
+	if cond != nil {
+		qs = qs.SetCond(cond)
+	}
+
 	_, err := qs.Limit(-1).OrderBy("contract_id").All(&contracts)
 	return contracts, err
 }
-
+*/
 func NewContract() *Contract {
 	return &Contract{}
 	/*

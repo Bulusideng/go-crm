@@ -77,7 +77,11 @@ func RegisterAccounts() {
 
 func ExportContracts(cat string, withComments bool) (string, error) {
 	beego.Warn("cat:", cat)
-	contracts, err := GetAllContracts()
+	usr := &Account{
+		Title: "Admin",
+	}
+
+	contracts, err := GetContracts(usr, nil)
 	if err != nil {
 		return "", err
 	}
@@ -163,7 +167,10 @@ func ImportContracts() {
 	orig_format := false
 	orig_format, _ = beego.AppConfig.Bool("orig_format")
 	beego.BeeLogger.Warn("Old format:%t", orig_format)
-	contracts, err := GetAllContracts()
+	usr := &Account{
+		Title: "Admin",
+	}
+	contracts, err := GetContracts(usr, nil)
 	if err == nil && len(contracts) > 0 {
 		return
 	}

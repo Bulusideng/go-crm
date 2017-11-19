@@ -33,6 +33,7 @@ type Comment struct {
 	Date        string
 	Changes     string
 	Content     string
+	Attach      string
 }
 
 func AddComment(c *Comment) error {

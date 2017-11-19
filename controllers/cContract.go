@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"os"
 	"path"
 	"reflect"
 	"strings"
@@ -13,6 +14,9 @@ import (
 
 type ContractController struct {
 	baseController
+	contractURL string
+	contract    *models.Contract
+	curUser     *models.Account
 }
 
 func (this *ContractController) valid(curUser *models.Account) bool {
@@ -40,7 +44,7 @@ func (this *ContractController) Get() {
 	if !this.valid(curUser) {
 		return
 	}
-	contracts, err := models.GetAllContracts()
+	contracts, err := models.GetContracts(curUser, nil)
 	if err != nil {
 		beego.Error(err)
 	} else {
@@ -84,7 +88,7 @@ func (this *ContractController) Query() { //Filter contract
 		}
 	}
 
-	contracts, err := models.GetContracts(filters)
+	contracts, err := models.GetContracts(curUser, filters)
 	if err != nil {
 		beego.Error(err)
 	} else {
@@ -93,82 +97,143 @@ func (this *ContractController) Query() { //Filter contract
 		this.Data["CurUser"] = curUser
 		this.Data["Contracts"] = contracts
 		this.Data["Filters"] = filters
-		contracts, _ := models.GetAllContracts()
 		this.Data["Selectors"] = GetSelectors(contracts, filters)
 		//this.Data["Cnames"] = models.GetCnames()
 	}
 }
 
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+func (this *ContractController) handleAttachment() (string, error) {
+	_, fileHeader, err := this.GetFile("attachment")
+	if err != nil {
+		beego.Error(err)
+		this.RedirectTo("/status", "获取附件失败:"+err.Error(), this.contractURL, 302)
+		return "", err
+	}
+	fileName := ""
+	if fileHeader != nil {
+		fileName = fileHeader.Filename
+		beego.Info(fileName)
+		dir := path.Join("attachment", this.contract.Contract_id)
+
+		exist, _ := PathExists(path.Join(dir, fileName)[1:])
+		if exist {
+			return "", errors.New("附件已存在！")
+		}
+
+		os.MkdirAll(dir, os.ModePerm)
+		err = this.SaveToFile("attachment", path.Join(dir, fileName))
+		if err != nil {
+			beego.Error(err)
+			this.RedirectTo("/status", "保存附件失败!", this.contractURL, 302)
+			return "", err
+		}
+		att := &models.Attachment{
+			Author:      this.curUser.Cname,
+			Contract_id: this.contract.Contract_id,
+			Link:        path.Join("/", dir, fileName),
+			Name:        fileName,
+		}
+		err = models.AddAttachment(att)
+		if err != nil {
+			beego.Error(err)
+			this.RedirectTo("/status", err.Error(), this.contractURL, 302)
+			return "", err
+		}
+	}
+	return fileName, nil
+}
+
 func (this *ContractController) Post() {
-	curUser := GetCurAcct(this.Ctx)
-	if !this.valid(curUser) {
+	this.curUser = GetCurAcct(this.Ctx)
+	if !this.valid(this.curUser) {
 		return
 	}
 
-	c := models.NewContract()
-	err := this.ParseForm(c)
+	this.contract = models.NewContract()
+	err := this.ParseForm(this.contract)
 	if err != nil {
 		beego.Error(err)
 		return
 	}
 
 	op := this.Input().Get("op")
-	beego.Debug(curUser.Cname, " op: [", op, "] on: ", *c)
+	beego.Debug(this.curUser.Cname, " op: [", op, "] on: ", *this.contract)
 
 	for k, v := range this.Ctx.Request.Form {
 		beego.Debug("Param ", k, ":", v)
 	}
 
-	contractURL := "/contract/view?cid=" + string(c.Contract_id)
+	this.contractURL = "/contract/view?cid=" + string(this.contract.Contract_id)
 	if op == "add" {
 		//c.Create_by = usr.Title + " " + usr.Cname + "[" + usr.Uname + "]"
-		c.Create_by = curUser.Uname
-		c.Create_date = time.Now().Format("2006-01-02")
-		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
-		err = models.AddContract(c)
+		this.contract.Create_by = this.curUser.Uname
+		this.contract.Create_date = time.Now().Format("2006-01-02")
+		this.contract.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
+		_, err = this.handleAttachment()
+		if err != nil {
+			return
+		}
+
+		err = models.AddContract(this.contract)
 		if err == nil {
-			this.RedirectTo("/status", "添加成功!", contractURL, 302)
+			this.RedirectTo("/status", "添加成功!", this.contractURL, 302)
 		}
 	} else if op == "update" {
 		oldContractId := this.GetString("oldContractId", "")
 		if oldContractId == "" {
-			oldContractId = c.Contract_id
+			oldContractId = this.contract.Contract_id
 		}
-		c.Consulters = strings.Join(this.Ctx.Request.Form["Consulters"], "&")
-		c.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
+		this.contract.Consulters = strings.Join(this.Ctx.Request.Form["Consulters"], "&")
+		this.contract.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
 		//fmt.Printf("New values: %+v\n", *c)
 		var changes *models.ChangeSlice
-		changes, err = models.UpdateContract(curUser, oldContractId, c)
+		changes, err = models.UpdateContract(this.curUser, oldContractId, this.contract)
 		if err == nil {
+			fname, err := this.handleAttachment()
+			if err != nil {
+				return
+			}
 			txt := this.GetString("NewComment", "")
-			if len(txt) > 0 || len(*changes) > 0 {
+			if len(txt) > 0 || len(*changes) > 0 || len(fname) > 0 {
 				cmt := &models.Comment{
-					Contract_id: c.Contract_id,
-					Title:       curUser.Title,
-					Uname:       curUser.Uname,
-					Cname:       curUser.Cname,
+					Contract_id: this.contract.Contract_id,
+					Title:       this.curUser.Title,
+					Uname:       this.curUser.Uname,
+					Cname:       this.curUser.Cname,
 					Date:        time.Now().Format(time.RFC1123),
 					Changes:     changes.String(),
 					Content:     txt,
+					Attach:      fname,
 				}
 				err = models.AddComment(cmt)
 				if err == nil {
-					this.RedirectTo("/status", "更新成功!", contractURL, 302)
+					this.RedirectTo("/status", "更新成功!", this.contractURL, 302)
 				} else {
-					this.RedirectTo("/status", "更新失败: "+err.Error(), contractURL, 302)
+					this.RedirectTo("/status", "更新失败: "+err.Error(), this.contractURL, 302)
 				}
 			} else {
-				this.RedirectTo("/status", "没有更新项!", contractURL, 302)
+				this.RedirectTo("/status", "没有更新项!", this.contractURL, 302)
 			}
 		}
 
 	} else if op == "backup" {
 		pwd := this.GetString("pwd", "")
-		if !curUser.ValidPwd(pwd) {
+		if !this.curUser.ValidPwd(pwd) {
 			this.RedirectTo("/status", "密码错误!", "/contract/backup", 302)
 			return
 		}
-		if !(curUser.IsManager() || curUser.IsAdmin()) {
+		if !(this.curUser.IsManager() || this.curUser.IsAdmin()) {
 			this.RedirectTo("/status", "当前帐号没有备份权限!", "/contract", 302)
 			return
 		}
@@ -183,20 +248,18 @@ func (this *ContractController) Post() {
 		} else {
 			this.Redirect("/contract/backup?file="+fn, 302)
 		}
-
 		return
 	} else {
 		beego.Error("Invalid op:%s", op)
 		err = errors.New("非法操作: " + op)
 		this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
 	}
-
 	if err != nil {
 		beego.Error(err)
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			this.RedirectTo("/status", "操作失败: "+"合同号已存在:"+c.Contract_id, "/contract", 302)
+			this.RedirectTo("/status", "操作失败: "+"合同号已存在:"+this.contract.Contract_id, "/contract", 302)
 		} else if strings.Contains(err.Error(), "no row found") {
-			this.RedirectTo("/status", "操作失败: "+"合同号不存在:"+c.Contract_id, "/contract", 302)
+			this.RedirectTo("/status", "操作失败: "+"合同号不存在:"+this.contract.Contract_id, "/contract", 302)
 		} else {
 			this.RedirectTo("/status", "操作失败: "+err.Error(), "/contract", 302)
 		}
@@ -272,7 +335,6 @@ func (this *ContractController) View() {
 	if !this.valid(curUser) {
 		return
 	}
-
 	cid := this.GetString("cid", "-1")
 	contract, err := models.GetContract(cid)
 	if err != nil {
@@ -297,6 +359,8 @@ func (this *ContractController) View() {
 	this.Data["Perm"] = Perm
 	this.Data["Comments"], _ = models.GetComments(cid)
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
+	this.Data["Attachments"], _ = models.GetAttachments(cid)
+
 }
 
 func (this *ContractController) Viewo() {

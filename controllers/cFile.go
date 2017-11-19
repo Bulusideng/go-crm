@@ -9,21 +9,20 @@ import (
 )
 
 type FileController struct {
-	beego.Controller
+	baseController
 }
 
-func (c *FileController) Get() {
-	filePath, err := url.QueryUnescape(c.Ctx.Request.RequestURI[1:])
+func (this *FileController) Get() {
+	filePath, err := url.QueryUnescape(this.Ctx.Request.RequestURI[1:])
 	if err != nil {
 		beego.Error(err)
 		return
 	}
 	f, err := os.Open(filePath)
 	if err != nil {
-		c.Ctx.WriteString(err.Error())
+		this.Ctx.WriteString(err.Error())
 	}
 	defer f.Close()
 
-	_, err = io.Copy(c.Ctx.ResponseWriter, f)
-
+	_, err = io.Copy(this.Ctx.ResponseWriter, f)
 }

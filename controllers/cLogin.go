@@ -14,6 +14,7 @@ type LoginController struct {
 }
 
 func (c *LoginController) Get() {
+	fmt.Printf("server on: %s\n", beego.AppConfig.String("HttpAddr"))
 	isExit := c.Input().Get("exit") == "true"
 	failed := c.Input().Get("failed") != ""
 	c.Data["chances"] = c.Input().Get("chances")

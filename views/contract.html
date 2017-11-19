@@ -17,7 +17,7 @@
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */		
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器 */		
 		display:flex;  /*Center*/
 		
 	}
@@ -45,12 +45,13 @@
   
   
 <body >    
+	{{$CurUser := .CurUser}}
 	<!--Disable form if not adim/manager or customer's worker-->
     <div class="container" id="mainform" Perm={{.Perm}}>
         <h1 class="text-center" >合同信息</h1>
         <form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
             {{$Team := .Team}}
-            {{$CurUser := .CurUser}}
+            
                 <div class="row">
                     {{with .Contract}}
                     <div class="col-md-4">
@@ -187,17 +188,22 @@
                             <label>拒签:</label>
                             <input type="date" class="form-control" name="Fail_date" value={{.Fail_date}}>
                         </div>
-                        <div style="display:none" class="form-group">
-                            <label>附件:</label>
-                            <input type="file" class="form-control" name="attachment" >
-                        </div>
+						
                     </div>
                     {{end}}
                 </div>
                 <div class="row">            
                     <div class="col-md-12">
                         <label>更新:</label><textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"  name="NewComment"></textarea></br>
+						<div class="form-group">
+                            <label>添加附件:</label>
+                            <input type="file" class="form-control" name="attachment">
+                        </div>
                         <center>
+							<a class="btn  btn-danger" href="/attachment/view?cid={{.Contract.Contract_id}}" >查看附件</a>
+							<!--
+							<a id="modal-attachment" href="#modal-container-attachment" role="button" data-toggle="modal">附件<a>
+							-->
                             {{if ne .Perm "Read"}}
                             <button type="submit" id="btn_submit" class="btn  btn-danger">更新</button>
                             {{end}}
@@ -214,6 +220,9 @@
                                 {{if ne .Changes ""}}
                                 <label class="warn">状态变化: {{.Changes}}</label>
                                 {{end}}
+								{{if ne .Attach ""}}
+								<label class="warn">附件: {{.Attach}}</label>
+								{{end}}
                             </li>
                             {{end}}
                         </ol>
@@ -222,7 +231,82 @@
         </form>
     </div>
 
-<div class="row">    
+
+
+
+<div class="row">
+    <div class="modal fade" id="modal-container-attachment" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        取消
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        附件
+                    </h4>
+                </div>
+                <div class="modal-body" id="consCheckGroup">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-12">
+							<h1 class="text-center" >附件列表</h1>
+								<table class="table">
+									<thead>
+										<tr>
+											<th>
+												作者
+											</th>
+											
+											<th>
+												文件
+											</th>
+											<th>
+												删除
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{{$Contract := .Contract}}
+										{{range .Attachments}}
+										<tr>
+											<td>
+												{{.Author}}
+											</td>
+											
+											<td>
+												<a href={{.Link}}>{{.Name}}</a>
+											</td>
+											
+											<td>
+												{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+												<a href="/attachment/delete?cid={{$Contract.Contract_id}}&id={{.Id}}">删除</a>
+												{{end}}
+											</td>
+										</tr>
+										{{end}}										
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> 
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
     <div class="modal fade" id="modal-container-consulter" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -243,7 +327,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         取消
                     </button> 
-                    {{if or (eq .CurUser.Title "Manager") (eq .CurUser.Title "Admin")}}
+                   {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveConsulter">
                         保存
                     </button>
@@ -397,3 +481,4 @@
 
 
 </html>
+

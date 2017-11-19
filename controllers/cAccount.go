@@ -152,16 +152,18 @@ func (this *AccountController) Post() {
 			this.RedirectTo("/status", "找回密码失败:"+err.Error(), "/login", 302)
 			return
 		}
-		link := "/account/pwdreset?Uname=" + acct.Uname + "&Random=" + acct.Random
+
+		link := "http://" + beego.AppConfig.String("HttpAddr") + "/account/pwdreset?Uname=" + acct.Uname + "&Random=" + acct.Random
 		//TODO send link through email
-		if true {
+		if false {
 			beego.Debug("Host: ", this.Ctx.Request.Host)
-			this.RedirectTo("/status", "重置密码链接已发送至邮箱！", link, 302)
+			this.RedirectTo("/status", "重置密码链接已发送至邮箱，假的。。。", "/account/pwdreset?Uname="+acct.Uname+"&Random="+acct.Random, 302)
 		} else {
-			if SendEmail(acct.Email, link) {
-				this.RedirectTo("/status", "重置密码链接已发送至邮箱！", "", 302)
+			content := `请访问以下链接重置密码:  ` + link
+			if SendEmail(acct.Email, "重置密码", content) {
+				this.RedirectTo("/status", "重置密码链接已发送至邮箱！", "/login", 302)
 			} else {
-				this.RedirectTo("/status", "重置邮件发送失败！", "", 302)
+				this.RedirectTo("/status", "重置邮件发送失败！", "/login", 302)
 			}
 		}
 

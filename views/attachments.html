@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+ {{template "header"}}
+  <title> 附件 </title>
+	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器 */
+		display:flex;  /*Center*/
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=30);
+		-moz-opacity:0.3;
+	}
+    
+		*{
+		  	color: #FFF;
+		 	font-family:"仿宋";
+			font-weight:bold;
+		}
+		
+		label, th, td{
+			font-size : 1.3em;
+		}
+	
+	</style>
+  </head>
+
+  <body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+            <h1 class="text-center" >附件列表</h1>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							作者
+						</th>
+						<th>
+							日期
+						</th>
+						<th>
+							文件
+						</th>
+						<th>
+							删除
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{$CurUser := .CurUser}}
+					{{range .Attachments}}
+					<tr>
+						<td>
+							{{.Author}}
+						</td>
+						<td>
+							{{.Time}}
+						</td>
+						<td>
+							<a href={{.Link}}>{{.Name}}</a>
+						</td>
+						{{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+						<td>
+							<a href="/attachment/delete?cid={{.Contract_id}}&id={{.Id}}">删除</a>
+						</td>
+						{{end}}
+					</tr>
+					{{end}}										
+				</tbody>
+			</table>
+			<center>
+				<a class="btn  btn-danger" href="/contract/view?cid={{.cid}}">返回</a>
+			</center>
+		</div>
+	</div>
+  </body>
+</html>
+

@@ -18,7 +18,7 @@
 			
 			body{
 				background: url();
-				background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */
+				background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器 */
 				display:flex;  /*Center*/
 			}
 			.container {
@@ -41,21 +41,28 @@
   	<body>
 		<div class="container">
 			<div class="row">
-				<div class="col-md-3">
+				<div class="col-md-4">
 				</div>
-				<div class="col-md-6">
-			        <h1 class="text-center" >找回密码</h1>
+				<div class="col-md-4">
+			        <h1 class="text-center" >找回密码</h1></br>
 			        <form method="post" action="/account?op=forgetpwd" onsubmit="return checkRegist()" enctype="multipart/form-data">
 			            <div class="form-group">
+							<label>用户名:</label>
 							<input type="text" placeholder="请输入用户名"  class="form-control" name="Uname" required="required">
 			            </div>
+						</br>
+						<div class="form-group">
+							<label>姓 名:</label>
+							<input type="text" placeholder="请输入姓名"  class="form-control" name="Cname" required="required">
+			            </div>
+						</br>
 						<center>
 			            	<button type="submit" class="btn btn-danger">确定</button>
 							<a class="btn btn-danger" href="/contract">取消</a>
 						</center>
 			        </form>
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-4">
 				</div>
 			</div>
 		</div>

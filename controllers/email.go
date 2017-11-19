@@ -11,14 +11,15 @@ import (
 	"github.com/astaxie/beego"
 )
 
-func SendEmail(to, body string) bool {
+func SendEmail(to, title, body string) bool {
+	//to = "dbiti@163.com" //test
 	from := beego.AppConfig.String("mailaddr")
 	pwd := beego.AppConfig.String("mailpwd")
 	smtpaddr := beego.AppConfig.String("smtpaddr")
 
-	msg := "From: " + from + "\n" +
+	msg := "From: " + "Admin" + "\n" +
 		"To: " + to + "\n" +
-		"Subject: Reset pwd\n\n" +
+		"Subject: " + title + "\n\n" +
 		body
 
 	err := smtp.SendMail(smtpaddr+":25",
@@ -26,9 +27,10 @@ func SendEmail(to, body string) bool {
 		from, []string{to}, []byte(msg))
 
 	if err != nil {
-		log.Printf("smtp error: %s", err)
+		fmt.Printf("smtp error: %s\n", err)
 		return false
 	}
+	fmt.Printf("Send mail success: %s %s\n", to, body)
 	return true
 }
 

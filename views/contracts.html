@@ -3,29 +3,23 @@
 	{{template "header"}}
 		<title> 首页 - 客户管理</title>  
 		<style>
-		
+			html{
+				height:100%;
+				width:100%;
+				margin:0;
+						background: url("/static/images/01.jpg") no-repeat center center fixed; 
+				
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-o-background-size: cover;
+				background-size: cover;
+			}
 			
-		html{
-		height:100%;
-		width:100%;
-		margin:0;
-				background: url("/static/images/01.jpg") no-repeat center center fixed; 
-		
-		-webkit-background-size: cover;
-		-moz-background-size: cover;
-		-o-background-size: cover;
-		background-size: cover;
-	}
-	
-	body{
-		background: url();
-		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器(如QQ浏览器)会读懂 */		
-		display:flex;  /*Center*/
-		
-	}
-			
-			
-			
+			body{
+				background: url();
+				background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器 */		
+				display:flex;  /*Center*/	
+			}
 			label,a{
 				color:#FFF;
 			}
@@ -38,7 +32,7 @@
         {{template "navbar" .}}
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table" >
+				<table class="table table-condensed  " >
 					<thead>
 						<tr>
 							<form method="post" action="/contract/query"  enctype="multipart/form-data">								
@@ -124,7 +118,7 @@
 									</select>
 								</th>
 								<th>
-									<button type="submit" class="btn btn-success">查询</button>
+									<button type="submit" class="btn btn-success" style="background-color:#4D76B3">查询</button>
 								</th>
 								<th>
 									<label>状态:</label>
@@ -148,7 +142,7 @@
 							<label>{{$idx}}</label>
 							</td>
 							<td>
-								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">{{.Contract_id}}</a>
+								<a class="btn" style="color:#FF0000" href="/contract/view?cid={{.Contract_id}}">{{.Contract_id}}</a>
 							</td>	
 							<td>
 								<a href="/contract/query?filter=Client_name:{{.Client_name}}">{{.Client_name}}</a>
@@ -172,7 +166,7 @@
 								<a href="/contract/query?filter=Zhuan_an_date:{{.Zhuan_an_date}}">{{.Zhuan_an_date}}</a>
 							</td>
 							<td>
-								<a class="btn  btn-success" href="/contract/view?cid={{.Contract_id}}">详情</a>
+								<a class="btn" style="color:#FF0000" href="/contract/view?cid={{.Contract_id}}">详情</a>
 							</td>
 							<td>
 								<a href="/contract/query?filter=Current_state:{{.Current_state}}">{{.Current_state}}</a>

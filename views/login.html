@@ -17,7 +17,7 @@
 	
 	body{
 		background: url();
-		background-color: rgba(0,0,0,0.5);/* IE9、标准浏览器、IE6和部分IE7内核 */
+		background-color: rgba(0,0,0,0.6);/* IE9、标准浏览器、IE6和部分IE7内核 */
 		display:flex;  /*Center*/
 	}
 	.container {
@@ -28,7 +28,6 @@
 	h2,	label{
 	  color: #FFF;
 	}
-
 </style>
 </head>
 
@@ -39,7 +38,7 @@
 	</div>
 	<div class="col-md-4" style="border:1px solid; padding:30px; color:#FFF">
 		<form action="/login" method="post">
-			<b><h2>欢迎登录</h2></b>
+			<center><b><h2>欢迎登录</h2></b></center>
 			<div class="input-group input-group-md" style="margin:20px">
 				<span class="input-group-addon" id="sizing-addon1"><i class="glyphicon glyphicon-user" aria-hidden="true"></i></span>
 				<input type="text" style="height:40px;" class="form-control" id="uname" name="uname" placeholder="请输入用户名" required="required"/>
@@ -52,7 +51,9 @@
 			<center>					
 				<button type="submit" class="btn btn-danger" style="margin:10px;">登录</button> 
 				<a class="btn btn-danger btn-form display-4" href="/account/register" style="margin:10px">注册</a>
+				<!--
 				<a class="btn btn-danger btn-form display-4" href="/account/pwdforget">忘记密码</a>
+				-->
 			</center>
 		</form>
 	</div>
