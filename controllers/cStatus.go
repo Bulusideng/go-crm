@@ -10,5 +10,4 @@ func (this *StatusController) Get() {
 	this.Data["CurUser"] = GetCurAcct(this.Ctx)
 	this.Data["Message"] = this.GetString("Message")
 	this.Data["RedirectTo"] = this.GetString("RedirectTo")
-	this.Data["RICH"] = IsRichView()
 }

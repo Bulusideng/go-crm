@@ -33,7 +33,7 @@ func AddAttachment(a *Attachment) error {
 	return nil
 }
 
-func DelAttachment(id int) error {
+func DelAttachment(id int) (string, error) {
 	o := orm.NewOrm()
 
 	a := &Attachment{
@@ -41,13 +41,13 @@ func DelAttachment(id int) error {
 	}
 	err := o.Read(a)
 	if err != nil {
-		return err
+		return "", err
 	}
 	err = os.Remove(a.Link[1:])
 	if err == nil || os.IsNotExist(err) { //Success or file not exit, delete the record in db
 		_, err = o.Delete(a)
 	}
-	return err
+	return a.Name, err
 }
 
 func GetAttachments(cid string) ([]*Attachment, error) {

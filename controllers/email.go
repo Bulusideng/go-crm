@@ -8,14 +8,15 @@ import (
 	"net/mail"
 	"net/smtp"
 
-	"github.com/astaxie/beego"
+	"github.com/Bulusideng/go-crm/models"
 )
 
 func SendEmail(to, title, body string) bool {
-	//to = "dbiti@163.com" //test
-	from := beego.AppConfig.String("mailaddr")
-	pwd := beego.AppConfig.String("mailpwd")
-	smtpaddr := beego.AppConfig.String("smtpaddr")
+	cfg := models.GetConfig()
+
+	from := cfg.Mailaddr
+	pwd := cfg.Mailpwd
+	smtpaddr := cfg.Smtpaddr
 
 	msg := "From: " + "Admin" + "\n" +
 		"To: " + to + "\n" +

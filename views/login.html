@@ -51,9 +51,9 @@
 			<center>					
 				<button type="submit" class="btn btn-danger" style="margin:10px;">登录</button> 
 				<a class="btn btn-danger btn-form display-4" href="/account/register" style="margin:10px">注册</a>
-				<!--
+				{{if .PwdRstSpt}}
 				<a class="btn btn-danger btn-form display-4" href="/account/pwdforget">忘记密码</a>
-				-->
+				{{end}}
 			</center>
 		</form>
 	</div>

@@ -44,7 +44,6 @@ func (this *AccountController) Get() {
 func (this *AccountController) Register() {
 	this.TplName = "account_register.html"
 	this.Data["RegAcct"] = true
-	this.Data["RICH"] = IsRichView()
 	mgrs, _ := models.AcctByTitle("Manager")
 	admins, _ := models.AcctByTitle("Admin")
 	this.Data["Managers"] = append(mgrs, admins...)
@@ -52,7 +51,6 @@ func (this *AccountController) Register() {
 
 func (this *AccountController) PwdForget() {
 	this.TplName = "account_pwdforget.html"
-	this.Data["RICH"] = IsRichView()
 }
 
 func (this *AccountController) PwdReset() {
@@ -74,7 +72,6 @@ func (this *AccountController) PwdReset() {
 	}
 	this.TplName = "account_pwdreset.html"
 	this.Data["Uname"] = uname
-	this.Data["RICH"] = IsRichView()
 }
 
 func (this *AccountController) View() {
@@ -153,11 +150,13 @@ func (this *AccountController) Post() {
 			return
 		}
 
-		link := "http://" + beego.AppConfig.String("HttpAddr") + "/account/pwdreset?Uname=" + acct.Uname + "&Random=" + acct.Random
+		host := "http://" + this.Ctx.Request.Host
+
+		link := host + "/account/pwdreset?Uname=" + acct.Uname + "&Random=" + acct.Random
 		//TODO send link through email
-		if false {
+		if true {
 			beego.Debug("Host: ", this.Ctx.Request.Host)
-			this.RedirectTo("/status", "重置密码链接已发送至邮箱，假的。。。", "/account/pwdreset?Uname="+acct.Uname+"&Random="+acct.Random, 302)
+			this.RedirectTo("/status", "重置密码链接已发送至:"+link, "/account/pwdreset?Uname="+acct.Uname+"&Random="+acct.Random, 302)
 		} else {
 			content := `请访问以下链接重置密码:  ` + link
 			if SendEmail(acct.Email, "重置密码", content) {

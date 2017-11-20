@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+ {{template "header"}}
+  <title>系统配置</title>
+	<style>
+	html,body {
+		height:100%;
+		width:100%;
+		margin:0;
+	
+		background: url("/static/images/01.jpg") no-repeat center center fixed; 
+		
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		
+	}
+	
+	body{
+		background: url();
+		background-color: rgba(0,0,0,0.1);/* IE9、标准浏览器、IE6和部分IE7内核的浏览器*/
+		display:flex;  /*Center*/
+	}
+	.container {
+		margin:auto;
+		filter:alpha(opacity=50);
+		-moz-opacity:0.5;
+	}
+	
+	h1,*{
+	  	color: #FFF;
+	 	font-family:"仿宋";
+		font-weight:bold;
+	}
+	
+	a,label, th, td{
+		font-size : 1.5em;
+	}
+
+	</style>
+  </head>
+
+  <body>
+	
+	<div class="container">		
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-6">
+			<center><h1>系统配置</h1></center>
+			<form class ="table table-hover" method="post" action="/config" onsubmit="return checkConfig()" enctype="multipart/form-data">
+				<div class="form-group">
+	                <label>访问控制(员工仅能查看自己客户信息):</label>
+	                <input type="checkbox" name="Contract_view_control" 
+					{{if .Config.Contract_view_control}}
+					checked = "checked"
+					{{end}}>
+	            </div>
+				<div class="form-group">
+	                <label>找回密码功能:</label>
+	                <input type="checkbox" name="Pwdreset" id="Pwdreset"
+					{{if .Config.Pwdreset}}
+					checked = "checked"
+					{{end}}>
+	            </div>
+				
+				<div class="form-group">
+	                <label>邮箱:</label>
+	                <input type="email" class="form-control" placeholder="请输入合法邮箱地址" name="Mailaddr" id="Mailaddr" pattern="[^@]+@[^@]+\.[a-zA-Z]{2,}" value={{.Config.Mailaddr}}>
+	            </div>
+				<div class="form-group">
+	                <label>密码:</label>
+	                <input type="password" class="form-control" name="Mailpwd" id="Mailpwd" value={{.Config.Mailpwd}}>
+	            </div>
+					<center>
+	            	<button type="submit" class="btn btn-danger">确定</button>
+					<a class="btn  btn-danger" href="/contract">取消</a>
+					</center>
+	        </form>
+		</div>
+		<div class="col-md-3">
+		</div>
+	</div>    
+	{{template "script"}}
+	<script>
+			function checkConfig()
+			{
+				if ($('#Pwdreset').prop('checked')){
+					if($('#Mailaddr').val().length == 0 || $('#Mailpwd').val().length == 0){
+						alert("请设为找回密码功能设置邮箱帐号！");
+						return false;	
+					}
+				}
+				return true;
+			}
+		</script>
+  </body>
+</html>
+
+

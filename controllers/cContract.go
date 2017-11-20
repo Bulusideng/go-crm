@@ -54,7 +54,6 @@ func (this *ContractController) Get() {
 	this.TplName = "contracts.html"
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
-	this.Data["RICH"] = IsRichView()
 
 }
 
@@ -113,45 +112,55 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
-func (this *ContractController) handleAttachment() (string, error) {
-	_, fileHeader, err := this.GetFile("attachment")
+func (this *ContractController) handleAttachment() (files []string, err error) {
+
+	attachDescrip := this.GetString("attachDescrip")
+	fileHeaders, err := this.GetFiles("attachment")
 	if err != nil {
 		beego.Error(err)
 		this.RedirectTo("/status", "获取附件失败:"+err.Error(), this.contractURL, 302)
-		return "", err
+		return files, err
 	}
-	fileName := ""
-	if fileHeader != nil {
-		fileName = fileHeader.Filename
-		beego.Info(fileName)
-		dir := path.Join("attachment", this.contract.Contract_id)
 
-		exist, _ := PathExists(path.Join(dir, fileName)[1:])
-		if exist {
-			return "", errors.New("附件已存在！")
-		}
+	for _, fileHeader := range fileHeaders {
+		fileName := ""
+		if fileHeader != nil {
+			fileName = fileHeader.Filename
+			beego.Info(fileName)
+			dir := path.Join("attachment", this.contract.Contract_id)
 
-		os.MkdirAll(dir, os.ModePerm)
-		err = this.SaveToFile("attachment", path.Join(dir, fileName))
-		if err != nil {
-			beego.Error(err)
-			this.RedirectTo("/status", "保存附件失败!", this.contractURL, 302)
-			return "", err
-		}
-		att := &models.Attachment{
-			Author:      this.curUser.Cname,
-			Contract_id: this.contract.Contract_id,
-			Link:        path.Join("/", dir, fileName),
-			Name:        fileName,
-		}
-		err = models.AddAttachment(att)
-		if err != nil {
-			beego.Error(err)
-			this.RedirectTo("/status", err.Error(), this.contractURL, 302)
-			return "", err
+			exist, _ := PathExists(path.Join(dir, fileName))
+			if exist {
+				beego.Error("附件已存在")
+				this.RedirectTo("/status", "附件已存在！", this.contractURL, 302)
+				return files, errors.New("附件已存在！")
+			}
+
+			os.MkdirAll(dir, os.ModePerm)
+			err = this.SaveToFile("attachment", path.Join(dir, fileName))
+			if err != nil {
+				beego.Error(err)
+				this.RedirectTo("/status", "保存附件失败!", this.contractURL, 302)
+				return files, err
+			}
+			att := &models.Attachment{
+				Author:      this.curUser.Cname,
+				Contract_id: this.contract.Contract_id,
+				Link:        path.Join("/", dir, fileName),
+				Name:        fileName,
+				Descrip:     attachDescrip,
+			}
+			err = models.AddAttachment(att)
+			if err != nil {
+				beego.Error(err)
+				this.RedirectTo("/status", err.Error(), this.contractURL, 302)
+				return files, err
+			}
+			files = append(files, fileName)
 		}
 	}
-	return fileName, nil
+
+	return files, nil
 }
 
 func (this *ContractController) Post() {
@@ -180,14 +189,29 @@ func (this *ContractController) Post() {
 		this.contract.Create_by = this.curUser.Uname
 		this.contract.Create_date = time.Now().Format("2006-01-02")
 		this.contract.Secretaries = strings.Join(this.Ctx.Request.Form["Secretaries"], "&")
-		_, err = this.handleAttachment()
-		if err != nil {
-			return
-		}
 
 		err = models.AddContract(this.contract)
-		if err == nil {
+		if err != nil {
+			this.RedirectTo("/status", err.Error(), this.contractURL, 302)
+			return
+		}
+		fnames, err := this.handleAttachment()
+		if err != nil {
+			return
+		} else {
+			if len(fnames) > 0 {
+				cmt := &models.Comment{
+					Contract_id: this.contract.Contract_id,
+					Title:       this.curUser.Title,
+					Uname:       this.curUser.Uname,
+					Cname:       this.curUser.Cname,
+					Date:        time.Now().Format(time.RFC1123),
+					Attach:      strings.Join(fnames, ", "),
+				}
+				err = models.AddComment(cmt)
+			}
 			this.RedirectTo("/status", "添加成功!", this.contractURL, 302)
+			return
 		}
 	} else if op == "update" {
 		oldContractId := this.GetString("oldContractId", "")
@@ -200,12 +224,12 @@ func (this *ContractController) Post() {
 		var changes *models.ChangeSlice
 		changes, err = models.UpdateContract(this.curUser, oldContractId, this.contract)
 		if err == nil {
-			fname, err := this.handleAttachment()
+			fnames, err := this.handleAttachment()
 			if err != nil {
 				return
 			}
 			txt := this.GetString("NewComment", "")
-			if len(txt) > 0 || len(*changes) > 0 || len(fname) > 0 {
+			if len(txt) > 0 || len(*changes) > 0 || len(fnames) > 0 {
 				cmt := &models.Comment{
 					Contract_id: this.contract.Contract_id,
 					Title:       this.curUser.Title,
@@ -214,7 +238,7 @@ func (this *ContractController) Post() {
 					Date:        time.Now().Format(time.RFC1123),
 					Changes:     changes.String(),
 					Content:     txt,
-					Attach:      fname,
+					Attach:      strings.Join(fnames, ", "),
 				}
 				err = models.AddComment(cmt)
 				if err == nil {
@@ -281,7 +305,6 @@ func (this *ContractController) Backup() {
 	this.TplName = "contract_backup.html"
 	this.Data["BakClient"] = true
 	this.Data["CurUser"] = curUser
-	this.Data["RICH"] = IsRichView()
 	fn := this.GetString("file", "")
 	if fn != "" {
 		this.Data["FILE"] = path.Join("/files", fn)
@@ -301,7 +324,6 @@ func (this *ContractController) Add() {
 	this.TplName = "contract_add.html"
 	this.Data["AddClient"] = true
 	this.Data["CurUser"] = curUser
-	this.Data["RICH"] = IsRichView()
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 }
 

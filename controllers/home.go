@@ -10,6 +10,7 @@ type MainController struct {
 }
 
 func (this *MainController) Get() {
+	beego.Warn("Remote addr:", this.Ctx.Request.RemoteAddr)
 	this.Redirect("/login", 302)
 	return
 	this.Data["IsHome"] = true

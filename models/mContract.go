@@ -301,14 +301,10 @@ func UpdateContract(curUser *Account, oldContractId string, c *Contract) (*Chang
 	return &changes, nil
 }
 
-var (
-	doFilter = true
-)
-
 func getCond(usr *Account) *orm.Condition {
 	cond := orm.NewCondition()
 	cond = cond.And("status", "Active")
-	if usr.IsManager() || usr.IsAdmin() || !doFilter {
+	if usr.IsManager() || usr.IsAdmin() || !GetConfig().Contract_view_control {
 		return cond
 	}
 

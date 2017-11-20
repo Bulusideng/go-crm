@@ -13,26 +13,25 @@ type LoginController struct {
 	baseController
 }
 
-func (c *LoginController) Get() {
-	fmt.Printf("server on: %s\n", beego.AppConfig.String("HttpAddr"))
-	isExit := c.Input().Get("exit") == "true"
-	failed := c.Input().Get("failed") != ""
-	c.Data["chances"] = c.Input().Get("chances")
+func (this *LoginController) Get() {
+	isExit := this.Input().Get("exit") == "true"
+	failed := this.Input().Get("failed") != ""
+	this.Data["chances"] = this.Input().Get("chances")
 
 	if isExit || failed {
-		c.Ctx.SetCookie("uname", "", -1, "/")
-		c.Ctx.SetCookie("title", "", -1, "/")
+		this.Ctx.SetCookie("uname", "", -1, "/")
+		this.Ctx.SetCookie("title", "", -1, "/")
 		beego.Debug("Clear cookie...")
 	}
 	if isExit {
-		c.Redirect("/", 302)
+		this.Redirect("/", 302)
 	} else {
 		if failed {
-			c.Data["Failed"] = true
+			this.Data["Failed"] = true
 		}
-		c.TplName = "login.html"
+		this.TplName = "login.html"
+		this.Data["PwdRstSpt"] = models.GetConfig().Pwdreset
 	}
-	c.Data["RICH"] = IsRichView()
 }
 
 func (c *LoginController) Post() {
