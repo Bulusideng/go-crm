@@ -117,9 +117,9 @@ func (this *ContractController) handleAttachment() (files []string, err error) {
 	attachDescrip := this.GetString("attachDescrip")
 	fileHeaders, err := this.GetFiles("attachment")
 	if err != nil {
-		beego.Error(err)
-		this.RedirectTo("/status", "获取附件失败:"+err.Error(), this.contractURL, 302)
-		return files, err
+		//beego.Error(err)
+		//this.RedirectTo("/status", "获取附件失败:"+err.Error(), this.contractURL, 302)
+		return files, nil
 	}
 
 	for _, fileHeader := range fileHeaders {
