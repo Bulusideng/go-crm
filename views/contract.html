@@ -68,6 +68,7 @@
                                 <form class="col-xs-16" method="post" action="/contract?op=update" onsubmit="postSubmit()" enctype="multipart/form-data">
                                     {{$CurUser := .CurUser}}
                                     {{$Team := .Team}}
+									{{$Perm := .Perm}}
                                         
                                     <div class="row-fluid">
                                         {{with .Contract}}
@@ -75,167 +76,260 @@
                                             <input type="text" class="form-control" id = "oldContractId" name="oldContractId" value={{.Contract_id}} readonly style="display:none">
                                             <div class="form-group">
                                                 <label>合同号:</label>
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                                {{if ge $Perm 2}}
                                                 </label><input type="checkbox" class="MgrWrite" id="changeCid" /><label>修改</label>
                                                 {{end}}
                                                 <input type="text" pattern="[0-9]+" class="form-control" id="Contract_id" name="Contract_id" required="required" readonly value={{.Contract_id}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>序号:</label>
-                                                <input type="number" class="form-control MgrWrite" name="Seq" 
+                                                <input type="number" class="form-control MgrWrite" name="Seq"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
                                                 value={{.Seq}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>客户姓名:</label>
-                                                <input type="text" class="form-control MgrWrite" name="Client_name" required="required" value={{.Client_name}}>
+                                                <input type="text" class="form-control MgrWrite" name="Client_name" required="required"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
+												value={{.Client_name}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>客户电话:</label>
-                                                <input type="tel" class="form-control MgrWrite" name="Client_tel" value={{.Client_tel}}>
+                                                <input type="tel" class="form-control MgrWrite" name="Client_tel"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
+												value={{.Client_tel}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>国家:</label>
-                                                <input type="text" class="form-control MgrWrite" name="Country" required="required" value={{.Country}}>
+                                                <input type="text" class="form-control MgrWrite" name="Country" required="required"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
+												value={{.Country}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>项目:</label>
-                                                <input type="text" class="form-control MgrWrite" name="Project_type" required="required" value={{.Project_type}}>
+                                                <input type="text" class="form-control MgrWrite" name="Project_type" required="required"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
+												value={{.Project_type}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>签约日期:</label>
-                                                <input type="date" class="form-control MgrWrite" name="Contract_date" value={{.Contract_date}}>
+                                                <input type="date" class="form-control MgrWrite" name="Contract_date"
+												{{if lt $Perm 2}}
+													readonly
+												{{end}}
+												value={{.Contract_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>状态:</label>
-                                                <textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"  name="Current_state">{{.Current_state}}</textarea>
+                                                <textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"
+												{{if lt $Perm 1}}
+													readonly
+												{{end}}
+												name="Current_state">{{.Current_state}}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>顾问:</label>
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                                {{if ge $Perm 2}}
                                                 <a id="modal-consulter" href="#modal-container-consulter" role="button" data-toggle="modal">
                                                 {{end}}
                                                     <input type="text" class="form-control" id="Consulters" name="Consulters" readonly value={{.Consulters}}>
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                                {{if ge $Perm 2}}
                                                 </a>
                                                 {{end}}
                                                 
                                             </div>
                                             <div class="form-group">
                                                 <label>文案:</label>
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                                {{if ge $Perm 2}}
                                                 <a id="modal-secretaries" href="#modal-container-secretaries" role="button" data-toggle="modal">
                                                 {{end}}
                                                     <input type="text" class="form-control" id="Secretaries" name="Secretaries" readonly value={{.Secretaries}}>
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
+                                                {{if ge $Perm 2}}
                                                 </a>
                                                 {{end}}
                                             </div>
                                             <div class="form-group">
                                                 <label>录入人:</label>
-                                                <select class="form-control MgrWrite" id="Create_by" name="Create_by" required="required">
+                                                <select class="form-control MgrWrite" id="Create_by" name="Create_by" required="required"
+												{{if lt $Perm 2}}
+												disabled
+												{{end}}
+												>
                                                 <option value = "N/A">N/A</option>
                                                 {{$cby := .Create_by}}
                                                 {{range $Team}}
-                                                <option value = {{.Uname}} {{if eq $cby .Uname}} class="MgrWrite" selected="selected" {{end}}>{{.Cname}}[{{.Uname}}]</option>
+                                                <option value = {{.Uname}} {{if eq $cby .Uname}} class="MgrWrite" selected="selected" {{end}}
+												>{{.Cname}}[{{.Uname}}]</option>
                                                 {{end}}
                                                 </select>
                                             </div>
                                             <div class="form-group">
                                                 <label>录入日期:</label>
-                                                <input type="date" class="form-control MgrWrite" name="Create_date" value={{.Create_date}}>
+                                                <input type="date" class="form-control MgrWrite" name="Create_date"
+												{{if lt $Perm 2}}
+												readonly
+												{{end}}
+												value={{.Create_date}}>
                                             </div>	
                                             <div class="form-group">
                                                 <label>转案:</label>
-                                                <input type="date" class="form-control" name="Zhuan_an_date" value={{.Zhuan_an_date}}>
+                                                <input type="date" class="form-control" name="Zhuan_an_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Zhuan_an_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>递档:</label>
-                                                <input type="date" class="form-control" name="Didang_date" value={{.Didang_date}}>
+                                                <input type="date" class="form-control" name="Didang_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}} 
+												value={{.Didang_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>档案号:</label>
-                                                <input type="date" class="form-control" name="Danganhao_date" value={{.Danganhao_date}}>
+                                                <input type="date" class="form-control" name="Danganhao_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Danganhao_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>补料:</label>
-                                                <input type="date" class="form-control" name="Buliao_date" value={{.Buliao_date}}>
+                                                <input type="date" class="form-control" name="Buliao_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Buliao_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>通知面试:</label>
-                                                <input type="date" class="form-control" name="Interview_date1" value={{.Interview_date1}}>
+                                                <input type="date" class="form-control" name="Interview_date1"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Interview_date1}}>
                                             </div>
                                         </div>
                                         
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>面试:</label>
-                                                <input type="date" class="form-control" name="Interview_date2" value={{.Interview_date2}}>
+                                                <input type="date" class="form-control" name="Interview_date2"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Interview_date2}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>打款通知:</label>
-                                                <input type="date" class="form-control" name="Pay_date1" value={{.Pay_date1}}>
+                                                <input type="date" class="form-control" name="Pay_date1"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Pay_date1}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>打款确认:</label>
-                                                <input type="date" class="form-control" name="Pay_date2" value={{.Pay_date2}}>
+                                                <input type="date" class="form-control" name="Pay_date2"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}value={{.Pay_date2}}>
+												
                                             </div>
                                             <div class="form-group">
                                                 <label>省提名:</label>
-                                                <input type="date" class="form-control" name="Nominate_date" value={{.Nominate_date}}>
+                                                <input type="date" class="form-control" name="Nominate_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Nominate_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>递交联邦:</label>
-                                                <input type="date" class="form-control" name="Federal_date1" value={{.Federal_date1}}>
+                                                <input type="date" class="form-control" name="Federal_date1"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Federal_date1}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>联邦档案号:</label>
-                                                <input type="date" class="form-control" name="Federal_date2" value={{.Federal_date2}}>
+                                                <input type="date" class="form-control" name="Federal_date2"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Federal_date2}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>通知体检:</label>
-                                                <input type="date" class="form-control" name="Physical_date" value={{.Physical_date}}>
+                                                <input type="date" class="form-control" name="Physical_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Physical_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>获签:</label>
-                                                <input type="date" class="form-control" name="Visa_date" value={{.Visa_date}}>
+                                                <input type="date" class="form-control" name="Visa_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Visa_date}}>
                                             </div>
                                             <div class="form-group">
                                                 <label>拒签:</label>
-                                                <input type="date" class="form-control" name="Fail_date" value={{.Fail_date}}>
+                                                <input type="date" class="form-control" name="Fail_date"
+												{{if lt $Perm 1}}
+												readonly
+												{{end}}
+												value={{.Fail_date}}>
                                             </div>
                                         </div>
                                         {{end}}
                                     </div>
                                     <div class="row-fluid">            
                                         <div class="col-md-12">
-                                            <label>更新:</label><textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;"  name="NewComment"></textarea></br>
+											{{if ge $Perm 1}}
+                                            <label>更新:</label><textarea class="form-control" style="height:110px;overflow-x:visible;overflow-y:visible;" name="NewComment"></textarea></br>
                                             <div class="form-group">
                                                 <label>添加附件:</label>
                                                 <input type="file" class="form-control" name="attachment" multiple="multiple">
                                             </div>
                                             <div class="form-group">
                                                 <label>附件描述:</label>
-                                                <input type="text" class="form-control" name="attachDescrip">
+                                                <input type="text" class="form-control" name="attachDescrip"
+												>
                                             </div>
+											{{end}}
                                             
                                             <center>
-                                                
                                                 <!--
                                                 <a id="modal-attachment" href="#modal-container-attachment" role="button" data-toggle="modal">附件<a>
                                                 -->
-                                                {{if ne .Perm "Read"}}
+                                                {{if ge $Perm 1}}
                                                 <button type="submit" id="btn_submit" class="btn  btn-danger">更新</button>
                                                 {{end}}
                                                 
-                                                {{if or (eq $CurUser.Title "Manager") (eq $CurUser.Title "Admin")}}
-                                                <a class="btn  btn-danger" href="/attachment/view?cid={{.Contract.Contract_id}}" >管理附件</a>
+                                                {{if ge $Perm 2}}
+                                                <!--<a class="btn  btn-danger" href="/attachment/view?cid={{.Contract.Contract_id}}" >管理附件</a>-->
                                                 <a class="btn  btn-danger" href="/contract/delete?cid={{.Contract.Contract_id}}" onclick="return doConfirm()">删除</a>
                                                 {{end}}
                                                 <a id="#toBotton" class="btn  btn-danger" href="/contract">主页</a>
                                             </center>
-                                            
                                         </div>
                                     </div>
                                 </form>
@@ -512,7 +606,7 @@
         */
         
         
-        
+        /*
 		switch ($('#mainform').attr("Perm")){
 			case "Read"://Disable all
 			//readonly do not apply to select and checkbox
@@ -523,6 +617,7 @@
 			$('.MgrWrite').prop('disabled',true);
 			break;
 		}
+		*/
 	});
 	
 	$("#changeCid").change(function() {

@@ -1,0 +1,1 @@
+go-crm.exe > 日志文件.log

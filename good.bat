@@ -1,1 +1,0 @@
-go-crm.exe -rich_view=true > good_log.log

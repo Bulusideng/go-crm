@@ -352,6 +352,14 @@ func (this *ContractController) Delete() {
 	}
 }
 
+type Perm int
+
+const (
+	permRead     Perm = iota // 0
+	permParWrite             // 1
+	permWrite                // 2
+)
+
 func (this *ContractController) View() {
 	curUser := GetCurAcct(this.Ctx)
 	if !this.valid(curUser) {
@@ -364,13 +372,13 @@ func (this *ContractController) View() {
 		this.Redirect("/contract", 302)
 		return
 	}
-	Perm := "Read"
+	perm := 0
 	//Manager, full write permission, consulter or secretary, partial wirte permission
 	if curUser.IsManager() || curUser.IsAdmin() {
-		Perm = "Write"
+		perm = 2
 	} else {
 		if strings.Contains(contract.Consulters, curUser.Cname) || strings.Contains(contract.Secretaries, curUser.Cname) {
-			Perm = "ParWrite" //Partial write
+			perm = 1
 		}
 	}
 
@@ -378,7 +386,7 @@ func (this *ContractController) View() {
 	this.Data["MgrClient"] = true
 	this.Data["CurUser"] = curUser
 	this.Data["Contract"] = contract
-	this.Data["Perm"] = Perm
+	this.Data["Perm"] = perm
 	this.Data["Comments"], _ = models.GetComments(cid)
 	this.Data["Team"], _ = models.GetNonAdmins() //Consulter and Secretary are limited to this set
 	this.Data["Attachments"], _ = models.GetAttachments(cid)

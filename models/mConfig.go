@@ -24,9 +24,6 @@ var (
 	config = &Config{
 		Id: ID,
 		Contract_view_control: true,
-		Mailaddr:              "dbiti@163.com",
-		Smtpaddr:              "smtp.163.com",
-		Mailpwd:               "oxiwangyi.",
 	}
 )
 
@@ -48,6 +45,7 @@ func readConfig() (c *Config, err error) {
 	o := orm.NewOrm()
 	err = o.Read(c)
 	if err != nil {
+		c = config
 		_, err = o.Insert(c)
 	}
 	beego.Warn("Read config:", c)

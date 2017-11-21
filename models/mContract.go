@@ -280,6 +280,8 @@ func UpdateContract(curUser *Account, oldContractId string, c *Contract) (*Chang
 				changes = append(changes, Change{Item: "拒签", Last: old.Fail_date, Current: c.Fail_date})
 			}
 
+			c.Status = old.Status
+
 			if old.Contract_id == c.Contract_id {
 				_, err = o.Update(c)
 			} else {
